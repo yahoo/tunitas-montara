@@ -1,0 +1,5 @@
+#!/bin/sh
+source ${0%/*}/rigging.sh || exit 70
+${exe?} --version
+# the --version option exits 0 (the user meant to do it)
+test 0 == $?

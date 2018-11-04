@@ -1,0 +1,17 @@
+# A GNU -*- Makefile -*- which is managed by automake
+
+# merely a convenience library
+lib_libwant_la = lib/libwant.la
+lib_libwant_la_LIBADD = $(none)
+lib_libwant_la_LDFLAGS = $(PACKAGE_LDFLAGS_SET)
+lib_libwant_la_MODULES = $(call TF_SOURCEStoMODULES, $(lib_libwant_la_SOURCES))
+lib_libwant_la_SOURCES = \
+  obj/src/want/namespace.cpp \
+  $(end)
+$(scold_cxxdir)/want/dependencies.mk:
+	$(AM_V_BB1ST) $(call TF_DISAGGREGATE_COMPILE, $(lib_libwant_la_SOURCES))
+	$(AM_V_BB2ND) $(call TF_DEPENDENCIES_COMPILE, $(lib_libwant_la_SOURCES))
+	test -e $@
+include $(scold_cxxdir)/want/dependencies.mk
+clean-dependencies::
+	rm -f $(scold_cxxdir)/want/dependencies.mk

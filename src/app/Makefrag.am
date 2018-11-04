@@ -1,0 +1,17 @@
+# A GNU -*- Makefile -*- which is managed by automake
+
+# merely a convenience library
+lib_libapp_la = lib/libapp.la
+lib_libapp_la_LIBADD = $(none)
+
+lib_libapp_la_SOURCES = \
+  obj/src/app/namespace.cpp \
+  $(end)
+
+$(scold_cxxdir)/app/dependencies.mk:
+	$(AM_V_BB1ST) $(call TF_DISAGGREGATE_COMPILE, $(lib_libapp_la_SOURCES))
+	$(AM_V_BB2ND) $(call TF_DEPENDENCIES_COMPILE, $(lib_libapp_la_SOURCES))
+	test -e $@
+include $(scold_cxxdir)/app/dependencies.mk
+clean-dependencies::
+	rm -f $(scold_cxxdir)/app/dependencies.mk

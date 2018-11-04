@@ -1,0 +1,9 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+#import options.indicator
+#warning FIXTHIS misspelling namespace options::indic----i----ator { }
+namespace options::indicator { }
+namespace app::service::options::indicator {
+  using namespace ::options::indicator; // cascade the namespaces
+}
+#endiv

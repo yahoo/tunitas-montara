@@ -1,0 +1,65 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace app::service::options {
+  //
+  // The options specification
+  //
+  // Usage:
+  //
+  //   Specification spec;
+  //   Parser parser{spec};
+  //   ...etc...
+  //
+  class Specification;
+}
+#endiv
+#divert <hpp>
+#import options.shortish.Specification
+#import options.longish.Specification
+#import std.initializer_list
+class app::service::options::Specification {
+public:
+  struct longish {
+    using Specification = ::options::longish::Specification;
+    using Initializer = std::initializer_list<Specification::modern_code_initializer_type>;
+  };
+  struct shortish {
+    using Specification = ::options::shortish::Specification;
+    using Initializer = std::string;
+  };
+  Specification();
+  Specification(Specification const &) = delete;
+  shortish::Specification const shortish;
+  longish::Specification const longish;
+};
+#endiv
+#divert <cpp>
+#import options.argument.constants
+namespace oa = ::options::argument;
+#import app.service.options.indicator.constants
+namespace oi = app::service::options::indicator;
+app::service::options::Specification::Specification()
+  //
+  // To enable oi::MISSING processing, from getopt(3): <quote>If the first character following any optional '+' or '-' described above (sic) of optstring is a colon (':'), then getopt() likewise does not print an error message. In addition, it returns ':' instead of '?' to indicate a missing option argument. This allows the caller to distinguish the two different types of errors.</quote>
+  //
+  //          /--------------- that one
+  //          |
+  //          v
+  : shortish{":hV?dfqvwyp:"}
+  , longish{{"help", oa::NO, oi::USAGE_SUBCOMMAND},
+            {"usage", oa::NO, oi::USAGE_SUBCOMMAND},
+	    {"version", oa::NO, oi::VERSION_SUBCOMMAND},
+	    {"debug", oa::NO, oi::DEBUG_MODE},
+	    {"quiet", oa::NO, oi::QUIET_MODE},
+	    {"verbose", oa::NO, oi::VERBOSE_MODE},
+	    {"warning", oa::NO, oi::WARNING_MODE},
+	    {"warnings", oa::NO, oi::WARNING_MODE},
+	    {"dryrun", oa::NO, oi::DRYRUN_MODE},
+	    {"dry-run", oa::NO, oi::DRYRUN_MODE},
+	    {"fg", oa::NO, oi::FOREGROUND_MODE},
+	    {"foreground", oa::NO, oi::FOREGROUND_MODE},
+	    {"bg", oa::NO, oi::BACKGROUND_MODE},
+	    {"background", oa::NO, oi::BACKGROUND_MODE},
+	    {"port", oa::REQUIRED, oi::SERVICE_PORT}}
+{ }
+#endiv

@@ -1,0 +1,35 @@
+# A GNU -*- Makefile -*- which is managed by automake
+
+sbin_montara_service = sbin/montara-service
+sbin_montara_service_LDADD = \
+  $(lib_libtunitas_montara_la) \
+  -ltunitas \
+  -loptions-module \
+  $(lib_libapp_la) \
+  $(end)
+sbin_montara_service_LDFLAGS = $(PACKAGE_LDFLAGS_SET)
+sbin_montara_service_MODULES = $(call TF_SOURCEStoMODULES, $(sbin_montara_service_SOURCES))
+sbin_montara_service_SOURCES = \
+  obj/src/app/service/main.cpp \
+  obj/src/app/service/namespace.cpp \
+  obj/src/app/service/options/namespace.cpp \
+  obj/src/app/service/options/indicator.cpp \
+  obj/src/app/service/options/indicator.constants.cpp \
+  obj/src/app/service/options/Specification.cpp \
+  obj/src/app/service/options/Parser.cpp \
+  obj/src/app/service/options/Parser.Result.cpp \
+  obj/src/app/service/Configuration.cpp \
+  obj/src/app/service/Quitting.cpp \
+  obj/src/app/service/constants.cpp \
+  obj/src/app/service/defaults.cpp \
+  obj/src/app/service/run.cpp \
+  obj/src/app/service/Usage.cpp \
+  $(end)
+
+$(scold_cxxdir)/app/service/dependencies.mk:
+	$(AM_V_BB1ST) $(call TF_DISAGGREGATE_COMPILE, $(sbin_montara_service_SOURCES))
+	$(AM_V_BB2ND) $(call TF_DEPENDENCIES_COMPILE, $(sbin_montara_service_SOURCES))
+	test -e $@
+include $(scold_cxxdir)/app/service/dependencies.mk
+clean-dependencies::
+	rm -f $(scold_cxxdir)/app/service/dependencies.mk

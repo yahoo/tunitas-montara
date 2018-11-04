@@ -1,0 +1,12 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <hpp>
+#import httpserver.http.utils
+namespace app::service::constants {
+  namespace server {
+    inline auto const BLOCKING = true;
+    // WATCHOUT - you MUST use THREADS because INTERNAL_SELECT is where the IPv6 and memory allocation bugs remain.
+    inline auto const METHOD = httpserver::http::utils::THREADS;
+    inline auto const THREADS = 5u;
+  }
+}
+#endiv

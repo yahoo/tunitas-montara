@@ -1,0 +1,33 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace app::service {
+  //
+  // The configuration of the service
+  //
+  // Usage:
+  //
+  //   Program prog{argv[0]};
+  //   Configuration cfg{prog};
+  //
+  //   error(cfg) << "bad, very bad";
+  //   warning(cfg) << "don't do this, don't do that";
+  //   notice(cfg) << "be happy";
+  //   verbose(cfg) << "gossip";
+  //   debug(cfg) << "here";
+  //
+  class Configuration;
+}
+#endiv
+#divert <hpp>
+#import std.uint16_t // [[FIXTHIS]] use ip::in::port_t when available
+#import std.optional
+#import tunitas.app.Configuration
+class app::service::Configuration : public tunitas::app::Configuration {
+  using ancestor = tunitas::app::Configuration;
+public:
+  using ancestor::Configuration;
+  std::optional<bool> emit_pid;
+  std::optional<bool> foreground_mode;
+  std::optional<std::uint16_t> port;
+};
+#endiv

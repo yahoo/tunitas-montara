@@ -1,0 +1,10 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <hpp>
+#import app.service.options.indicator
+#import options.indicator.constants
+namespace app::service::options::indicator {
+  inline auto const SERVICE_PORT = Code::CODE_254;
+  inline auto const FOREGROUND_MODE = Code::CODE_253;
+  inline auto const BACKGROUND_MODE = Code::CODE_252; // [[FIXTHIS]] use pred(FOREGROUND_MODE)
+}
+#endiv

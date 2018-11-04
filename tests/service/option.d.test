@@ -1,0 +1,5 @@
+#!/bin/sh
+source ${0%/*}/rigging.sh || exit 70
+${exe?} -d -y
+# the -d option enters debug mode, but we need to dry-run this
+test 0 == $?

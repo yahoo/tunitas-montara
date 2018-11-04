@@ -1,0 +1,126 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <hpp>
+#import app.service.Configuration
+namespace app::service {
+  //
+  // Run the service
+  // There is no termination (except by SIGTERM)
+  //
+  // Usage:
+  //
+  //   Configuration cfg{...};
+  //   Specification specification{...};
+  //   auto parser = Parser{cfg, specification};
+  //   auto parsed = parser.parse(Args{c, v});
+  //   if (ok(parsed)) {
+  //     throw Quitting{cfg.NAME};
+  //   }
+  //   run(cfg);
+  //   return sys::exits::OK;
+  //
+  auto run(Configuration const &) -> void;
+}
+#endiv
+#divert <cpp>
+#import app.service.constants
+#import app.service.defaults
+#import getpid
+#import httpserver.Webserver
+#import httpserver.Create_Webserver
+namespace httpserver {
+  using Service = Webserver;
+  namespace service {
+    using Create = httpserver::Create_Webserver;
+  }
+}
+#import std.cout
+#import std.cerr
+#import tunitas.montara.endpoint.Consent
+#import tunitas.montara.endpoint.Consent_CreateWithArray
+#import tunitas.montara.endpoint.Consent_CreateWithList
+#import tunitas.montara.endpoint.Consent_FindIdentifiersByEntity
+#import tunitas.montara.endpoint.Consent_Identifier
+#import tunitas.montara.endpoint.Consent_RevokeWithArray
+#import tunitas.montara.endpoint.Consent_RevokeWithList
+#import tunitas.montara.endpoint.Datatransfer
+#import tunitas.montara.endpoint.Datatransfer_CreateWithArray
+#import tunitas.montara.endpoint.Datatransfer_CreateWithList
+#import tunitas.montara.endpoint.Datatransfer_FindByConsentIdentifier
+#import tunitas.montara.endpoint.Datatransfer_Identifier
+#import tunitas.montara.endpoint.Subscription
+#import tunitas.montara.endpoint.Subscription_FindByEntity
+#import tunitas.montara.endpoint.Subscription_Identifier
+auto app::service::run(Configuration const &cfg) -> void {
+  namespace endpoint = tunitas::montara::endpoint;
+  httpserver::Service service{[&cfg]() {
+        httpserver::service::Create specification;
+        using namespace constants::server;
+        specification.debug();
+        specification.use_ipv6().start_method(METHOD).max_threads(THREADS);
+        specification.regex_checking();
+	specification.port(cfg.port.value_or(defaults::SERVICE_PORT));
+        return std::move(specification);
+      }()};
+
+  if (cfg.emit_pid.value_or(defaults::EMIT_PID)) {
+    std::cout << getpid() << std::flush;
+  }
+  // [[FIXTHIS]] ignore sigpipe
+  // [[FIXTHIS]] daemonize and drop privileges
+
+  auto const FAMILY_URL_SENSE = false;
+  endpoint::Consent consent;
+  service.register_resource("/consent", &consent, FAMILY_URL_SENSE);
+
+  endpoint::Consent_CreateWithArray consent_createWithArray;
+  service.register_resource("/consent/createWithArray", &consent_createWithArray, FAMILY_URL_SENSE);
+
+  endpoint::Consent_CreateWithList consent_createWithList;
+  service.register_resource("/consent/createWithList", &consent_createWithList, FAMILY_URL_SENSE);
+
+  endpoint::Consent_FindIdentifiersByEntity consent_findIdentifiersByEntity;
+  service.register_resource("/consent/findIdentifiersByEntity", &consent_findIdentifiersByEntity, FAMILY_URL_SENSE);
+  // the pesky aliases
+  service.register_resource("/consent/findIdsByEntity", &consent_findIdentifiersByEntity, FAMILY_URL_SENSE);
+
+  endpoint::Consent_Identifier consent_identifier;
+  service.register_resource("/consent/{consentId}", &consent_identifier, FAMILY_URL_SENSE);
+
+  endpoint::Consent_RevokeWithArray consent_revokeWithArray;
+  service.register_resource("/consent/revokeWithArray", &consent_revokeWithArray, FAMILY_URL_SENSE);
+
+  endpoint::Consent_RevokeWithList consent_revokeWithList;
+  service.register_resource("/consent/revokeWithList", &consent_revokeWithList, FAMILY_URL_SENSE);
+
+  endpoint::Datatransfer datatransfer;
+  service.register_resource("/datatransfer", &datatransfer, FAMILY_URL_SENSE);
+
+  endpoint::Datatransfer_CreateWithArray datatransfer_createWithArray;
+  service.register_resource("/datatransfer/createWithArray", &datatransfer_createWithArray, FAMILY_URL_SENSE);
+
+  endpoint::Datatransfer_CreateWithList datatransfer_createWithList;
+  service.register_resource("/datatransfer/createWithList", &datatransfer_createWithList, FAMILY_URL_SENSE);
+
+  endpoint::Datatransfer_FindByConsentIdentifier datatransfer_findByConsentIdentifier;
+  service.register_resource("/datatransfer/findByConsentIdentifier", &datatransfer_findByConsentIdentifier, FAMILY_URL_SENSE);
+  // the pesky aliases
+  service.register_resource("/datatransfer/findByConsentID", &datatransfer_findByConsentIdentifier, FAMILY_URL_SENSE);
+  service.register_resource("/datatransfer/findByConsentId", &datatransfer_findByConsentIdentifier, FAMILY_URL_SENSE);
+
+  endpoint::Datatransfer_Identifier datatransfer_identifier;
+  service.register_resource("/datatransfer/{datatransferId}", &datatransfer_identifier, FAMILY_URL_SENSE);
+  
+  endpoint::Subscription subscription;
+  service.register_resource("/subscription", &subscription, FAMILY_URL_SENSE);
+
+  endpoint::Subscription_FindByEntity subscription_findByEntity;
+  service.register_resource("/subscription/findByEntity", &subscription_findByEntity, FAMILY_URL_SENSE);
+
+  endpoint::Subscription_Identifier subscription_identifier;
+  service.register_resource("/subscription/{subscriptionId}", &subscription_identifier, FAMILY_URL_SENSE);
+  
+  // There is no 'quit' method.  The service runs forever.
+  // To stop it, you have to kill it, e.g., systemctl stop montara
+  service.start(cfg.foreground_mode.value_or(defaults::FOREGROUND_MODE));
+}
+#endiv

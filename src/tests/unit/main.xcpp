@@ -1,0 +1,15 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <cpp>
+#import tests.unit.httpserver.Fixture
+#import tests.unit.montara.Fixture
+#import tests.unit.want.Fixture
+#import rigging.bench.Main
+auto main(int argc, char *argv[]) -> int {
+  using namespace rigging::bench;
+  using namespace tests::unit;
+  Main remain(httpserver::Fixture::suite(),
+              montara::Fixture::suite(),
+              want::Fixture::suite());
+  return remain(argc, argv);
+}
+#endiv

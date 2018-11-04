@@ -1,0 +1,70 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tests::unit::httpserver { class Fixture; }
+#endiv
+#divert <hpp>
+#import cppunit.Test
+#import cppunit.test.Fixture
+class tests::unit::httpserver::Fixture : public cppunit::test::Fixture {
+public:
+  auto test_endpoint_match() -> void;
+  static auto suite() -> cppunit::Test *;
+};
+#endiv
+#divert <cpp>
+#import std.cerr
+#import std.string_literals
+#import httpserver.Webserver
+using namespace std::string_literals;
+auto tests::unit::httpserver::Fixture::test_endpoint_match() -> void {
+#if 0
+  //
+  // Circa (nonstd-)libhttpserver-0.9.0, this requires a manual hack to make the interface public enough.
+  // To wit:
+  //
+  // *** http_endpoint.hpp	2018-11-03 12:14:38.300005330 -0700
+  // --- http_endpoint.hpp~	2018-11-03 12:14:02.615242398 -0700
+  // ***************
+  // *** 86,92 ****
+  //            * @return a reference to the http_endpoint obtained
+  //           **/
+  //           http_endpoint& operator =(const http_endpoint& h);
+  // !   // REMOVED FOR TESTING ---> private:
+  //           /**
+  //            * Method indicating if this endpoint 'matches' with the one passed. A passed endpoint matches a registered endpoint if
+  //            * the regex represented by the registered endpoint matches the passed one.
+  // --- 86,92 ----
+  //            * @return a reference to the http_endpoint obtained
+  //           **/
+  //           http_endpoint& operator =(const http_endpoint& h);
+  // !     private:
+  //           /**
+  //            * Method indicating if this endpoint 'matches' with the one passed. A passed endpoint matches a registered endpoint if
+  //            * the regex represented by the registered endpoint matches the passed one.
+  //
+  auto const FAMILY_SENSE = false;
+  auto const REGISTERED = true;
+  auto const UNREGISTERED = false;
+  auto const USE_REGEX = true;
+  auto const USE_STRING = false;
+  using Subject = ::httpserver::details::http_endpoint;
+  Subject pattern{"/audience/attribute/{ID}", FAMILY_SENSE, REGISTERED, USE_REGEX};
+  Subject specimen{"/audience/attribute/123", FAMILY_SENSE, UNREGISTERED, USE_STRING};
+  bool matched = pattern.match(specimen);
+  std::cerr << "matched=" << matched << '\n';
+  CPPUNIT_ASSERT(matched);
+#else
+  CPPUNIT_ASSERT(true);
+#endif
+}
+#import unit.rigging.suite.Stream
+#import unit.rigging.suite.call
+#import unit.rigging.suite.add
+auto tests::unit::httpserver::Fixture::suite() -> cppunit::Test * {
+  using namespace ::unit::rigging::suite;
+  Stream series("httpserver");
+  series << call("endpoint_match", &Fixture::test_endpoint_match)
+    ;
+  return series.release();
+}
+#endiv

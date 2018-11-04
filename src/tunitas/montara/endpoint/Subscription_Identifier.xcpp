@@ -1,0 +1,62 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::montara::endpoint {
+  //
+  // The code behind the /subscription/{subscriptionId} endpoint
+  //
+  // Example: TBD
+  //
+  // Usage:
+  //
+  //   endpoint::Datatransfer_Identifier resource;
+  //   ws.register_resource("/taxonomy/{subscriptionId}", &resource, true);
+  //   ws.start(cfg.foreground);
+  //   
+  class Subscription_Identifier;
+}
+#endiv
+#divert <hpp>
+class tunitas::montara::endpoint::Subscription_Identifier : public httpserver::Resource<Subscription_Identifier> {
+public:
+  Subscription_Identifier();
+  auto render_GET(Request const &, [[out]] Response **fill) -> void;
+  auto render_DELETE(Request const &, [[out]] Response **fill) -> void;
+private:
+  static std::string const DUMMY_DATA;
+};
+#endiv
+#divert <cpp>
+#import std.string_literals
+#import tunitas.montara.filter
+#import tunitas.montara.constants
+#import tunitas.montara.resource
+namespace tunitas::montara::endpoint {
+  using namespace std::literals;
+  using namespace constants;
+  Subscription_Identifier::Subscription_Identifier() {
+    resource::initialize_getdelete(*this);
+  }
+  auto Subscription_Identifier::render_GET(Request const &request, Response **fill) -> void {
+    filter::enforce_no_query_parameters(request, *fill);
+    if (nullptr == *fill) {
+      // [[FIXTHIS]] recover the taxonomy from an actual database
+      auto const &content_body = DUMMY_DATA;
+      auto const code = http::R200_OK;
+      auto const &content_type = mime::APPLICATION_JSON;
+      httpserver::response::Builder bob{content_body, code, content_type};
+      *fill = new Response{bob};
+    }
+  }
+  auto Subscription_Identifier::render_DELETE(Request const &request, Response **fill) -> void {
+    filter::enforce_no_query_parameters(request, *fill);
+    if (nullptr == *fill) {
+      // [[FIXTHIS]] find and delete the thing (returning 404 NOT FOUND)
+      auto const &content_body = R"text(deleted)text";
+      auto const code = http::R200_OK;
+      auto const &content_type = mime::TEXT_PLAIN;
+      httpserver::response::Builder bob{content_body, code, content_type};
+      *fill = new Response{bob};
+    }
+  }
+}
+#endiv

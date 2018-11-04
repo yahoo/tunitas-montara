@@ -1,0 +1,146 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace app::service::options {
+  //
+  // The options parser.
+  //
+  // The lifetime of the Configuration (cfg) must be longer than the Parser.
+  // The lifetime of the Specification (spec) must be longer than the Parser.
+  //
+  // Usage:
+  //
+  //   auto spec = Specification{};
+  //   auto parser = Parser{cfg, spec};
+  //   auto parsed = parser.parse(args);
+  //   if (ok(parsed)) {
+  //     ...etc...
+  //   }
+  //
+  class Parser;
+}
+#endiv
+#divert <hpp>
+#import tunitas.app.options.Args
+#import app.service.Configuration
+#import app.service.options.Specification
+#import options.longish.Step
+#import std.uint16_t
+class app::service::options::Parser {
+public:
+  inline Parser(Configuration &modified, Specification const &);
+  // disallow temporaries in places where the lifetimes matter
+  inline Parser(Configuration const &, Specification &&) = delete;
+  inline Parser(Configuration &&, Specification const &) = delete;
+  struct Result;
+  auto parse([[inout]] Args &) -> Result;
+protected:
+  Configuration &cfg;
+  Specification const &specification;
+  auto get_port(::options::longish::Step const &) -> std::uint16_t;
+};
+#entail app.service.options.Parser.Result
+#endiv
+#divert <ipp>
+#import app.service.options.Specification
+app::service::options::Parser::Parser(Configuration &modified, Specification const &specification)
+  : cfg{modified}
+  , specification{specification}
+{ }
+#endiv
+#divert <cpp>
+#import app.service.Quitting
+#import app.service.Usage
+#import app.service.options.Parser.Result
+#import app.service.options.indicator.constants
+#import options.longish.Getter
+#import options.longish.Step
+#import tunitas.montara.Version
+auto app::service::options::Parser::parse(Args &args) -> Result {
+  using namespace ::options::longish;
+  Getter getter{specification.shortish, specification.longish, args};
+  for (Step step=getter(); more(step); step=getter()) {
+    namespace oi = indicator;
+    switch (code(step)) {
+    case oi::CHR_h:
+    case oi::USAGE_SUBCOMMAND:
+      throw Usage{cfg.NAME};
+    case oi::CHR_V:
+    case oi::VERSION_SUBCOMMAND:
+      throw tunitas::montara::Version{cfg.NAME};
+    case oi::CHR_b:
+    case oi::BACKGROUND_MODE:
+      cfg.foreground_mode = false;
+      break;
+    case oi::CHR_d:
+    case oi::DEBUG_MODE:
+      cfg.debug_mode = true;
+      break;
+    case oi::CHR_f:
+    case oi::FOREGROUND_MODE:
+      cfg.foreground_mode = true;
+      break;
+    case oi::CHR_q:
+    case oi::QUIET_MODE:
+      cfg.quiet_mode = true;
+      break;
+    case oi::CHR_p:
+    case oi::SERVICE_PORT:
+      cfg.port = get_port(step);
+      break;
+    case oi::CHR_v:
+    case oi::VERBOSE_MODE:
+      cfg.verbose_mode = true;
+      break;
+    case oi::CHR_w:
+    case oi::WARNINGS_MODE:
+      cfg.warning_mode = true;
+      break;
+    case oi::CHR_y:
+    case oi::DRYRUN_MODE:
+      cfg.dry_run_mode = true;
+      break;
+    case oi::MISSING:
+      error(cfg) << "missing value for " << word_in_error(step) << '\n';
+      throw Quitting{cfg.NAME, sys::exits::CONFIG};
+    case oi::UNKNOWN:
+      error(cfg) << "unknown option " << word_in_error(step) << '\n';
+      throw Quitting{cfg.NAME, sys::exits::CONFIG};
+    default:
+      error(cfg) << "unconfigured option -" << flag_in_error(step) << ", --" << word_in_error(step) << '\n';
+      throw Quitting{cfg.NAME, sys::exits::CONFIG};
+    }
+  }
+  auto const SUCCESS = true;
+  return Result{SUCCESS, getter.begin(), getter.end()};
+}
+#import app.service.Quitting
+#import std.size_t
+#import std.stoi
+#import std.string
+#import std.numeric_limits
+#import sys.exits.constants
+auto app::service::options::Parser::get_port(::options::longish::Step const &step) -> std::uint16_t {
+  // Whereas stoi signals failure both via exception and also via its 2nd inout parameter
+  // we have to put a lot of machinery around it to make it safe and obvious what is occurring.
+  try {
+    std::string const syntax = required(step);
+    std::size_t end{0};
+    auto candidate = std::stoi(syntax, &end);
+    if (end != syntax.size()) {
+      throw std::runtime_error{"stoi"};
+    }
+    auto const lo = 1+std::numeric_limits<std::uint16_t>::min();
+    auto const hi = std::numeric_limits<std::uint16_t>::max();
+    if (candidate < 0 || candidate < lo || hi < candidate) {
+      error(cfg) << "the service port " << candidate << " is out of range " << lo << ".." << hi << '\n';
+      throw Quitting{cfg.NAME, sys::exits::CONFIG};
+    }
+    return candidate;
+  } catch (std::exception const &) {
+    // The exception will say "stoi" (ours or theirs)
+    std::string ine = required(step); if (ine.empty()) {ine = "(empty)";} // [[FIXME]] use format::ine(...)
+    error(cfg) << "the service port is not a number - " << ine << '\n';
+    throw Quitting{cfg.NAME, sys::exits::CONFIG};
+  }
+}
+#endiv

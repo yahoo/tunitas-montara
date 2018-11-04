@@ -1,0 +1,47 @@
+# A GNU -*- Makefile -*- which is managed by automake
+
+lib_libtunitas_montara_la = lib/libtunitas-montara.la
+lib_libtunitas_montara_la_LIBADD = \
+  $(lib_libwant_la) \
+  -ltunitas \
+  -lhttpserver \
+  $(end)
+lib_libtunitas_montara_la_LDFLAGS = $(PACKAGE_LDFLAGS_SET)
+lib_libtunitas_montara_la_MODULES = $(call TF_SOURCEStoMODULES, $(lib_libtunitas_montara_la_XCPP_SOURCES))
+lib_libtunitas_montara_la_SOURCES = \
+  src/tunitas/montara/endpoint/DUMMY_DATA.cpp \
+  $(lib_libtunitas_montara_la_XCPP_SOURCES)
+  $(end)
+lib_libtunitas_montara_la_XCPP_SOURCES = \
+  obj/src/tunitas/montara/namespace.cpp \
+  obj/src/tunitas/montara/Version.cpp \
+  \
+  obj/src/tunitas/montara/endpoint/namespace.cpp \
+  obj/src/tunitas/montara/constants.cpp \
+  obj/src/tunitas/montara/filter.cpp \
+  obj/src/tunitas/montara/resource.cpp \
+  obj/src/tunitas/montara/service.cpp \
+  obj/src/tunitas/montara/endpoint/Consent.cpp \
+  obj/src/tunitas/montara/endpoint/Consent_CreateWithArray.cpp \
+  obj/src/tunitas/montara/endpoint/Consent_CreateWithList.cpp \
+  obj/src/tunitas/montara/endpoint/Consent_FindIdentifiersByEntity.cpp \
+  obj/src/tunitas/montara/endpoint/Consent_Identifier.cpp \
+  obj/src/tunitas/montara/endpoint/Consent_Revoke_Identifier.cpp \
+  obj/src/tunitas/montara/endpoint/Consent_RevokeWithArray.cpp \
+  obj/src/tunitas/montara/endpoint/Consent_RevokeWithList.cpp \
+  obj/src/tunitas/montara/endpoint/Datatransfer.cpp \
+  obj/src/tunitas/montara/endpoint/Datatransfer_CreateWithArray.cpp \
+  obj/src/tunitas/montara/endpoint/Datatransfer_CreateWithList.cpp \
+  obj/src/tunitas/montara/endpoint/Datatransfer_FindByConsentIdentifier.cpp \
+  obj/src/tunitas/montara/endpoint/Datatransfer_Identifier.cpp \
+  obj/src/tunitas/montara/endpoint/Subscription.cpp \
+  obj/src/tunitas/montara/endpoint/Subscription_FindByEntity.cpp \
+  obj/src/tunitas/montara/endpoint/Subscription_Identifier.cpp \
+  $(end)
+$(scold_cxxdir)/tunitas/montara/dependencies.mk:
+	$(AM_V_BB1ST) $(call TF_DISAGGREGATE_COMPILE, $(lib_libtunitas_montara_la_XCPP_SOURCES))
+	$(AM_V_BB2ND) $(call TF_DEPENDENCIES_COMPILE, $(lib_libtunitas_montara_la_XCPP_SOURCES))
+	test -e $@
+include $(scold_cxxdir)/tunitas/montara/dependencies.mk
+clean-dependencies::
+	rm -f $(scold_cxxdir)/tunitas/montara/dependencies.mk

@@ -1,0 +1,55 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+#import app.service.options.Parser
+#endiv
+#divert <hpp>
+#import tunitas.app.words.Strings
+namespace app::service::options {
+  inline auto ok(Parser::Result const &) -> bool;
+  // These are "casts" like std::move and std::forward
+  inline auto value(Parser::Result const &) -> tunitas::app::words::Strings const &;
+  inline auto value(Parser::Result &) -> tunitas::app::words::Strings &;
+  inline auto value(Parser::Result &&) -> tunitas::app::words::Strings &&;
+}
+#import std.tuple
+class app::service::options::Parser::Result : public std::tuple<bool, tunitas::app::words::Strings> {
+  using ancestor = std::tuple<bool, tunitas::app::words::Strings>;
+  using Strings = tunitas::app::words::Strings;
+public:
+  inline explicit Result(bool);
+  // [[FIXTHIS]] wherein ITERATOR matches the concept of a string-producing iterator
+  template<typename ITERATOR> inline Result(bool, ITERATOR start, ITERATOR finish);
+  inline Result(bool, Strings &&);
+  inline Result(bool, Strings const &);
+};
+#endiv
+#divert <ipp>
+#import std.get
+auto app::service::options::ok(Parser::Result const &r) -> bool {
+  return std::get<0>(r);
+}
+auto app::service::options::value(Parser::Result const &r) -> tunitas::app::words::Strings const & {
+  return std::get<1>(r);
+}
+auto app::service::options::value(Parser::Result &r) -> tunitas::app::words::Strings & {
+  return std::get<1>(r);
+}
+#import std.forward
+auto app::service::options::value(Parser::Result &&r) -> tunitas::app::words::Strings && {
+  return std::get<1>(std::forward<Parser::Result>(r));
+}
+app::service::options::Parser::Result::Result(bool success)
+  : ancestor{success, Strings{}}
+{ }
+template<typename ITERATOR> app::service::options::Parser::Result::Result(bool success, ITERATOR start, ITERATOR finish)
+  : ancestor{success, Strings{start, finish}}
+{ }
+#import std.forward
+app::service::options::Parser::Result::Result(bool success, Strings &&series)
+  : ancestor{success, std::forward<Strings>(series)}
+{ }
+app::service::options::Parser::Result::Result(bool success, Strings const &series)
+  : ancestor{success, series}
+{ }
+#endiv
+

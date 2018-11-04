@@ -1,0 +1,52 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <hpp>
+#import app.service.options
+#import tunitas.app.options.Args
+#import sys.exits.Code
+namespace app::service {
+  auto main(options::Args) -> sys::exits::Code;
+}
+#endiv
+#divert <cpp>
+auto main(int c, char *v[]) -> int {
+  return app::service::main(tunitas::app::options::Args(c, v));
+}
+#import std.cerr
+#import std.exception
+#import std.string
+#import sys.exits.constants
+#import app // cascades from namespace tunitas::app
+#import app.service.run
+#import app.service.Configuration
+#import app.service.options.Parser
+#import app.service.options.Specification
+#import app.service.Quitting
+#import tunitas.app.Program
+#import tunitas.app.exception.Generic
+auto app::service::main(options::Args args) -> sys::exits::Code {
+  Program NAME{args.front()};
+  try {
+    Configuration cfg{NAME};
+    options::Specification spec{};
+    options::Parser parser{cfg, spec};
+    auto parsed = parser.parse(args);
+    if (!ok(parsed)) {
+      error(cfg) << "could not parse the options, quitting\n";
+      throw Quitting{NAME};
+    }
+    if (cfg.dry_run_mode) {
+      verbose(cfg) << "nothing to do in dry-run mode\n";
+    } else {
+      // This will never return
+      run(cfg);
+    }
+    return sys::exits::OK;
+  } catch (app::exception::Generic const &g) {
+    g.stream() << g << '\n';
+    return g.code();
+  } catch (std::exception const &e) {
+    std::cerr << NAME << ": fatal, an unexpected error - " << e.what() << '\n';
+    return sys::exits::SOFTWARE;
+  }
+}
+#endiv

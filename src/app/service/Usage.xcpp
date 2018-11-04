@@ -1,0 +1,80 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace app::service {
+  //
+  // The usage message, as an application exception
+  //
+  // Usage: (sic)
+  //
+  //     throw Usage{"program"};
+  //
+  // Usage: (sic)
+  //
+  //   try {
+  //     ...
+  //     throw Usage{"program"};
+  //     ...
+  //   } catch (tunitas::app::exception::Generic const &g) {
+  //     g.stream() << g << '\n';
+  //     return g.code();          ... equivalently ::exit(g.code());
+  //   }
+  //
+  class [[nodiscard]] Usage;
+}
+#endiv
+#divert <hpp>
+#import tunitas.app.exception.Usage
+#import tunitas.app.exception.Messaging
+#import std.exception
+#import std.string
+class app::service::Usage : public tunitas::app::exception::Usage, public tunitas::app::exception::Messaging, public std::exception {
+  struct ancestors {
+    using Usage = tunitas::app::exception::Usage;
+    using Messaging = tunitas::app::exception::Messaging;
+    using Exception = std::exception;
+  };
+public:
+  inline explicit Usage(std::string const &NAME);
+  inline Usage(std::string const &NAME, sys::exits::Code);
+  auto what() const noexcept -> char const * final;
+private:
+  static auto format(std::string const &NAME) -> std::string;
+};
+#endiv
+#divert <ipp>
+#import sys.exits.constants
+app::service::Usage::Usage(std::string const &NAME)
+  : Usage{NAME, sys::exits::OK}
+{ }
+app::service::Usage::Usage(std::string const &NAME, sys::exits::Code code)
+  : ancestors::Usage{code}
+  , ancestors::Messaging{format(NAME)}
+  , ancestors::Exception{}
+{ }
+#endiv
+#divert <cpp>
+#import std.ostringstream
+#import app.service.defaults
+auto app::service::Usage::format(std::string const &NAME) -> std::string {
+  std::ostringstream buf;
+  buf << "usage: " << NAME << " [...options...]\n"
+      << "\n"
+      << "Service Options\n"
+      << "--foreground, --fg, -f             remain in the foreground, e.g. for systemd\n"
+      << "--background, --bg                 daemonize into the background\n"
+      << "--port=NUMBER, -p NUMBER           use port NUMBER instead of the default " << defaults::SERVICE_PORT << '\n'
+      << '\n'
+      << "General Options:\n"
+      << "--usage, --help, -h                emit this message, and exit\n"
+      << "--version, -V                      emit the package version, and exit\n"
+      << "--dry-run, --dryrun, -y            dry run, do not start the server\n"
+      << "--warnings, --warning, -w          emit warnings\n"
+      << "--quiet, -q                        be quiet, emit no notices or warnings\n"
+      << "--verbose, -v                      be verbose (independent of --quiet)\n"
+      << "--debug, -d                        debug output (you should not need this)"; // no '\n'
+  return buf.str();
+}
+auto app::service::Usage::what() const noexcept -> char const * {
+  return ancestors::Messaging::what();
+}
+#endiv

@@ -1,0 +1,48 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::montara::endpoint {
+  //
+  // The code behind the /datatransfer/createWithArray endpoint
+  //
+  // Example: TBD
+  //
+  // Usage:
+  //
+  //   endpoint::Datatransfer_CreateWithArray resource;
+  //   ws.register_resource("/datatransfer/createWithArray", &resource, true);
+  //   ws.start(cfg.foreground);
+  //   
+  class Datatransfer_CreateWithArray;
+}
+#endiv
+#divert <hpp>
+class tunitas::montara::endpoint::Datatransfer_CreateWithArray : public httpserver::Resource<Datatransfer_CreateWithArray> {
+public:
+  Datatransfer_CreateWithArray();
+  auto render_POST(Request const &, [[out]] Response **fill) -> void;
+};
+#endiv
+#divert <cpp>
+#import std.string_literals
+#import tunitas.montara.filter
+#import tunitas.montara.constants
+#import tunitas.montara.resource
+namespace tunitas::montara::endpoint {
+  using namespace constants;
+  using namespace std::literals;
+  Datatransfer_CreateWithArray::Datatransfer_CreateWithArray() {
+    resource::initialize_only_post(*this);
+  }
+  auto Datatransfer_CreateWithArray::render_POST(Request const &request, Response **fill) -> void {
+    filter::enforce_no_query_parameters(request, *fill);
+    if (nullptr == *fill) {
+      // [[FIXTHIS]] accept the body and put it in a database or a queue, but only if the ID's segments already exists.
+      auto const &content_body = R"text(accepted)text"s;
+      auto const code = http::R202_ACCEPTED;
+      auto const &content_type = mime::TEXT_PLAIN;
+      httpserver::response::Builder bob{content_body, code, content_type};
+      *fill = new Response{bob};
+    }
+  }
+}
+#endiv

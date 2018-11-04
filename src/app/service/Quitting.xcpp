@@ -1,0 +1,32 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace app::service { class Quitting; }
+#endiv
+#divert <hpp>
+#import tunitas.app.exception.Quitting
+#import std.runtime_error
+#import std.string
+#import sys.exits.Code
+class app::service::Quitting : public tunitas::app::exception::Quitting, public std::runtime_error {
+  using ancestor = tunitas::app::exception::Quitting;
+public:
+  inline explicit Quitting(std::string const &NAME);
+  inline explicit Quitting(std::string const &NAME, sys::exits::Code);
+  auto what() const noexcept -> char const * final;
+};
+#endiv
+#divert <ipp>
+#import sys.exits.constants
+app::service::Quitting::Quitting(std::string const &NAME)
+  : Quitting{NAME, sys::exits::OK}
+{ }
+app::service::Quitting::Quitting(std::string const &NAME, sys::exits::Code code)
+  : ancestor{code}
+  , runtime_error{NAME + ": quitting"}
+{ }
+#endiv
+#divert <cpp>
+auto app::service::Quitting::what() const noexcept -> char const * {
+   return runtime_error::what();
+}
+#endiv

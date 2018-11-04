@@ -1,0 +1,50 @@
+// This is -*- c++ -*- (as close to C++2a as possible)
+#divert <fpp>
+namespace tunitas::montara::endpoint {
+  //
+  // The code behind the /consent/revokeWithArray endpoint
+  //
+  // Example: TBD
+  //
+  // Usage:
+  //
+  //   endpoint::Consent_RevokeWithArray resource;
+  //   ws.register_resource("/consent/revokeWithArray", &resource, true);
+  //   ws.start(cfg.foreground);
+  //   
+  class Consent_RevokeWithArray;
+}
+#endiv
+#divert <hpp>
+class tunitas::montara::endpoint::Consent_RevokeWithArray : public httpserver::Resource<Consent_RevokeWithArray> {
+public:
+  Consent_RevokeWithArray();
+  auto render_POST(Request const &, [[out]] Response **fill) -> void;
+private:
+  static std::string const DUMMY_DATA;
+};
+#endiv
+#divert <cpp>
+#import std.string_literals
+#import tunitas.montara.filter
+#import tunitas.montara.constants
+#import tunitas.montara.resource
+namespace tunitas::montara::endpoint {
+  using namespace constants;
+  using namespace std::literals;
+  Consent_RevokeWithArray::Consent_RevokeWithArray() {
+    resource::initialize_only_post(*this);
+  }
+  auto Consent_RevokeWithArray::render_POST(Request const &request, Response **fill) -> void {
+    filter::enforce_no_query_parameters(request, *fill);
+    if (nullptr == *fill) {
+      // [[FIXTHIS]] accept the body and put it in a database or a queue
+      auto const &content_body = R"text(accepted)text"s;
+      auto const code = http::R202_ACCEPTED;
+      auto const &content_type = mime::TEXT_PLAIN;
+      httpserver::response::Builder bob{content_body, code, content_type};
+      *fill = new Response{bob};
+    }
+  }
+}
+#endiv

@@ -1,0 +1,5 @@
+#!/bin/sh
+source ${0%/*}/rigging.sh || exit 70
+${exe?} -w -y
+# enters warning mode, but we need to dry-run this
+test 0 == $?
