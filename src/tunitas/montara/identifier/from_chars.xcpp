@@ -3,6 +3,10 @@
 #import tunitas.montara.identifier.required.Identifier
 #import tunitas.Outcome
 #import std.string
+#if 7 < __GNUC__
+#include <charconv> // #import std.from_chars
+#include <charconv> // #import std.from_chars_result
+#endif
 // #import std.from_chars_result some day ... but not in gcc-7
 namespace tunitas::montara::identifier {
   //
@@ -32,24 +36,24 @@ namespace tunitas::montara {
     using Result = Outcome<IDENTIFIER>;
     using Underlying = typename std::underlying_type<IDENTIFIER>::type;
     Underlying potential;
+    auto first = candidate.begin();
     auto last = candidate.end();
-    auto result = std::from_chars(candidate.begin(), last, potential);
-    if (last == result.ptr) {
+    auto result = std::from_chars(&*first, &*last, potential);
+    if (&*last == result.ptr) {
       return Result{IDENTIFIER(potential)};
     } else {
       // Consulting https://en.cppreference.com/w/cpp/utility/from_chars
       // and in lieu of returning Result{std::error_code{result.ec}}
       // which gives higher fidelity on the problem but is not in "our" error category.
-      return Result{std::error_code{Code::NOT_AN_IDENTIFIER}};
+      return Result{std::error_code{error::Code::NOT_AN_IDENTIFIER}};
     }
   }
-  template<identifier::required::Identifier IDENTIFIER> auto from_chars(char const *first, char const *last, IDENTIFIER &value) -> std::from_chars_result {
+  template<identifier::required::Identifier IDENTIFIER> auto identifier::from_chars(char const *first, char const *last, IDENTIFIER &value) -> std::from_chars_result {
     using Underlying = typename std::underlying_type<IDENTIFIER>::type;
     Underlying potential;
-    auto last = candidate.end();
-    auto result = std::from_chars(candidate.begin(), last, potential);
+    auto result = std::from_chars(first, last, potential);
     if (last == result.ptr) {
-      return value = IDENTIFIER(potential);
+      value = IDENTIFIER(potential);
     }
     return result;
   }

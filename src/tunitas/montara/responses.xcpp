@@ -28,7 +28,7 @@ namespace tunitas::montara::responses {
 #endiv
 #divert <ipp>
 #import httpserver.response.Builder
-#import std.unique_ptr;
+#import std.unique_ptr
 #import tunitas.montara.constants
 auto tunitas::montara::responses::internal_server_error(Response *&fill) -> void {
   internal_server_error(fill, "internal server error");
