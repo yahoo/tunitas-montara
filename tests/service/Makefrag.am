@@ -1,5 +1,6 @@
 tests_service_TESTS = \
   tests/service/option.help.test \
+  tests/service/option.b.test \
   tests/service/option.background.test \
   tests/service/option.bg.test \
   tests/service/option.dry-run.test \
@@ -7,14 +8,19 @@ tests_service_TESTS = \
   tests/service/option.d.test \
   tests/service/option.e.test \
   tests/service/option.engine.test \
+  tests/service/option.f.test \
   tests/service/option.fg.test \
   tests/service/option.foreground.test \
   tests/service/option.help.test \
   tests/service/option.h.test \
   tests/service/option.port.test \
+  tests/service/option.P.test \
   tests/service/option.p.test \
+  tests/service/option.pid.test \
+  tests/service/option.emit-pid.test \
   tests/service/option.q.test \
   tests/service/option.quiet.test \
+  tests/service/option.storage.test \
   tests/service/option.storage-engine.test \
   tests/service/option.usage.test \
   tests/service/option.verbose.test \
@@ -24,6 +30,7 @@ tests_service_TESTS = \
   tests/service/option.warnings.test \
   tests/service/option.warning.test \
   tests/service/option.w.test \
+  tests/service/option.y.test \
   tests/service/error.port.missing-1.test \
   tests/service/error.port.missing-2.test \
   tests/service/error.port.missing-3.test \
@@ -34,3 +41,8 @@ tests_service_TESTS = \
   tests/service/error.engine.bogus-1.test \
   tests/service/error.engine.bogus-2.test \
   $(end)
+
+tests_service_TESTS_SELFCHECK_ACTUAL   = $(wildcard tests/service/*.test)
+tests_service_TESTS_SELFCHECK_EXPECTED = $(tests_service_TESTS)
+tests_service_TESTS_SELFCHECK_ORPHANS  = $(filter-out $(tests_service_TESTS_SELFCHECK_EXPECTED), $(tests_service_TESTS_SELFCHECK_ACTUAL))
+$(if $(tests_service_TESTS_SELFCHECK_ORPHANS),$(error Orphaned tests: $(tests_service_TESTS_SELFCHECK_ORPHANS)))

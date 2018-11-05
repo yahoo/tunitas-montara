@@ -9,3 +9,8 @@ tests_unit_TESTS = \
   tests/unit/storage.test \
   tests/unit/montara.test \
   $(end)
+
+tests_unit_TESTS_SELFCHECK_ACTUAL   = $(wildcard tests/unit/*.test)
+tests_unit_TESTS_SELFCHECK_EXPECTED = $(tests_unit_TESTS)
+tests_unit_TESTS_SELFCHECK_ORPHANS  = $(filter-out $(tests_unit_TESTS_SELFCHECK_EXPECTED), $(tests_unit_TESTS_SELFCHECK_ACTUAL))
+$(if $(tests_unit_TESTS_SELFCHECK_ORPHANS),$(error Orphaned tests: $(tests_unit_TESTS_SELFCHECK_ORPHANS)))

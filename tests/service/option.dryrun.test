@@ -1,5 +1,5 @@
 #!/bin/sh
 source ${0%/*}/rigging.sh || exit 70
-${exe?} --dryrun -y
-# the --dryrun option enters dry-run mode, but we need to dry-run this
+${exe?} --dryrun
+# the --dryrun option enters dry-run mode, but we need to dry-run this (sic)
 test 0 == $?

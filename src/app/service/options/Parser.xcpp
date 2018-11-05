@@ -86,6 +86,10 @@ auto app::service::options::Parser::parse(Args &args) -> Result {
     case oi::QUIET_MODE:
       cfg.quiet_mode = true;
       break;
+    case oi::CHR_P:
+    case oi::EMIT_PID:
+      cfg.emit_pid = true;
+      break;
     case oi::CHR_p:
     case oi::SERVICE_PORT:
       cfg.port = get_port(step);
@@ -114,6 +118,7 @@ auto app::service::options::Parser::parse(Args &args) -> Result {
       throw Quitting{cfg.NAME, sys::exits::CONFIG};
     default:
       // This is a programmer error (reasonably it is a logic_error) because some option from the argv line wasn't configured.
+      // It is also substantially untestable in a correctly configured system.
       error(cfg) << "unconfigured option '" << char(code(step)) << "'\n";
       throw Quitting{cfg.NAME, sys::exits::SOFTWARE};
     }

@@ -62,8 +62,11 @@ auto app::service::Usage::format(std::string const &NAME) -> std::string {
       << "Service Options\n"
       << "--foreground, --fg, -f             remain in the foreground, e.g. for systemd\n"
       << "--background, --bg                 daemonize into the background\n"
+      << "--pid, -P                          emit the PID of the running daemon on the standard output\n"
+      << "  alternative: --emit-pid\n"
       << "--port=NUMBER, -p NUMBER           use port NUMBER instead of the default " << defaults::SERVICE_PORT << '\n'
       << "--engine=ENGINE, -e ENGINE         use storage engine ENGINE instead of the default " << defaults::STORAGE_ENGINE << '\n'
+      << "  alternatives: --storage=ENGINE, --storage-engine=ENGINE\n"
       << '\n'
       << "General Options:\n"
       << "--usage, --help, -h                emit this message, and exit\n"

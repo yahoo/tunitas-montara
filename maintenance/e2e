@@ -62,6 +62,8 @@ else
     : ${with_module_std:=${__subnearby?}/module-std}
 fi
 : ${with_module_httpserver:=no}
+# required: at least nonstd-libhttpserver-0.9.0-8.1.ipv6+poll+regex
+: ${with_nonstd_libhttpserver:=/opt/nonstd/libhttpserver}
 : ${with_module_nonstd:=no}
 : ${with_module_posix:=no}
 : ${with_module_string:=no}
@@ -79,6 +81,7 @@ eval \
     ${with_hypogeal_twilight:+--with-hypogeal-twilight=$with_hypogeal_twilight} \
     ${with_temerarious_flagship:+--with-temerarious-flagship=$with_temerarious_flagship} \
     ${with_module_httpserver:+--with-module-httpserver=$with_module_httpserver} \
+    ${with_nonstd_libhttpserver:+--with-nonstd-libhttpserver=$with_nonstd_libhttpserver} \
     ${with_module_string:+--with-module-c-string=$with_module_string} \
     ${with_module_nonstd:+--with-module-nonstd=$with_module_nonstd} \
     ${with_module_options:+--with-module-options=$with_module_options} \

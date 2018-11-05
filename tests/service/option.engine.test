@@ -1,5 +1,5 @@
 #!/bin/sh
 source ${0%/*}/rigging.sh || exit 70
 ${exe?} --engine null -y
-# assigns the port, but we need to dry-run this
+# assigns the storage engine, but we need to dry-run this
 test 0 == $?

@@ -1,0 +1,5 @@
+#!/bin/sh
+source ${0%/*}/rigging.sh || exit 70
+${exe?} --emit-pid -y
+# the --emit-pid option emits the pid before running, but we need to dry-run this
+test 0 == $?
