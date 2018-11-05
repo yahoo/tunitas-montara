@@ -1,0 +1,34 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tests::unit::storage { class Fixture; }
+#endiv
+#divert <hpp>
+#import cppunit.Test
+#import cppunit.test.Fixture
+class tests::unit::storage::Fixture : public cppunit::test::Fixture {
+public:
+  auto test_something() -> void;
+  static auto suite() -> cppunit::Test *;
+};
+#endiv
+#divert <cpp>
+#import std.string_literals
+using namespace std::string_literals;
+auto tests::unit::storage::Fixture::test_something() -> void {
+  CPPUNIT_ASSERT(true);
+}
+#import unit.rigging.suite.Stream
+#import unit.rigging.suite.call
+#import unit.rigging.suite.add
+#import tests.unit.storage.null.Fixture
+#import tests.unit.storage.memory.Fixture
+auto tests::unit::storage::Fixture::suite() -> cppunit::Test * {
+  using namespace ::unit::rigging::suite;
+  Stream series("storage");
+  series << call("something", &Fixture::test_something)
+         << add(null::Fixture::suite())
+         << add(memory::Fixture::suite())
+    ;
+  return series.release();
+}
+#endiv

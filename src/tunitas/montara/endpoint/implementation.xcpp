@@ -1,0 +1,17 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+// Every endpoint implementation is going to need these
+// But these don't need to be in the interface of 'namespace endpoint'
+#import json.parse
+#import json.to
+#import std.exception
+#import std.string_literals
+#import tunitas.montara.filters
+#import tunitas.montara.constants
+#import tunitas.montara.resources
+#import tunitas.montara.responses
+#endiv
+#divert <hpp>
+#warning REMOVEWHEN inline json::parse(failure::Returned, ...) is actually in the primary declaration
+inline auto json::parse(failure::Returned, String const &, Features how) -> reader::Result;
+#endiv

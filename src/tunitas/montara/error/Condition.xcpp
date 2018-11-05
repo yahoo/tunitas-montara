@@ -1,0 +1,27 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::error {
+  enum class Condition {
+    SUCCESS = 0,
+    FAILURE = 1
+  };
+}
+#import std.is_error_condition_enum
+namespace std {
+  template<> struct is_error_condition_enum<tunitas::montara::error::Condition>;
+}
+#endiv
+#divert <hpp>
+#import std.true_type
+template<> struct std::is_error_condition_enum<tunitas::montara::error::Condition> : public std::true_type { };
+#import std.error_condition
+namespace tunitas::montara::error {
+  inline auto make_error_condition(Condition) -> std::error_condition;
+}
+#endiv
+#divert <ipp>
+#import tunitas.montara.error.category
+auto tunitas::montara::error::make_error_condition(Condition condition) -> std::error_condition {
+  return std::error_condition{(int) condition, category()};
+}
+#endiv

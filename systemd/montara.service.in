@@ -1,0 +1,16 @@
+[Unit]
+Description=Tunitas Montara (PrivacyChain) Service
+After=syslog.target network.target
+
+[Service]
+User=tunitas
+# NOT ---> EnvironmentFile=/etc/sysconfig/montara
+# instead move to use /etc/systemd/system/tunitas-montara.d/anything.conf
+ExecStart=@sbindir@/montara-service --foreground
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+RestartSec=1s
+
+[Install]
+WantedBy=multi-user.target

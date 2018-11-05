@@ -1,0 +1,25 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+#import std.is_same
+#import std.intmax_t
+#import std.string
+namespace tunitas::montara::storage::required {
+  //
+  // A configurable type is any type that can appear as the mapped type in a Configuration
+  // a.k.a. configuration::Variant
+  //
+  // These are the types that appear in the std::variant<...> declaration of Configuration
+  // bool
+  // std::intmax_t
+  // std::string
+  //
+  // Usage:
+  //
+  //   template<required::Configurable TYPE> auto function(TYPE) -> ...something...
+  //
+  template<typename CONFIGURABLE> concept bool Configurable = 
+    (std::is_same<bool, CONFIGURABLE>::value ||
+     std::is_same<std::intmax_t, CONFIGURABLE>::value ||
+     std::is_same<std::string, CONFIGURABLE>::value);
+}
+#endiv

@@ -3,5 +3,9 @@ tests_unit_TESTS = \
   tests/unit/all.test \
   tests/unit/want.test \
   tests/unit/httpserver.test \
+  tests/unit/error.test \
+  tests/unit/endpoint.test \
+  tests/unit/identifier.test \
+  tests/unit/storage.test \
   tests/unit/montara.test \
   $(end)

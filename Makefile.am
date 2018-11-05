@@ -61,6 +61,12 @@ include src/tests/unit/Makefrag.am
 include src/tunitas/montara/Makefrag.am
 include src/want/Makefrag.am
 
+# There is no point in defining systemddir to follow $(prefix) because
+# the system's systemd won't look in odd places, e.g. /usr/local/lib/systemd/system
+systemddir = /usr/lib/systemd
+systemd_systemdir = $(systemddir)/system
+systemd_system_DATA = systemd/montara.service
+
 bin_PROGRAMS = $(none)
 sbin_PROGRAMS = \
   sbin/montara-service \

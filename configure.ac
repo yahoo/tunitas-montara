@@ -7,7 +7,7 @@ dnl make check &&
 dnl make install &&
 dnl echo OK DONE
 dnl
-AC_INIT([rockway], [0.0.0], [/dev/null@oath.com])
+AC_INIT([montara], [0.0.0], [/dev/null@oath.com])
 TF_INIT(AC_PACKAGE_NAME, AC_PACKAGE_VERSION, AC_PACKAGE_BUGREPORT)
 
 dnl These options are also in the Makefile.am in AUTOMAKE_OPTIONS
@@ -17,7 +17,7 @@ AM_SILENT_RULES([yes])
 AC_CONFIG_SRCDIR([src/app/service/main.xcpp])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile systemd/montara.service])
 #
 # To have submodules
 #   configure.ac: HGTW_CONFIG_SUBMODULES([submodules], [...list...])

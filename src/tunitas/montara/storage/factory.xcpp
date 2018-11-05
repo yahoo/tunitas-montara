@@ -1,0 +1,24 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <hpp>
+#forward tunitas.montara.storage.Factory
+namespace tunitas::montara::storage {
+  //
+  // Acquire the singleton category
+  // See the commentariat in Factory.xcpp
+  //
+  // Usage:
+  //
+  //   auto ordered = factory().order(...name...);
+  //
+  auto factory() -> Factory const &;
+}
+#endiv
+#divert <ipp>
+#import tunitas.montara.storage.Factory
+#endiv
+#divert <cpp>
+auto tunitas::montara::storage::factory() -> Factory const & {
+  static Factory const singleton;
+  return singleton;
+}
+#endiv

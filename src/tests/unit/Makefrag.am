@@ -12,8 +12,14 @@ bin_unit_SOURCES = \
   obj/src/tests/unit/main.cpp \
   obj/src/tests/unit/namespace.cpp \
   \
+  obj/src/tests/unit/endpoint.Fixture.cpp \
+  obj/src/tests/unit/error.Fixture.cpp \
   obj/src/tests/unit/httpserver.Fixture.cpp \
+  obj/src/tests/unit/identifier.Fixture.cpp \
   obj/src/tests/unit/montara.Fixture.cpp \
+  obj/src/tests/unit/storage.Fixture.cpp \
+  obj/src/tests/unit/storage.null.Fixture.cpp \
+  obj/src/tests/unit/storage.memory.Fixture.cpp \
   obj/src/tests/unit/want.Fixture.cpp \
   $(end)
 

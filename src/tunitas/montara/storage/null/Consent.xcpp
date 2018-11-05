@@ -1,0 +1,65 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::storage::null {
+  //
+  // The null storage of consent.
+  //
+  // Usage:
+  //
+  //   See Engine
+  //
+  class Consent;
+}
+#endiv
+#divert <hpp>
+#import tunitas.montara.storage.Consent
+#import tunitas.montara.storage.null.State
+class tunitas::montara::storage::null::Consent : public storage::Consent {
+  using ancestor = storage::Consent;
+public:
+  inline explicit Consent(State &);
+  auto GET(id::Consent) -> Outcome<type::Blob> override;
+  auto GET(type::Entity const &what_is_an_entity) -> Outcome<type::Blob> override;
+  auto PUT(id::Consent, type::Blob) -> outcome::Success override;
+  auto POST(type::Blob) -> outcome::Success override;
+protected:
+  State &state;
+};
+#endiv
+#divert <ipp>
+tunitas::montara::storage::null::Consent::Consent(State &state)
+  : state{state} { }
+#endiv
+#divert <cpp>
+#import std.lock_guard
+namespace tunitas::montara::storage::null {
+  auto Consent::GET(id::Consent) -> Outcome<type::Blob> {
+    using Result = Outcome<type::Blob>;
+    // do nothing
+    State::mutex::Guard guard{state.exclusion};
+    state.log << "Consent::" << __FUNCTION__ << '\n';
+    return Result{};
+  } 
+  auto Consent::GET(type::Entity const &what_is_an_entity) -> Outcome<type::Blob> {
+    using Result = Outcome<type::Blob>;
+    // do nothing
+    State::mutex::Guard guard{state.exclusion};
+    state.log << "Consent::" << __FUNCTION__ << '\n';
+    return Result{};
+  } 
+  auto Consent::PUT(id::Consent, type::Blob) -> outcome::Success {
+    using Result = outcome::Success;
+    // do nothing
+    State::mutex::Guard guard{state.exclusion};
+    state.log << "Consent::" << __FUNCTION__ << '\n';
+    return Result{};
+  } 
+  auto Consent::POST(type::Blob) -> outcome::Success {
+    using Result = outcome::Success;
+    // do nothing
+    State::mutex::Guard guard{state.exclusion};
+    state.log << "Consent::" << __FUNCTION__ << '\n';
+    return Result{};
+  } 
+}
+#endiv

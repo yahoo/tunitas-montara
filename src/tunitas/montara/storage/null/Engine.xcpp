@@ -1,0 +1,14 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::storage::null {
+  class Engine;
+}
+#endiv
+#divert <hpp>
+#import tunitas.montara.storage.Engine
+class tunitas::montara::storage::null::Engine : public storage::Engine {
+  using ancestor = storage::Engine;
+public:
+  // There is nothing (new) in the null engine
+};
+#endiv

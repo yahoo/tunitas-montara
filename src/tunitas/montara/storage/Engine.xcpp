@@ -1,0 +1,48 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::storage {
+  //
+  // The storage engine, specialized to the Montara use case (PrivacyChain)
+  // Abstract, descendants only.
+  //
+  // Usage:
+  //
+  //   auto name = "something";
+  //   auto ordered = factory()->order(name);
+  //   auto config = Configuration{};
+  //   auto built = value(ordered)->build(config);
+  //   auto engine = value(std::move(built));
+  //   engine->consent.GET(...)
+  //   engine->consent.PUT(...)
+  //   engine->consent.POST(...)
+  //   engine->consent.DELEET(...)
+  //   engine->transfer.GET(...)
+  //   engine->transfer.PUT(...)
+  //   engine->transfer.POST(...)
+  //   engine->transfer.DELEET(...)
+  //   engine->subscription.GET(...)
+  //   engine->subscription.PUT(...)
+  //   engine->subscription.POST(...)
+  //   engine->subscription.DELEET(...)
+  //
+  class Engine;
+}
+#endiv
+#divert <hpp>
+#import std.unique_ptr
+#import tunitas.montara.storage.State
+#import tunitas.montara.storage.Consent
+#import tunitas.montara.storage.Transfer
+#import tunitas.montara.storage.Subscription
+class tunitas::montara::storage::Engine {
+protected:
+  Engine() = default;
+  Engine(Engine const &) = delete;
+public:
+  virtual ~Engine() = default;
+  std::unique_ptr<State> state;
+  std::unique_ptr<Consent> consent;
+  std::unique_ptr<Transfer> transfer;
+  std::unique_ptr<Subscription> subscription;
+};
+#endiv

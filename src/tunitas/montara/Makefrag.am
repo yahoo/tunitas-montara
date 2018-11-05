@@ -3,6 +3,7 @@
 lib_libtunitas_montara_la = lib/libtunitas-montara.la
 lib_libtunitas_montara_la_LIBADD = \
   $(lib_libwant_la) \
+  -ljson-module \
   -ltunitas \
   -lhttpserver \
   $(end)
@@ -15,12 +16,15 @@ lib_libtunitas_montara_la_SOURCES = \
 lib_libtunitas_montara_la_XCPP_SOURCES = \
   obj/src/tunitas/montara/namespace.cpp \
   obj/src/tunitas/montara/Version.cpp \
+  obj/src/tunitas/montara/constants.cpp \
+  obj/src/tunitas/montara/filters.cpp \
+  obj/src/tunitas/montara/log.cpp \
+  obj/src/tunitas/montara/resources.cpp \
+  obj/src/tunitas/montara/responses.cpp \
+  obj/src/tunitas/montara/service.cpp \
   \
   obj/src/tunitas/montara/endpoint/namespace.cpp \
-  obj/src/tunitas/montara/constants.cpp \
-  obj/src/tunitas/montara/filter.cpp \
-  obj/src/tunitas/montara/resource.cpp \
-  obj/src/tunitas/montara/service.cpp \
+  obj/src/tunitas/montara/endpoint/implementation.cpp \
   obj/src/tunitas/montara/endpoint/Consent.cpp \
   obj/src/tunitas/montara/endpoint/Consent_CreateWithArray.cpp \
   obj/src/tunitas/montara/endpoint/Consent_CreateWithList.cpp \
@@ -37,6 +41,49 @@ lib_libtunitas_montara_la_XCPP_SOURCES = \
   obj/src/tunitas/montara/endpoint/Subscription.cpp \
   obj/src/tunitas/montara/endpoint/Subscription_FindByEntity.cpp \
   obj/src/tunitas/montara/endpoint/Subscription_Identifier.cpp \
+  \
+  obj/src/tunitas/montara/error/namespace.cpp \
+  obj/src/tunitas/montara/error/Code.cpp \
+  obj/src/tunitas/montara/error/Condition.cpp \
+  obj/src/tunitas/montara/error/Category.cpp \
+  obj/src/tunitas/montara/error/category.cpp \
+  \
+  obj/src/tunitas/montara/identifier/namespace.cpp \
+  obj/src/tunitas/montara/identifier/required.Identifier.cpp \
+  obj/src/tunitas/montara/identifier/Consent.cpp \
+  obj/src/tunitas/montara/identifier/Subscription.cpp \
+  obj/src/tunitas/montara/identifier/Transfer.cpp \
+  obj/src/tunitas/montara/identifier/to_string.cpp \
+  obj/src/tunitas/montara/identifier/from_chars.cpp \
+  \
+  obj/src/tunitas/montara/storage/namespace.cpp \
+  obj/src/tunitas/montara/storage/Factory.cpp \
+  obj/src/tunitas/montara/storage/factory.cpp \
+  obj/src/tunitas/montara/storage/Builder.cpp \
+  obj/src/tunitas/montara/storage/required.Configurable.cpp \
+  obj/src/tunitas/montara/storage/configuration/namespace.cpp \
+  obj/src/tunitas/montara/storage/configuration/Variant.cpp \
+  obj/src/tunitas/montara/storage/configuration/Visitor.cpp \
+  obj/src/tunitas/montara/storage/configuration/exception.Wrong_Type.cpp \
+  obj/src/tunitas/montara/storage/configuration/as.cpp \
+  obj/src/tunitas/montara/storage/Configuration.cpp \
+  obj/src/tunitas/montara/storage/Engine.cpp \
+  obj/src/tunitas/montara/storage/State.cpp \
+  obj/src/tunitas/montara/storage/Consent.cpp \
+  obj/src/tunitas/montara/storage/Transfer.cpp \
+  obj/src/tunitas/montara/storage/Subscription.cpp \
+  \
+  obj/src/tunitas/montara/storage/null/namespace.cpp \
+  obj/src/tunitas/montara/storage/null/Builder.cpp \
+  obj/src/tunitas/montara/storage/null/Engine.cpp \
+  obj/src/tunitas/montara/storage/null/State.cpp \
+  obj/src/tunitas/montara/storage/null/Consent.cpp \
+  obj/src/tunitas/montara/storage/null/Transfer.cpp \
+  obj/src/tunitas/montara/storage/null/Subscription.cpp \
+  \
+  obj/src/tunitas/montara/type/namespace.cpp \
+  obj/src/tunitas/montara/type/Blob.cpp \
+  obj/src/tunitas/montara/type/Entity.cpp \
   $(end)
 $(scold_cxxdir)/tunitas/montara/dependencies.mk:
 	$(AM_V_BB1ST) $(call TF_DISAGGREGATE_COMPILE, $(lib_libtunitas_montara_la_XCPP_SOURCES))

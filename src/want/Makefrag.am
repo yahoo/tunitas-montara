@@ -7,6 +7,8 @@ lib_libwant_la_LDFLAGS = $(PACKAGE_LDFLAGS_SET)
 lib_libwant_la_MODULES = $(call TF_SOURCEStoMODULES, $(lib_libwant_la_SOURCES))
 lib_libwant_la_SOURCES = \
   obj/src/want/namespace.cpp \
+  obj/src/want/nonstd.Nullbuf.cpp \
+  obj/src/want/nonstd.null.cpp \
   $(end)
 $(scold_cxxdir)/want/dependencies.mk:
 	$(AM_V_BB1ST) $(call TF_DISAGGREGATE_COMPILE, $(lib_libwant_la_SOURCES))

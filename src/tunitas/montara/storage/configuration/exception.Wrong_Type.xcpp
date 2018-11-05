@@ -1,0 +1,26 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::storage::configuration::exception {
+  //
+  // And also a type exception
+  // To simplify and make cogent the visitor lambdas on failing branches.
+  //
+  // Usage:
+  //
+  //   throw Wrong_Type{};
+  //
+  class [[nodiscard]] Wrong_Type;
+}
+#endiv
+#divert <hpp>
+#import std.invalid_argument
+class tunitas::montara::storage::configuration::exception::Wrong_Type : public std::invalid_argument {
+  using ancestor = std::invalid_argument;
+public:
+  inline Wrong_Type();
+};
+#endiv
+#divert <ipp>
+tunitas::montara::storage::configuration::exception::Wrong_Type::Wrong_Type()
+  : ancestor{"wrong type"} { }
+#endiv

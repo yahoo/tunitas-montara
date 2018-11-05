@@ -1,0 +1,60 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::storage {
+  //
+  // The factory of builders of engines
+  //
+  // Usage:
+  //
+  //   auto storage_name = "memory";
+  //   auto ordered = factory().order(storage_name);
+  //   if (!ok(ordered)) {
+  //      std::cerr << "error: could not order '" << storage_name << "' because " << error_code(ordered).message() << '\n';
+  //      throw Quitting{};
+  //   } else {
+  //      auto builder = value(std::move(ordered));
+  //      Configuration configuration{...};
+  //      auto built = builder->build(configuration);
+  //      if (!ok(built)) {
+  //        std::cerr << "error: could not build the " << storage_name << " engine because " << error_code(built).message() << '\n';
+  //        throw Quitting{};
+  //      } else {
+  //         ...use it...
+  //      }
+  //   }
+  //
+  class Factory;
+}
+#endiv
+#divert <hpp>
+#import std.unique_ptr
+#import tunitas.Outcome
+#import tunitas.montara.storage.factory
+#import tunitas.montara.storage.Builder
+class tunitas::montara::storage::Factory {
+protected:
+  friend auto factory() -> Factory const &;
+  Factory() = default;
+public:
+  using Result = tunitas::Outcome<std::unique_ptr<Builder>>;
+  auto order(std::string const &name) const -> Result;
+};
+#endiv
+#divert <cpp>
+#import std.error_code
+#import tunitas.montara.error.Code
+#import tunitas.montara.storage.null.Builder
+#import std.string_literals
+using namespace std::literals;
+auto tunitas::montara::storage::Factory::order(std::string const &name) const -> Result {
+#if 0
+  if ("memory"s == name) {
+    return Result{std::make_unique<memory::Builder>()};
+  }
+#endif
+  if ("null"s == name) {
+    return Result{std::make_unique<null::Builder>()};
+  }
+  return Result{std::error_code{error::Code::NO_SUCH_STORAGE_ENGINE}};
+}
+#endiv

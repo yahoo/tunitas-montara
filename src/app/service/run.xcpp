@@ -24,15 +24,11 @@ namespace app::service {
 #divert <cpp>
 #import app.service.constants
 #import app.service.defaults
+#import app.service.Quitting
 #import getpid
 #import httpserver.Webserver
 #import httpserver.Create_Webserver
-namespace httpserver {
-  using Service = Webserver;
-  namespace service {
-    using Create = httpserver::Create_Webserver;
-  }
-}
+namespace httpserver { using Service = Webserver; namespace service { using Create = httpserver::Create_Webserver; } }
 #import std.cout
 #import std.cerr
 #import tunitas.montara.endpoint.Consent
@@ -50,8 +46,11 @@ namespace httpserver {
 #import tunitas.montara.endpoint.Subscription
 #import tunitas.montara.endpoint.Subscription_FindByEntity
 #import tunitas.montara.endpoint.Subscription_Identifier
+#import tunitas.montara.storage.factory
+#import tunitas.montara.storage.Configuration
 auto app::service::run(Configuration const &cfg) -> void {
   namespace endpoint = tunitas::montara::endpoint;
+  namespace storage = tunitas::montara::storage;
   httpserver::Service service{[&cfg]() {
         httpserver::service::Create specification;
         using namespace constants::server;
@@ -68,8 +67,27 @@ auto app::service::run(Configuration const &cfg) -> void {
   // [[FIXTHIS]] ignore sigpipe
   // [[FIXTHIS]] daemonize and drop privileges
 
+  auto engine = [&cfg]() {
+    auto storage_name = cfg.storage_engine.value_or(defaults::STORAGE_ENGINE);
+    auto ordered = storage::factory().order(storage_name);
+    auto const could_not = [&cfg, &storage_name](char const *verb, std::error_code ec) {
+      std::cerr << "error: could not " << verb << " storage engine '" << /*[[FIXTHIS]] format::q(...)*/ storage_name << "' because " << ec.message() << '\n';
+      throw Quitting{cfg.NAME, sys::exits::UNAVAILABLE};
+    };
+    if (!ok(ordered)) {
+      could_not("acquire", error_code(ordered));
+    }
+    auto builder = value(std::move(ordered));
+    storage::Configuration configuration; // [[FIXTHIS]] load up some configuration values from service::Configuration
+    auto built = builder->build(configuration);
+    if (!ok(built)) {
+      could_not("build", error_code(ordered));
+    }
+    return value(std::move(built));
+  }();
+
   auto const FAMILY_URL_SENSE = false;
-  endpoint::Consent consent;
+  endpoint::Consent consent{*engine->consent};
   service.register_resource("/consent", &consent, FAMILY_URL_SENSE);
 
   endpoint::Consent_CreateWithArray consent_createWithArray;
@@ -83,7 +101,7 @@ auto app::service::run(Configuration const &cfg) -> void {
   // the pesky aliases
   service.register_resource("/consent/findIdsByEntity", &consent_findIdentifiersByEntity, FAMILY_URL_SENSE);
 
-  endpoint::Consent_Identifier consent_identifier;
+  endpoint::Consent_Identifier consent_identifier{*engine->consent};
   service.register_resource("/consent/{consentId}", &consent_identifier, FAMILY_URL_SENSE);
 
   endpoint::Consent_RevokeWithArray consent_revokeWithArray;

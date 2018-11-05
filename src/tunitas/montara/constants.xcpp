@@ -48,6 +48,8 @@ namespace tunitas::montara::constants {
     // 
     namespace mime {
       inline auto const APPLICATION_JSON = "application/json"s;
+      inline auto const APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded"s;
+      inline auto const MULTIPART_FORM_DATA = "multipart/form-data"s;
       inline auto const TEXT_PLAIN = "text/plain"s;
       inline auto const TEXT_HTTP = "text/http"s;
     }

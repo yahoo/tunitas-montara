@@ -1,0 +1,23 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::storage::configuration {
+  //
+  // The Visitor provides access into the Variant.
+  // As such, the Visitor is also an implementation detail of the Configuration.
+  //
+  // Herein lies a copy of the generic "visitor"
+  // As exhibited in https://en.cppreference.com/w/cpp/utility/variant/visit
+  //
+  // Usage:
+  //
+  //   using Both = std::variant<double, std::intmax_t>;
+  //   Both val = ...3 or 3.0...
+  //
+  //   auto vis = Visitor{[](double) { ... },
+  //                      [](std::intmax_t) { ... }};
+  //   auto ret = std::visit(vis, val);
+  //
+  template<typename... TYPES> struct Visitor : TYPES... { using TYPES::operator()...; };
+  template<typename... TYPES> Visitor(TYPES...) -> Visitor<TYPES...>;
+}
+#endiv

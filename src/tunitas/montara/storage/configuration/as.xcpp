@@ -1,0 +1,36 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <hpp>
+#import tunitas.montara.storage.required.Configurable
+#import tunitas.montara.storage.configuration.Variant
+namespace tunitas::montara::storage::configuration {
+  template<required::Configurable TYPE> inline auto as(Variant const &) -> TYPE;
+  template<> inline auto as<bool>(Variant const &) -> bool;
+  template<> inline auto as<std::intmax_t>(Variant const &) -> std::intmax_t;
+  template<> inline auto as<std::string>(Variant const &) -> std::string;
+}
+#endiv
+#divert <ipp>
+#import tunitas.montara.storage.configuration.Visitor
+#import tunitas.montara.storage.configuration.exception.Wrong_Type
+#import std.visit
+namespace tunitas::montara::storage::configuration {
+  template<> inline auto as<bool>(Variant const &t) -> bool {
+    auto v = Visitor{[](bool v) { return v; },
+                     [](std::intmax_t) -> bool { throw exception::Wrong_Type{}; },
+                     [](std::string const &) -> bool { throw exception::Wrong_Type{}; }};
+    return std::visit(v, t);
+  }
+  template<> inline auto as<std::intmax_t>(Variant const &t) -> std::intmax_t {
+    auto v = Visitor{[](bool) -> std::intmax_t { throw exception::Wrong_Type{}; },
+                     [](std::intmax_t v)  { return v; },
+                     [](std::string const &) -> std::intmax_t { throw exception::Wrong_Type{}; }};
+    return std::visit(v, t);
+  }
+  template<> inline auto as<std::string>(Variant const &t) -> std::string {
+    auto v = Visitor{[](bool) -> std::string { throw exception::Wrong_Type{}; },
+                     [](std::intmax_t) -> std::string { throw exception::Wrong_Type{}; },
+                     [](std::string const &v) { return v; } };
+    return std::visit(v, t);
+  }
+}
+#endiv

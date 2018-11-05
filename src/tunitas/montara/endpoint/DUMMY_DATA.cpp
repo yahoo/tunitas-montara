@@ -7,6 +7,7 @@ using namespace tunitas::montara::endpoint;
 #include "tunitas.montara.endpoint.Consent_FindIdentifiersByEntity"
 std::string const Consent_FindIdentifiersByEntity::DUMMY_DATA{"dummy-consent-identifier-found-by-entity"};
 #include "tunitas.montara.endpoint.Consent_Identifier"
+std::string const Consent_Identifier::DUMMY_DATA{"dummy-consent-by-identifier"};
 #include "tunitas.montara.endpoint.Consent_RevokeWithArray"
 #include "tunitas.montara.endpoint.Consent_RevokeWithList"
 #include "tunitas.montara.endpoint.Consent_Revoke_Identifier"

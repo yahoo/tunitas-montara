@@ -1,0 +1,32 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::storage {
+  //
+  // The abstraction of the subscription
+  // Descendants only.
+  //
+  // Usage:
+  //
+  //   See Engine
+  //
+  class Subscription;
+}
+#endiv
+#divert <hpp>
+#import tunitas.Outcome
+#import tunitas.outcome.Success
+#import tunitas.montara.identifier.Consent
+#import tunitas.montara.identifier.Subscription
+#import tunitas.montara.type.Entity
+#import tunitas.montara.type.Blob
+class tunitas::montara::storage::Subscription {
+protected:
+  Subscription() = default;
+public:
+  virtual ~Subscription() = default;
+  virtual auto GET(id::Subscription) -> Outcome<type::Blob> = 0;
+  virtual auto GET(type::Entity const &what_is_an_entity) -> Outcome<type::Blob> = 0;
+  virtual auto PUT(id::Subscription, type::Blob) -> outcome::Success = 0;
+  virtual auto POST(type::Blob) -> outcome::Success = 0;
+};
+#endiv

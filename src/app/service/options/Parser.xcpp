@@ -25,6 +25,7 @@ namespace app::service::options {
 #import app.service.options.Specification
 #import options.longish.Step
 #import std.uint16_t
+#import std.string
 class app::service::options::Parser {
 public:
   inline Parser(Configuration &modified, Specification const &);
@@ -36,7 +37,9 @@ public:
 protected:
   Configuration &cfg;
   Specification const &specification;
-  auto get_port(::options::longish::Step const &) -> std::uint16_t;
+  using Step = ::options::longish::Step;
+  auto get_port(Step const &) -> std::uint16_t;
+  auto get_engine(Step const &) -> std::string;
 };
 #entail app.service.options.Parser.Result
 #endiv
@@ -87,6 +90,10 @@ auto app::service::options::Parser::parse(Args &args) -> Result {
     case oi::SERVICE_PORT:
       cfg.port = get_port(step);
       break;
+    case oi::CHR_e:
+    case oi::STORAGE_ENGINE:
+      cfg.storage_engine = get_engine(step);
+      break;
     case oi::CHR_v:
     case oi::VERBOSE_MODE:
       cfg.verbose_mode = true;
@@ -106,8 +113,9 @@ auto app::service::options::Parser::parse(Args &args) -> Result {
       error(cfg) << "unknown option " << word_in_error(step) << '\n';
       throw Quitting{cfg.NAME, sys::exits::CONFIG};
     default:
-      error(cfg) << "unconfigured option -" << flag_in_error(step) << ", --" << word_in_error(step) << '\n';
-      throw Quitting{cfg.NAME, sys::exits::CONFIG};
+      // This is a programmer error (reasonably it is a logic_error) because some option from the argv line wasn't configured.
+      error(cfg) << "unconfigured option '" << char(code(step)) << "'\n";
+      throw Quitting{cfg.NAME, sys::exits::SOFTWARE};
     }
   }
   auto const SUCCESS = true;
@@ -119,7 +127,7 @@ auto app::service::options::Parser::parse(Args &args) -> Result {
 #import std.string
 #import std.numeric_limits
 #import sys.exits.constants
-auto app::service::options::Parser::get_port(::options::longish::Step const &step) -> std::uint16_t {
+auto app::service::options::Parser::get_port(Step const &step) -> std::uint16_t {
   // Whereas stoi signals failure both via exception and also via its 2nd inout parameter
   // we have to put a lot of machinery around it to make it safe and obvious what is occurring.
   try {
@@ -138,9 +146,24 @@ auto app::service::options::Parser::get_port(::options::longish::Step const &ste
     return candidate;
   } catch (std::exception const &) {
     // The exception will say "stoi" (ours or theirs)
-    std::string ine = required(step); if (ine.empty()) {ine = "(empty)";} // [[FIXME]] use format::ine(...)
+    std::string ine = required(step); if (ine.empty()) {ine = "(empty)";} // [[FIXTHIS]] use format::ine(...)
     error(cfg) << "the service port is not a number - " << ine << '\n';
     throw Quitting{cfg.NAME, sys::exits::CONFIG};
   }
+}
+#import std.isalnum
+#import std.all_of
+#import std.move
+auto app::service::options::Parser::get_engine(Step const &step) -> std::string {
+  std::string syntax = required(step);
+  if (syntax.empty()) {
+    error(cfg) << "the storage engine name cannot be empty\n";
+    throw Quitting{cfg.NAME, sys::exits::CONFIG};
+  }
+  if (!std::all_of(syntax.begin(), syntax.end(), [](char c) { return std::isalnum(c); })) {
+    error(cfg) << "the storage engine name '" << /*[[FIXTHIS]] use format::q(...)*/ syntax << "' is not a reasonable identifier\n";
+    throw Quitting{cfg.NAME, sys::exits::CONFIG};
+  }
+  return std::move(syntax);
 }
 #endiv

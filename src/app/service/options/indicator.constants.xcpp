@@ -6,5 +6,6 @@ namespace app::service::options::indicator {
   inline auto const SERVICE_PORT = Code::CODE_254;
   inline auto const FOREGROUND_MODE = Code::CODE_253;
   inline auto const BACKGROUND_MODE = Code::CODE_252; // [[FIXTHIS]] use pred(FOREGROUND_MODE)
+  inline auto const STORAGE_ENGINE = Code::CODE_251;
 }
 #endiv

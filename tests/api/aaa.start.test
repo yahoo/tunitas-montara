@@ -1,0 +1,4 @@
+#!/bin/bash
+source ${0%/*}/rigging.sh || exit 70
+rm -f ${pidfile?}
+../../sbin/montara-service --background --pid --port $PORT > ${pidfile?}

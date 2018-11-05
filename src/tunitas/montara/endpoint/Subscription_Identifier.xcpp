@@ -27,17 +27,17 @@ private:
 #endiv
 #divert <cpp>
 #import std.string_literals
-#import tunitas.montara.filter
+#import tunitas.montara.filters
 #import tunitas.montara.constants
-#import tunitas.montara.resource
+#import tunitas.montara.resources
 namespace tunitas::montara::endpoint {
   using namespace std::literals;
   using namespace constants;
   Subscription_Identifier::Subscription_Identifier() {
-    resource::initialize_getdelete(*this);
+    resources::initialize_getdelete(*this);
   }
   auto Subscription_Identifier::render_GET(Request const &request, Response **fill) -> void {
-    filter::enforce_no_query_parameters(request, *fill);
+    filters::enforce_no_query_parameters(request, *fill);
     if (nullptr == *fill) {
       // [[FIXTHIS]] recover the taxonomy from an actual database
       auto const &content_body = DUMMY_DATA;
@@ -48,7 +48,7 @@ namespace tunitas::montara::endpoint {
     }
   }
   auto Subscription_Identifier::render_DELETE(Request const &request, Response **fill) -> void {
-    filter::enforce_no_query_parameters(request, *fill);
+    filters::enforce_no_query_parameters(request, *fill);
     if (nullptr == *fill) {
       // [[FIXTHIS]] find and delete the thing (returning 404 NOT FOUND)
       auto const &content_body = R"text(deleted)text";

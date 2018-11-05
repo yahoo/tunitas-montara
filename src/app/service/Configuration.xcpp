@@ -29,5 +29,6 @@ public:
   std::optional<bool> emit_pid;
   std::optional<bool> foreground_mode;
   std::optional<std::uint16_t> port;
+  std::optional<std::string> storage_engine;
 };
 #endiv

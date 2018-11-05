@@ -1,0 +1,31 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::storage {
+  //
+  // The abstraction of consent
+  // Descendants only.
+  //
+  // Usage:
+  //
+  //   See Engine
+  //
+  class Consent;
+}
+#endiv
+#divert <hpp>
+#import tunitas.Outcome
+#import tunitas.outcome.Success
+#import tunitas.montara.identifier.Consent
+#import tunitas.montara.type.Entity
+#import tunitas.montara.type.Blob
+class tunitas::montara::storage::Consent {
+protected:
+  Consent() = default;
+public:
+  virtual ~Consent() = default;
+  virtual auto GET(id::Consent) -> Outcome<type::Blob> = 0;
+  virtual auto GET(type::Entity const &what_is_an_entity) -> Outcome<type::Blob> = 0;
+  virtual auto PUT(id::Consent, type::Blob) -> outcome::Success = 0;
+  virtual auto POST(type::Blob) -> outcome::Success = 0;
+};
+#endiv

@@ -1,0 +1,22 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+#import json.Value
+namespace tunitas::montara::type {
+  //
+  // An entity.
+  //
+  // Asked:  What exactly is an entity?
+  // Answered: some one or some thing..
+  //
+  // It's a string, a medium-to-biggish one.
+  //
+  // You can copy these things, but you don't want to.
+  // You should use std::move(... to slide them around.
+  //
+  // Usage:
+  //
+  //   auto function(Entity) -> Entity;
+  //
+  using Entity = std::string;
+}
+#endiv

@@ -1,0 +1,35 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::storage {
+  //
+  // The builder of an engine
+  // Abstract, descendants only.
+  //
+  // Usage:
+  //
+  //   auto built = builder->build(configuration);
+  //   if (ok(built)) {
+  //     auto engine = value(std::move(built));
+  //     ...fire up the engine...
+  //   } else {
+  //      auto ec = error_code(built);
+  //      std::cerr << "could not build the engine because " << ec.message() << '\n';
+  //   }
+  //
+  class Builder;
+}
+#endiv
+#divert <hpp>
+#import tunitas.Outcome
+#import tunitas.montara.storage.Engine
+#import tunitas.montara.storage.Configuration
+class tunitas::montara::storage::Builder {
+protected:
+  Builder() = default;
+  Builder(Builder const &) = delete;
+public:
+  virtual ~Builder() = default;
+  using Result = tunitas::Outcome<std::unique_ptr<Engine>>;
+  virtual auto build(Configuration const &) -> Result = 0;
+};
+#endiv

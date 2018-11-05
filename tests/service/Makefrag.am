@@ -5,6 +5,8 @@ tests_service_TESTS = \
   tests/service/option.dry-run.test \
   tests/service/option.dryrun.test \
   tests/service/option.d.test \
+  tests/service/option.e.test \
+  tests/service/option.engine.test \
   tests/service/option.fg.test \
   tests/service/option.foreground.test \
   tests/service/option.help.test \
@@ -13,6 +15,7 @@ tests_service_TESTS = \
   tests/service/option.p.test \
   tests/service/option.q.test \
   tests/service/option.quiet.test \
+  tests/service/option.storage-engine.test \
   tests/service/option.usage.test \
   tests/service/option.verbose.test \
   tests/service/option.version.test \
@@ -25,4 +28,9 @@ tests_service_TESTS = \
   tests/service/error.port.missing-2.test \
   tests/service/error.port.missing-3.test \
   tests/service/error.unknown.test \
+  tests/service/error.engine.missing-1.test \
+  tests/service/error.engine.missing-2.test \
+  tests/service/error.engine.missing-3.test \
+  tests/service/error.engine.bogus-1.test \
+  tests/service/error.engine.bogus-2.test \
   $(end)

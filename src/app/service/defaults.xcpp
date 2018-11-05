@@ -1,11 +1,18 @@
 // This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
-#divert <fpp>
+#divert <hpp>
+#import std.string
+#import std.string_literals
 namespace app::service::defaults {
   //
   // Default values for use in the std::optional<TYPE>
   //
-  auto const EMIT_PID = false;
-  auto const FOREGROUND_MODE = true;
-  auto const SERVICE_PORT = 23118; // [[FIXTIHS]] tie this to a --enable-service-port=NUMBER option in configure.ac
+  namespace detail {
+    using namespace std::string_literals;
+    inline auto const EMIT_PID = false;
+    inline auto const FOREGROUND_MODE = true;
+    inline auto const SERVICE_PORT = 23118; // [[FIXTIHS]] tie this to a --enable-service-port=NUMBER option in configure.ac
+    inline auto const STORAGE_ENGINE = "null"s;
+  }
+  using namespace detail;
 }
 #endiv

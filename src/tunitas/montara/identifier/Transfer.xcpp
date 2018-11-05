@@ -1,0 +1,28 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+#import std.uint64_t
+namespace tunitas::montara::identifier {
+  //
+  // But the transfers will be among the hither and yon.
+  //
+  //   auto id = Transfer(123);
+  //   auto id = from_chars<Transfer>("123");
+  //   auto str = to_string(id);
+  //
+  enum class Transfer : std::uint64_t;
+}
+#endiv
+#divert <hpp>
+#import std.string
+namespace tunitas::montara::identifier {
+  inline auto to_string(Transfer) -> std::string;
+}
+#entail tunitas.montara.identifier.from_chars
+#endiv
+#divert <ipp>
+#import std.to_string
+#import std.underlying_type
+auto tunitas::montara::identifier::to_string(Transfer value) -> std::string {
+  return std::to_string((std::underlying_type<Transfer>::type) value);
+}
+#endiv

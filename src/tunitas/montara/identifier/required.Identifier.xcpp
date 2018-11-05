@@ -1,0 +1,20 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+#forward tunitas.montara.identifier.Consent
+#forward tunitas.montara.identifier.Transfer
+#forward tunitas.montara.identifier.Subscription
+#import std.is_same
+namespace tunitas::montara::identifier::required {
+  //
+  // The concept of a Montara (PrivacyChain) identifier enumeration
+  //
+  // Usage:
+  //
+  //   template<required::Identifier IDENTIFIER> auto function(IDENTIFIER id) -> Result;
+  //
+  template<typename IDENTIFIER> concept bool Identifier = 
+    (std::is_same<Consent, IDENTIFIER>::value ||
+     std::is_same<Transfer, IDENTIFIER>::value ||
+     std::is_same<Subscription, IDENTIFIER>::value);
+}
+#endiv

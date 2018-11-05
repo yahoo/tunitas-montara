@@ -24,17 +24,17 @@ public:
 #endiv
 #divert <cpp>
 #import std.string_literals
-#import tunitas.montara.filter
+#import tunitas.montara.filters
 #import tunitas.montara.constants
-#import tunitas.montara.resource
+#import tunitas.montara.resources
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
   Consent_Revoke_Identifier::Consent_Revoke_Identifier() {
-    resource::initialize_only_post(*this);
+    resources::initialize_only_post(*this);
   }
   auto Consent_Revoke_Identifier::render_POST(Request const &request, Response **fill) -> void {
-    filter::enforce_no_query_parameters(request, *fill);
+    filters::enforce_no_query_parameters(request, *fill);
     if (nullptr == *fill) {
       // [[FIXTHIS]] accept the body and put it in a database or a queue
       auto const &content_body = R"text(accepted)text"s;

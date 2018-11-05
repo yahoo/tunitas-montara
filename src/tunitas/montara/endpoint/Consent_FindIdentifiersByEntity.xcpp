@@ -27,17 +27,17 @@ private:
 #endiv
 #divert <cpp>
 #import std.string_literals
-#import tunitas.montara.filter
+#import tunitas.montara.filters
 #import tunitas.montara.constants
-#import tunitas.montara.resource
+#import tunitas.montara.resources
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
   Consent_FindIdentifiersByEntity::Consent_FindIdentifiersByEntity() {
-    resource::initialize_only_get(*this);
+    resources::initialize_only_get(*this);
   }
   auto Consent_FindIdentifiersByEntity::render_GET(Request const &request, Response **fill) -> void {
-    filter::enforce_no_query_parameters(request, *fill);
+    filters::enforce_no_query_parameters(request, *fill);
     if (nullptr == *fill) {
       // [[FIXTHIS]] recover the optout from a database
       auto const &content_body = DUMMY_DATA;

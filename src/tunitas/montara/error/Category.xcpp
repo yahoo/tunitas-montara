@@ -1,0 +1,61 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::error {
+  //
+  // The error category of montara
+  //
+  // Usage:
+  //
+  //   auto cond = category().default_error_condition(code);
+  //   auto name = category().name();
+  //   auto samecode = category().equivalent(code, integer);
+  //   auto samecond = category().equivalent(integer, condition);
+  //   auto message = category().message(code);
+  //
+  class Category;
+}
+#endiv
+#divert <hpp>
+#import std.string
+#import std.error_code
+#import std.error_condition
+#import std.error_category
+#forward tunitas.montara.error.category
+class tunitas::montara::error::Category : public std::error_category {
+  using ancestor = std::error_category;
+protected:
+  Category() = default;
+  friend auto category() -> Category const &;
+public:
+  auto name() const noexcept -> char const * final;
+  auto default_error_condition(int code) const noexcept -> std::error_condition final;
+  auto message(int code) const -> std::string final;
+};
+#endiv
+#divert <cpp>
+#import tunitas.montara.error.Code
+#import tunitas.montara.error.Condition
+#import std.to_string
+namespace tunitas::montara::error {
+  auto Category::name() const noexcept -> char const * {
+    return "montara-storage";
+  }
+  auto Category::default_error_condition(int code) const noexcept -> std::error_condition {
+    auto reduced = 0 == code ? Condition::SUCCESS : Condition::FAILURE;
+    return std::error_condition{(int)reduced, *this};
+  }
+  auto Category::message(int code) const -> std::string {
+    switch (Code(code)) {
+    case Code::SUCCESS:
+      return "success";
+    case Code::NO_SUCH_STORAGE_ENGINE:
+      return "no such storage engine";
+    case Code::NOT_AN_IDENTIFIER:
+      return "not an identifier (not a number)";
+    case Code::NO_SUCH_KEY_IN_CONFIGURATION:
+      return "no such key in the configuration";
+    }
+    return "error code " + std::to_string(code);
+  }
+}
+#endiv

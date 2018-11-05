@@ -45,7 +45,7 @@ app::service::options::Specification::Specification()
   //          /--------------- that one
   //          |
   //          v
-  : shortish{":hV?dfqvwyp:"}
+  : shortish{":hV?dfqvwyp:e:"}
   , longish{{"help", oa::NO, oi::USAGE_SUBCOMMAND},
             {"usage", oa::NO, oi::USAGE_SUBCOMMAND},
 	    {"version", oa::NO, oi::VERSION_SUBCOMMAND},
@@ -60,6 +60,8 @@ app::service::options::Specification::Specification()
 	    {"foreground", oa::NO, oi::FOREGROUND_MODE},
 	    {"bg", oa::NO, oi::BACKGROUND_MODE},
 	    {"background", oa::NO, oi::BACKGROUND_MODE},
-	    {"port", oa::REQUIRED, oi::SERVICE_PORT}}
+	    {"port", oa::REQUIRED, oi::SERVICE_PORT},
+	    {"engine", oa::REQUIRED, oi::STORAGE_ENGINE},
+	    {"storage-engine", oa::REQUIRED, oi::STORAGE_ENGINE}}
 { }
 #endiv

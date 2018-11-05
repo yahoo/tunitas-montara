@@ -1,0 +1,55 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::storage {
+  //
+  // Generic configuration for a storage engine
+  // Needs to cover a wide range of storage engine parameterizations
+  // across: null, memory, SQLite, MySQL, PostgreSQL, RAMCloud and others.
+  //
+  // It stores name-value pairs.
+  //
+  // Usage:
+  //
+  //   Configuration cfg;
+  //   auto built = builder->build(cfg);
+  //
+  class Configuration;
+}
+#endiv
+#divert <hpp>
+#import std.map
+#import tunitas.Outcome
+#import tunitas.montara.storage.required.Configurable
+#import tunitas.montara.storage.configuration.Variant
+class tunitas::montara::storage::Configuration : public std::map<std::string, configuration::Variant> {
+  using ancestor = std::map<std::string, configuration::Variant>;
+public:
+  using ancestor::map;
+  template<required::Configurable TYPE> inline auto get(std::string const &key) const -> Outcome<TYPE>;
+  template<required::Configurable TYPE> inline auto get_otherwise(std::string const &key, TYPE otherwise) const -> TYPE;
+};
+#endiv
+#divert <ipp>
+#import tunitas.montara.error.Code
+#import tunitas.montara.storage.configuration.as
+namespace tunitas::montara::storage {
+  template<required::Configurable TYPE> auto Configuration::get(std::string const &key) const -> Outcome<TYPE> {
+    using Result = Outcome<TYPE>;
+    auto found = ancestor::find(key);
+    if (ancestor::end() == found) {
+      return Result{error::Code::NO_SUCH_KEY_IN_CONFIGURATION};
+    } {
+      return Result{configuration::as<TYPE>(found->second)};
+    }
+  }
+  template<required::Configurable TYPE> auto Configuration::get_otherwise(std::string const &key, TYPE otherwise) const -> TYPE {
+    auto found = ancestor::find(key);
+    if (ancestor::end() == found) {
+      return otherwise;
+    } else {
+      return configuration::as<TYPE>(found->second);
+    }
+  }
+}
+#endiv
+

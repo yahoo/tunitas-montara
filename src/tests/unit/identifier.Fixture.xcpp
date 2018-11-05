@@ -1,0 +1,89 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tests::unit::identifier { class Fixture; }
+#endiv
+#divert <hpp>
+#import cppunit.Test
+#import cppunit.test.Fixture
+class tests::unit::identifier::Fixture : public cppunit::test::Fixture {
+public:
+  auto test_to_string() -> void;
+  auto test_from_chars_Outcome() -> void;
+  auto test_from_chars_result() -> void;
+  static auto suite() -> cppunit::Test *;
+};
+#endiv
+#divert <cpp>
+#import std.string_literals
+using namespace std::string_literals;
+#import tunitas.montara.identifier.to_string
+#import tunitas.montara.identifier.Consent
+#import tunitas.montara.identifier.Subscription
+#import tunitas.montara.identifier.Transfer
+auto tests::unit::identifier::Fixture::test_to_string() -> void {
+  using namespace ::tunitas::montara::identifier;
+  auto cid = Consent(33);
+  auto sid = Subscription(44);
+  auto tid = Transfer(55);
+  CPPUNIT_ASSERT("33"s == to_string(cid));
+  CPPUNIT_ASSERT("44"s == to_string(sid));
+  CPPUNIT_ASSERT("55"s == to_string(tid));
+}
+#import std.cerr
+auto tests::unit::identifier::Fixture::test_from_chars_Outcome() -> void {
+  using namespace ::tunitas::montara::identifier;
+  auto fromc = from_chars<Consent>("33");
+  CPPUNIT_ASSERT(ok(fromc));
+  CPPUNIT_ASSERT_EQUAL(33lu, (int long unsigned)value(fromc));
+  auto froms = from_chars<Subscription>("44");
+  CPPUNIT_ASSERT(ok(froms));
+  CPPUNIT_ASSERT_EQUAL(44lu, (int long unsigned)value(froms));
+  auto fromt = from_chars<Transfer>("55");
+  CPPUNIT_ASSERT(ok(fromt));
+  CPPUNIT_ASSERT_EQUAL(55lu, (int long unsigned)value(fromt));
+  auto bad = from_chars<Transfer>("1a");
+  CPPUNIT_ASSERT(!ok(bad));
+  std::cerr << "bad because " << error_code(bad).message() << '\n';
+}
+#if 7 < __GNUC__
+// retry with gcc8 or gcc9
+auto tests::unit::identifier::Fixture::test_from_chars_result() -> void {
+  {
+    auto fromc = from_chars<Consent>("33");
+    CPPUNIT_ASSERT('\0' == *fromc.ptr);
+    CPPUNIT_ASSERT_EQUAL(33lu, value(fromc));
+  } {
+    auto froms = from_chars<Subscription>("44");
+    CPPUNIT_ASSERT('\0' == *froms.ptr);
+    CPPUNIT_ASSERT_EQUAL(44lu, value(froms));
+  } {
+    auto fromt = from_chars<Transfer>("55");
+    CPPUNIT_ASSERT('\0' == *fromt.ptr);
+    CPPUNIT_ASSERT_EQUAL(55lu, value(fromt));
+  } {
+    auto bad = from_chars<Transfer>("1a");
+    CPPUNIT_ASSERT('\0' != bad.ptr);
+    std::cerr << "bad because " << (int)bad.ec << '\n';
+  }
+}
+#endif
+#import unit.rigging.suite.Stream
+#import unit.rigging.suite.call
+#import unit.rigging.suite.add
+auto tests::unit::identifier::Fixture::suite() -> cppunit::Test * {
+  using namespace ::unit::rigging::suite;
+  Stream series("identifier");
+  series << call("to_string", &Fixture::test_to_string)
+    ;
+  {
+    Stream fch("from_chars");
+    fch << call("Outcome", &Fixture::test_from_chars_Outcome)
+#if 7 < __GNUC__
+        << call("result", &Fixture::test_from_chars_result)
+#endif
+      ;
+    series << add(fch.release());
+  }
+  return series.release();
+}
+#endiv

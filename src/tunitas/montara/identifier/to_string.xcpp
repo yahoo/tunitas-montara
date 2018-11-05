@@ -1,0 +1,7 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <hpp>
+// Whereas to_string(...) is part of the interface of these enums. You now have it.
+#import tunitas.montara.identifier.Consent
+#import tunitas.montara.identifier.Subscription
+#import tunitas.montara.identifier.Transfer
+#endiv

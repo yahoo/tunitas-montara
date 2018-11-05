@@ -16,45 +16,75 @@ namespace tunitas::montara::endpoint {
 }
 #endiv
 #divert <hpp>
+#import tunitas.montara.storage.Consent
 class tunitas::montara::endpoint::Consent_Identifier : public httpserver::Resource<Consent_Identifier> {
 public:
-  Consent_Identifier();
-  auto render_POST(Request const &, [[out]] Response **fill) -> void;
-  auto render_PUT(Request const &, [[out]] Response **fill) -> void;
+  explicit Consent_Identifier(storage::Consent &);
+  auto render_GET(Request const &, [[out]] Response *&fill) -> void;
+  auto render_PUT(Request const &, [[out]] Response *&fill) -> void;
+public: // but we wish it wasn't; we wish it wasn't even here [[REMOVEWHEN]] libhttpserver has an appropriate function signature
+  auto render_GET(Request const &r, [[out]] Response **f) -> void { render_GET(r, *f); }
+  auto render_PUT(Request const &r, [[out]] Response **f) -> void { render_PUT(r, *f); }
+protected:
+  storage::Consent &store;
+private:
+  static std::string const DUMMY_DATA;
 };
 #endiv
 #divert <cpp>
-#import std.string_literals
-#import tunitas.montara.filter
-#import tunitas.montara.constants
-#import tunitas.montara.resource
+#import tunitas.montara.endpoint.implementation
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
-  Consent_Identifier::Consent_Identifier() {
-    resource::initialize_only_get(*this);
+  Consent_Identifier::Consent_Identifier(storage::Consent &store) : store{store} {
+    resources::initialize_getput(*this);
   }
-  auto Consent_Identifier::render_POST(Request const &request, Response **fill) -> void {
-    filter::enforce_no_query_parameters(request, *fill);
-    if (nullptr == *fill) {
-      // [[FIXTHIS]] accept the body and put it in a database or a queue (but only if there was not one before)
-      auto const &content_body = R"text(accepted)text";
-      auto const code = http::R202_ACCEPTED;
-      auto const &content_type = mime::TEXT_PLAIN;
+  auto Consent_Identifier::render_GET(Request const &request, Response *&fill) -> void try {
+    filters::enforce_no_query_parameters(request, fill);
+    if (nullptr == fill) {
+      // [[FIXTHIS]] recover the consent from a database
+      auto const &content_body = DUMMY_DATA;
+      auto const code = http::R200_OK;
+      auto const &content_type = mime::APPLICATION_JSON;
       httpserver::response::Builder bob{content_body, code, content_type};
-      *fill = new Response{bob};
+      fill = new Response{bob};
     }
+  } catch (std::exception const &e) {
+    responses::internal_server_error(fill, e.what());
+  } catch (...) {
+    responses::internal_server_error(fill);
   }
-  auto Consent_Identifier::render_PUT(Request const &request, Response **fill) -> void {
-    filter::enforce_no_query_parameters(request, *fill);
-    if (nullptr == *fill) {
-      // [[FIXTHIS]] accept the body and put it in a database or a queue (but only if there wasn't one before)
-      auto const &content_body = R"text(accepted)text";
-      auto const code = http::R202_ACCEPTED;
-      auto const &content_type = mime::TEXT_PLAIN;
-      httpserver::response::Builder bob{content_body, code, content_type};
-      *fill = new Response{bob};
+  auto Consent_Identifier::render_PUT(Request const &request, Response *&fill) -> void try {
+    filters::enforce_no_query_parameters(request, fill);
+    filters::enforce_application_json(request, fill);
+    if (nullptr == fill) {
+      json::String document = json::to(json::STRING(), request.get_content());
+      auto parsed = json::parse(json::failure::returned, document);
+      if (!ok(parsed)) {
+        responses::bad_request(fill, "json syntax");
+      } else {
+        // [[FIXTHIS]] construct the URL in run.cpp so that these to guaranteeto match
+        // this must match the name used in run.cpp -----------------------------------\ (here)
+        //                                                                             |
+        //                                                                             v
+        auto identified = identifier::from_chars<identifier::Consent>(request.get_arg("consentId"));
+        if (!ok(identified)) {
+          responses::bad_request(fill, "no identifier");
+        } else {
+          store.PUT(value(identified), value(std::move(parsed)));
+          // [[FIXTHIS]] accept the body and put it in a database or a queue (but only if there wasn't one before)
+          auto const &content_body = R"text(accepted)text";
+          auto const code = http::R202_ACCEPTED;
+          auto const &content_type = mime::TEXT_PLAIN;
+          httpserver::response::Builder bob{content_body, code, content_type};
+          fill = new Response{bob};
+        }
+      }
     }
+  } catch (std::exception const &e) {
+    responses::internal_server_error(fill, e.what());
+  } catch (...) {
+    responses::internal_server_error(fill);
   }
 }
 #endiv

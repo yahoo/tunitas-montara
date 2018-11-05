@@ -1,0 +1,90 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tests::unit::error { class Fixture; }
+#endiv
+#divert <hpp>
+#import cppunit.Test
+#import cppunit.test.Fixture
+class tests::unit::error::Fixture : public cppunit::test::Fixture {
+public:
+  auto test_make_error_code() -> void;
+  auto test_make_error_condition() -> void;
+  auto test_category_name() -> void;
+  auto test_category_default_error_condition() -> void;
+  auto test_category_equivalent_code() -> void;
+  auto test_category_equivalent_condition() -> void;
+  auto test_category_message() -> void;
+  static auto suite() -> cppunit::Test *;
+};
+#endiv
+#divert <cpp>
+#import std.string_literals
+using namespace std::string_literals;
+#import tunitas.montara.error.Code
+auto tests::unit::error::Fixture::test_make_error_code() -> void {
+  using namespace ::tunitas::montara::error;
+  CPPUNIT_ASSERT(std::error_code{Code::SUCCESS} == make_error_code(Code(0))); 
+  CPPUNIT_ASSERT(std::error_code{Code::NO_SUCH_STORAGE_ENGINE} == make_error_code(Code(1))); 
+}
+#import tunitas.montara.error.Condition
+auto tests::unit::error::Fixture::test_make_error_condition() -> void {
+  using namespace ::tunitas::montara::error;  
+  CPPUNIT_ASSERT(std::error_condition{Condition::SUCCESS} == make_error_condition(Condition(0)));
+  CPPUNIT_ASSERT(std::error_condition{Condition::FAILURE} == make_error_condition(Condition(1)));
+  CPPUNIT_ASSERT(std::error_condition{Condition::FAILURE} == make_error_condition(Condition(2)));
+  CPPUNIT_ASSERT(std::error_condition{Condition::FAILURE} == make_error_condition(Condition(3)));
+}
+auto tests::unit::error::Fixture::test_category_name() -> void {
+  using namespace ::tunitas::montara::error;
+  std::string name = category().name();
+  CPPUNIT_ASSERT(!name.empty());
+}
+auto tests::unit::error::Fixture::test_category_default_error_condition() -> void {
+  using namespace ::tunitas::montara::error;
+  CPPUNIT_ASSERT(std::error_condition{Condition::SUCCESS} == category().default_error_condition(0));
+  CPPUNIT_ASSERT(std::error_condition{Condition::FAILURE} == category().default_error_condition(1));
+}
+#import std.generic_category
+auto tests::unit::error::Fixture::test_category_equivalent_code() -> void {
+  using namespace ::tunitas::montara::error;
+  CPPUNIT_ASSERT(category().equivalent(std::error_code{Code::SUCCESS}, 0));
+  CPPUNIT_ASSERT(category().equivalent(std::error_code{Code::NO_SUCH_STORAGE_ENGINE}, 1));
+  CPPUNIT_ASSERT(!category().equivalent(std::error_code{2, std::generic_category()}, 1));
+}
+auto tests::unit::error::Fixture::test_category_equivalent_condition() -> void {
+  using namespace ::tunitas::montara::error;
+  CPPUNIT_ASSERT(category().equivalent(0, std::error_condition{Condition::SUCCESS}));
+  CPPUNIT_ASSERT(category().equivalent(1, std::error_condition{Condition::FAILURE}));
+  CPPUNIT_ASSERT(!category().equivalent(1, std::error_condition{std::errc::address_in_use}));
+}
+auto tests::unit::error::Fixture::test_category_message() -> void {
+  using namespace ::tunitas::montara::error;
+  CPPUNIT_ASSERT("success"s == category().message(0));
+  for (auto i=-10, e=10; e!=i; ++i) {
+    auto message = category().message(i);
+    CPPUNIT_ASSERT(!message.empty());
+  }
+}
+#import unit.rigging.suite.Stream
+#import unit.rigging.suite.call
+#import unit.rigging.suite.add
+auto tests::unit::error::Fixture::suite() -> cppunit::Test * {
+  using namespace ::unit::rigging::suite;
+  Stream series("error");
+  series << call("make_error_code", &Fixture::test_make_error_code)
+         << call("make_error_code", &Fixture::test_make_error_code)
+         << call("make_error_code", &Fixture::test_make_error_code)
+    ;
+  {
+    Stream cat("category");
+    cat << call("name", &Fixture::test_category_name)
+        << call("default_error_condition", &Fixture::test_category_default_error_condition)
+        << call("equivalent-code", &Fixture::test_category_equivalent_code)
+        << call("equivalent-condition", &Fixture::test_category_equivalent_condition)
+        << call("message", &Fixture::test_category_message)
+      ;
+    series << add(cat.release());
+  }
+  return series.release();
+}
+#endiv

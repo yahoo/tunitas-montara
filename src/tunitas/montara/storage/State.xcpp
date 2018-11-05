@@ -1,0 +1,48 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::storage {
+  //
+  // The generic state of a storage engine.
+  // Descendants only.
+  //
+  // For serious storage engines, most state will be elsewhere.
+  // For the toys and test cases, the state is within.
+  // State across: null, memory, SQLite, MySQL, PostgreSQL, RAMCloud and others.
+  //
+  // Usage:
+  //
+  //   null::State stateless;
+  //   auto consent = std::make_unique<null::Consent>(state);
+  //
+  class State;
+}
+#endiv
+#divert <hpp>
+#import std.lock_guard
+#import std.map
+#import std.mutex
+#import std.ostream
+#import std.string
+class tunitas::montara::storage::State {
+protected:
+  inline State(std::ostream &);
+public:
+  virtual ~State() = default;
+  // There is no state in the null state!
+  // Just a logger to record what is going on 
+  std::ostream &log;
+  //
+  // Usage:
+  //
+  //   mutex::Guard lock{exclusion};
+  //   log <<  "log something\n";
+  //
+  using Mutex = std::mutex;
+  struct mutex { using Guard = std::lock_guard<Mutex>; };
+  Mutex exclusion;
+};
+#endiv
+#divert <ipp>
+tunitas::montara::storage::State::State(std::ostream &log)
+  : log{log} { }
+#endiv

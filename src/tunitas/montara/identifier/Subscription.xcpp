@@ -1,0 +1,31 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+#import std.uint64_t
+namespace tunitas::montara::identifier {
+  //
+  // The subscriptions allow you to see how it goes.
+  //
+  // Usage:
+  //
+  //   auto id = Subscription(123);
+  //   auto id = from_chars<Subscription>("123");
+  //   auto str = to_string(id);
+  //
+  enum class Subscription : std::uint64_t;
+}
+#endiv
+#divert <hpp>
+#import std.string
+namespace tunitas::montara::identifier {
+  inline auto to_string(Subscription) -> std::string;
+}
+#import tunitas.montara.identifier.from_chars
+#endiv
+#divert <ipp>
+#import std.to_string
+#import std.underlying_type
+auto tunitas::montara::identifier::to_string(Subscription value) -> std::string {
+  return std::to_string((std::underlying_type<Subscription>::type) value);
+}
+#entail tunitas.montara.identifier.from_chars
+#endiv

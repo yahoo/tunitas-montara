@@ -1,0 +1,25 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <hpp>
+#forward tunitas.montara.error.Category
+namespace tunitas::montara::error {
+  //
+  // Acquire the singleton category
+  //
+  // Usage:
+  //
+  //   auto cond = category().default_error_condition(code);
+  //   auto name = category().name();
+  //   auto message = category().message(code);
+  //
+  auto category() -> Category const &;
+}
+#endiv
+#divert <ipp>
+#import tunitas.montara.error.Category
+#endiv
+#divert <cpp>
+auto tunitas::montara::error::category() -> Category const & {
+  static Category const singleton;
+  return singleton;
+}
+#endiv

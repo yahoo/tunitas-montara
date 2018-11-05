@@ -7,14 +7,33 @@ namespace tests::unit::want { class Fixture; }
 #import cppunit.test.Fixture
 class tests::unit::want::Fixture : public cppunit::test::Fixture {
 public:
-  auto test_something() -> void;
+  auto test_nonstd_Nullbuf() -> void;
+  auto test_nonstd_null() -> void;
   static auto suite() -> cppunit::Test *;
 };
 #endiv
 #divert <cpp>
 #import std.string_literals
 using namespace std::string_literals;
-auto tests::unit::want::Fixture::test_something() -> void {
+#import std.string
+#import std.ostringstream
+#import std.unique_ptr
+#import want.nonstd.Nullbuf
+auto tests::unit::want::Fixture::test_nonstd_Nullbuf() -> void {
+  std::ostringstream buf;
+  std::unique_ptr<::want::nonstd::Nullbuf<char>> n( new ::want::nonstd::Nullbuf<char>());
+  buf << "[see this]";
+  static_cast<std::ios&>(buf).rdbuf(n.get()); // <----- tricky. reach up into the ios and modify the streambuf pointer of the stringstream
+  buf << "[NOT SEE THIS]";
+  std::string const expected("[see this]");
+  std::string const actual(buf.str());
+  CPPUNIT_ASSERT(expected == actual);
+}
+#import want.nonstd.null
+auto tests::unit::want::Fixture::test_nonstd_null() -> void {
+  ::want::nonstd::null buf;
+  buf << "[NOT SEE THIS]";
+  // and no coredumps(!)
   CPPUNIT_ASSERT(true);
 }
 #import unit.rigging.suite.Stream
@@ -23,8 +42,13 @@ auto tests::unit::want::Fixture::test_something() -> void {
 auto tests::unit::want::Fixture::suite() -> cppunit::Test * {
   using namespace ::unit::rigging::suite;
   Stream series("want");
-  series << call("something", &Fixture::test_something)
-    ;
+  {
+    Stream non("nonstd");
+    non << call("Nullbuf", &Fixture::test_nonstd_Nullbuf)
+        << call("null", &Fixture::test_nonstd_null)
+      ;
+    series << add(non.release());
+  }
   return series.release();
 }
 #endiv

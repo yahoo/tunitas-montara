@@ -1,0 +1,5 @@
+#!/bin/sh
+source ${0%/*}/rigging.sh || exit 70
+${exe?} -y -e ''
+# the engine cannot be empty
+test 0 != $?

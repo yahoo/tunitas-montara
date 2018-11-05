@@ -1,0 +1,8 @@
+tests_api_XFAIL_TESTS = \
+tests_api_TESTS = \
+  tests/api/aaa.start.test \
+  $(tests_api_XFAIL_TESTS) \
+  tests/api/consent.POST.test \
+  tests/api/consent.PUT.test \
+  tests/api/zzz.end.test \
+  $(end)
