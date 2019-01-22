@@ -38,7 +38,7 @@ public:
 #import std.to_string
 namespace tunitas::montara::error {
   auto Category::name() const noexcept -> char const * {
-    return "montara-storage";
+    return "montara-service";
   }
   auto Category::default_error_condition(int code) const noexcept -> std::error_condition {
     auto reduced = 0 == code ? Condition::SUCCESS : Condition::FAILURE;

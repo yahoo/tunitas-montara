@@ -72,8 +72,7 @@ auto tests::unit::error::Fixture::suite() -> cppunit::Test * {
   using namespace ::unit::rigging::suite;
   Stream series("error");
   series << call("make_error_code", &Fixture::test_make_error_code)
-         << call("make_error_code", &Fixture::test_make_error_code)
-         << call("make_error_code", &Fixture::test_make_error_code)
+         << call("make_error_condition", &Fixture::test_make_error_condition)
     ;
   {
     Stream cat("category");
