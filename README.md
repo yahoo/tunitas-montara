@@ -12,7 +12,7 @@ The PrivacyChain specification is documented in the [IAB PrivacyChain Specificat
 
 {id}{consentType}{entity}{expires}{attributes}{status}
 
-`PUT /consent` Update` an existing consent.
+`PUT /consent Update` an existing consent.
 
 {id}{consentType}{entity}{expires}{attributes}{status}
 

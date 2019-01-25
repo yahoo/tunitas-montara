@@ -31,8 +31,8 @@ auto tests::unit::error::Fixture::test_make_error_condition() -> void {
   using namespace ::tunitas::montara::error;  
   CPPUNIT_ASSERT(std::error_condition{Condition::SUCCESS} == make_error_condition(Condition(0)));
   CPPUNIT_ASSERT(std::error_condition{Condition::FAILURE} == make_error_condition(Condition(1)));
-  CPPUNIT_ASSERT(std::error_condition{Condition::FAILURE} == make_error_condition(Condition(2)));
-  CPPUNIT_ASSERT(std::error_condition{Condition::FAILURE} == make_error_condition(Condition(3)));
+  CPPUNIT_ASSERT(std::error_condition{Condition(2)} == make_error_condition(Condition(2)));
+  CPPUNIT_ASSERT(std::error_condition{Condition(3)} == make_error_condition(Condition(3)));
 }
 auto tests::unit::error::Fixture::test_category_name() -> void {
   using namespace ::tunitas::montara::error;
@@ -43,6 +43,10 @@ auto tests::unit::error::Fixture::test_category_default_error_condition() -> voi
   using namespace ::tunitas::montara::error;
   CPPUNIT_ASSERT(std::error_condition{Condition::SUCCESS} == category().default_error_condition(0));
   CPPUNIT_ASSERT(std::error_condition{Condition::FAILURE} == category().default_error_condition(1));
+  CPPUNIT_ASSERT(std::error_condition{Condition::FAILURE} == category().default_error_condition(2));
+  CPPUNIT_ASSERT(std::error_condition{Condition::FAILURE} == category().default_error_condition(3));
+  CPPUNIT_ASSERT(std::error_condition{Condition::FAILURE} == category().default_error_condition(4));
+  CPPUNIT_ASSERT(std::error_condition{Condition::FAILURE} == category().default_error_condition(5));
 }
 #import std.generic_category
 auto tests::unit::error::Fixture::test_category_equivalent_code() -> void {
