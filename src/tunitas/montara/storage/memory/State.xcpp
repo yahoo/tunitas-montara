@@ -1,0 +1,34 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::storage::memory {
+  //
+  // Implements the memory state
+  //
+  // Usage: see tunitas.montara.storage.State
+  //
+  class State;
+}
+#endiv
+#divert <hpp>
+#import tunitas.montara.identifier.Consent
+#import tunitas.montara.type.Blob
+#import tunitas.montara.storage.State
+#import std.ostream
+#import std.map
+class tunitas::montara::storage::memory::State : public storage::State {
+  using ancestor = storage::State;
+public:
+  inline explicit State(std::ostream &);
+  using ConsentMap = std::map<id::Consent, type::Blob>;
+  ConsentMap consents;
+  using SubscriptionMap = std::map<id::Subscription, type::Blob>;
+  SubscriptionMap subscriptions;
+  using TransferMap = std::map<id::Transfer, type::Blob>;
+  TransferMap transfers;
+};
+#endiv
+#divert <ipp>
+tunitas::montara::storage::memory::State::State(std::ostream &log)
+  : ancestor{log} { }
+#endiv
+

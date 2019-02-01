@@ -43,15 +43,14 @@ public:
 #divert <cpp>
 #import std.error_code
 #import tunitas.montara.error.Code
+#import tunitas.montara.storage.memory.Builder
 #import tunitas.montara.storage.null.Builder
 #import std.string_literals
 using namespace std::literals;
 auto tunitas::montara::storage::Factory::order(std::string const &name) const -> Result {
-#if 0
   if ("memory"s == name) {
     return Result{std::make_unique<memory::Builder>()};
   }
-#endif
   if ("null"s == name) {
     return Result{std::make_unique<null::Builder>()};
   }

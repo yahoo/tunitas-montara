@@ -1,0 +1,43 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::storage::aspect {
+  //
+  // The bundle of outcome helpers
+  // A mixin, descendants only
+  //
+  // Provides some static member functions to help return the outcomes
+  //
+  // Usage:
+  //
+  //   class my::Class : public Something, protected aspect::Outcomes {
+  //     ...etc...
+  //   };
+  //
+  class Outcomes;
+}
+#endiv
+#divert <hpp>
+class tunitas::montara::storage::aspect::Outcomes {
+protected:
+  ~Outcomes() = default;
+  // These are a very very long way to go to save some cut & paste
+  template<typename OUTCOME> inline static auto INVALID() -> OUTCOME;
+  template<typename OUTCOME> inline static auto PRESENT() -> OUTCOME;
+  template<typename OUTCOME> inline static auto MISSING() -> OUTCOME;
+};
+#endiv
+#divert <ipp>
+#import tunitas.montara.error.Code
+#import std.error_code
+namespace tunitas::montara::storage::aspect {
+  template<typename OUTCOME> auto Outcomes::INVALID() -> OUTCOME {
+    return OUTCOME{std::error_code{error::Code::INVALID_BLOB}};
+  }
+  template<typename OUTCOME> auto Outcomes::PRESENT() -> OUTCOME {
+    return OUTCOME{std::error_code{error::Code::FOUND}};
+  }
+  template<typename OUTCOME> auto Outcomes::MISSING() -> OUTCOME {
+    return OUTCOME{std::error_code{error::Code::NOT_FOUND}};
+  }
+}
+#endiv

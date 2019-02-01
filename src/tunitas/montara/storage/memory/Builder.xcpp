@@ -1,8 +1,8 @@
 // This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
 #divert <fpp>
-namespace tunitas::montara::storage::null {
+namespace tunitas::montara::storage::memory {
   //
-  // Implements the null builder
+  // Implements the memory builder
   //
   //  Usage: see tunitas.montara.storage.Builder
   //
@@ -11,22 +11,22 @@ namespace tunitas::montara::storage::null {
 #endiv
 #divert <hpp>
 #import tunitas.montara.storage.Builder
-class tunitas::montara::storage::null::Builder : public storage::Builder {
+class tunitas::montara::storage::memory::Builder : public storage::Builder {
   using ancestor = storage::Builder;
 public:
   auto build(Configuration const &) -> Result final;
 };
 #endiv
 #divert <cpp>
-#import tunitas.montara.storage.null.Engine
-#import tunitas.montara.storage.null.State
-#import tunitas.montara.storage.null.Consent
-#import tunitas.montara.storage.null.Subscription
-#import tunitas.montara.storage.null.Transfer
+#import tunitas.montara.storage.memory.Engine
+#import tunitas.montara.storage.memory.State
+#import tunitas.montara.storage.memory.Consent
+#import tunitas.montara.storage.memory.Subscription
+#import tunitas.montara.storage.memory.Transfer
 #import std.make_unique
 #import std.move
 #import tunitas.montara.log
-auto tunitas::montara::storage::null::Builder::build(Configuration const &cfg) -> Result {
+auto tunitas::montara::storage::memory::Builder::build(Configuration const &cfg) -> Result {
   auto result = std::make_unique<Engine>();
   std::ostream &log = cfg.get_otherwise<bool>("logging", false) ? log::err : log::nul;
   auto stateptr = std::make_unique<State>(log);

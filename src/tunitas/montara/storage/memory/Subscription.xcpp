@@ -1,0 +1,51 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::storage::memory {
+  //
+  // The memory storage of subscription.
+  //
+  // Usage:
+  //
+  //   See Engine
+  //
+  class Subscription;
+}
+#endiv
+#divert <hpp>
+#import tunitas.Outcome
+#import tunitas.montara.storage.Subscription
+#import tunitas.montara.storage.memory.State
+#import tunitas.montara.storage.memory.Operations
+#import tunitas.montara.type.Blob
+class tunitas::montara::storage::memory::Subscription
+  : public storage::Subscription
+  , private Operations<decltype(State::subscriptions), id::Subscription, type::Blob, Outcome<type::Blob>> {
+  using ancestor = storage::Subscription;
+public:
+  inline explicit Subscription(State &);
+  inline auto GET(id::Subscription) -> Outcome<type::Blob> override;
+  inline auto GET(type::Entity const &what_is_an_entity) -> Outcome<type::Blob> override;
+  inline auto PUT(id::Subscription, type::Blob) -> outcome::Success override;
+  inline auto POST(type::Blob) -> outcome::Success override;
+protected:
+  State &state;
+};
+#endiv
+#divert <ipp>
+namespace tunitas::montara::storage::memory {
+  Subscription::Subscription(State &state)
+    : state{state} { }
+  auto Subscription::GET(id::Subscription key) -> Outcome<type::Blob> {
+    return Operations::getty(state.exclusion, state.subscriptions, key);
+  }
+  auto Subscription::GET(type::Entity const &match) -> Outcome<type::Blob> {
+    return Operations::getty(state.exclusion, state.subscriptions, match);
+  } 
+  auto Subscription::PUT(id::Subscription key, type::Blob value) -> outcome::Success {
+    return Operations::putty(state.exclusion, state.subscriptions, key, std::move(value));
+  }
+  auto Subscription::POST(type::Blob value) -> outcome::Success {
+    return Operations::posty(state.exclusion, state.subscriptions, std::move(value));
+  } 
+}
+#endiv

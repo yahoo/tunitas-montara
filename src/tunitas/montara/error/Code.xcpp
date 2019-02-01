@@ -4,8 +4,11 @@ namespace tunitas::montara::error {
   enum class Code {
     SUCCESS = 0,
     NO_SUCH_STORAGE_ENGINE,
-    NOT_AN_IDENTIFIER, // i.e. not a number
-    NO_SUCH_KEY_IN_CONFIGURATION
+    NOT_AN_IDENTIFIER, // i.e. the identifier is not a number (an "identifier" is a large integer)
+    NO_SUCH_KEY_IN_CONFIGURATION,
+    INVALID_BLOB, // typically this is PUT(id, blob) where id != blob["id"]
+    NOT_FOUND, // i.e. GET(id) failed to find the id; the type of the identifier is clear from the context
+    FOUND //      i.e. POST(blob) for an id that alread exists; should have been PUT
   };
 }
 #import std.is_error_code_enum

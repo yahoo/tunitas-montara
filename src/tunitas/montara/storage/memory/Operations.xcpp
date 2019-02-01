@@ -1,0 +1,127 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::storage::memory {
+  //
+  // The generic in-memory operations on a map-type data structure.
+  // Avoid cut & paste across Consent, Transfer, Subscription
+  // This is an implementation detail; does not provide public interfaces.
+  // Ancestry only.
+  //
+  // Usage:
+  //
+  //   See storage::Engine
+  //   See memory::Engine
+  //   See memory::Consent, memory::Transfer, memory::Subscription
+  //
+  template<typename MAP, typename ID, typename BLOB, typename RESULT> class Operations;
+}
+#endiv
+#divert <hpp>
+#import tunitas.montara.storage.memory.State
+#import tunitas.montara.type.Entity
+#import tunitas.montara.storage.aspect.Outcomes
+#import tunitas.montara.storage.State
+template<typename MAP, typename ID, typename VALUE, typename RESULT> class tunitas::montara::storage::memory::Operations : protected storage::aspect::Outcomes {
+protected:
+  ~Operations() = default;
+  using Mutex = storage::State::Mutex;
+  using Guard = storage::State::mutex::Guard;
+  using Map = MAP;
+  using Identifier = ID;
+  using Entity = type::Entity; // [[FINDTHIS]] What is an entity?
+  using Value = VALUE;
+  struct results {
+    using Payload = RESULT;
+    using Success = outcome::Success;
+  };
+  static auto getty(Mutex &, Map const &, Identifier key) -> typename results::Payload;
+  static auto getty(Mutex &, Map const &, Entity const &) -> typename results::Payload;
+  static auto putty(Mutex &, Map &, Identifier key, Value) -> typename results::Success;
+  static auto posty(Mutex &, Map &, Value keyvalue) -> typename results::Success;
+};
+#endiv
+#divert <tpp>
+#import json.exception.Generic
+#import std.lock_guard
+#import std.move
+#import tunitas.montara.storage.State
+namespace tunitas::montara::storage::memory {
+  template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::getty(Mutex &mut, Map const &map, Identifier key) -> typename results::Payload {
+    using Result = typename results::Payload;
+    try {
+      Guard guard{mut};
+      auto const found = map.find(key);
+      auto const end = map.end();
+      if (end == found) {
+	return MISSING<Result>();
+      } else {
+	return Result{found->second}; // yup, that's a copy
+      }
+    } catch (json::exception::Generic const &) {
+      return INVALID<Result>();
+    }
+  }
+  template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::getty(Mutex &mut, Map const &map, Entity const &match) -> typename results::Payload {
+    using Result = typename results::Payload;
+    try {
+      Guard guard{mut};
+      for (auto const &pair : map) {
+	auto const &candidate = pair.second["entity"];
+	if (match == (std::string const &) candidate) {
+	  return Result{pair.second}; // yup, that's a copy
+	}
+      }
+      return MISSING<Result>();
+    } catch (json::exception::Generic const &) {
+      return INVALID<Result>();
+    }
+  } 
+  template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::putty(Mutex &mut, Map &map, Identifier key, Value value) -> typename results::Success {
+    using Result = typename results::Success;
+    try {
+      auto const &obj{value["id"]};
+      if (obj.isNull()) {
+	// Either "id" is null (not present) or it has to be the same as the PUT key
+	auto const candidate = Identifier{obj.asUInt64()};
+	if (key != candidate) {
+	  // If this has to be true, then why do this?
+	  return INVALID<Result>();
+	}
+      }
+      Guard guard{mut};
+      auto const found = map.find(key);
+      auto const end = map.end();
+      if (end == found) {
+	return MISSING<Result>();
+      } else {
+	found->second = std::move(value);
+	return Result{outcome::SUCCESS};
+      }
+    } catch (json::exception::Generic const &) {
+      return INVALID<Result>();
+    }
+  }
+  template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::posty(Mutex &mut, Map &map, Value value) -> typename results::Success {
+    using Result = typename results::Success;
+    try {
+      auto const &obj{value["id"]};
+      if (obj.isNull()) {
+	return Result{std::error_code{error::Code::INVALID_BLOB}};
+      }
+      auto const key = Identifier{obj.asUInt64()};
+      Guard guard{mut};
+      auto const found = map.find(key);
+      auto const end = map.end();
+      if (end != found) {
+	return PRESENT<Result>();
+      } else {
+	map[key] = std::move(value);
+	return Result{outcome::SUCCESS};
+      }
+    } catch (json::exception::Generic const &) {
+      return INVALID<Result>();
+    }
+
+  } 
+}
+#endiv

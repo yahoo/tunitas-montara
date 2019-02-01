@@ -1,8 +1,8 @@
 // This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
 #divert <fpp>
-namespace tunitas::montara::storage::null {
+namespace tunitas::montara::storage::memory {
   //
-  // Implements the null engine
+  // Implements the memory engine
   //
   // Usage: see tunitas.montara.storage.Engine
   //
@@ -11,9 +11,9 @@ namespace tunitas::montara::storage::null {
 #endiv
 #divert <hpp>
 #import tunitas.montara.storage.Engine
-class tunitas::montara::storage::null::Engine : public storage::Engine {
+class tunitas::montara::storage::memory::Engine : public storage::Engine {
   using ancestor = storage::Engine;
 public:
-  // There is nothing (new) in the null engine
+  // There is nothing (new) in the memory engine
 };
 #endiv

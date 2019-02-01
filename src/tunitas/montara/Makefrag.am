@@ -60,6 +60,7 @@ lib_libtunitas_montara_la_XCPP_SOURCES = \
   obj/src/tunitas/montara/storage/Factory.cpp \
   obj/src/tunitas/montara/storage/factory.cpp \
   obj/src/tunitas/montara/storage/Builder.cpp \
+  obj/src/tunitas/montara/storage/aspect.Outcomes.cpp \
   obj/src/tunitas/montara/storage/required.Configurable.cpp \
   obj/src/tunitas/montara/storage/configuration/namespace.cpp \
   obj/src/tunitas/montara/storage/configuration/Variant.cpp \
@@ -72,6 +73,15 @@ lib_libtunitas_montara_la_XCPP_SOURCES = \
   obj/src/tunitas/montara/storage/Consent.cpp \
   obj/src/tunitas/montara/storage/Transfer.cpp \
   obj/src/tunitas/montara/storage/Subscription.cpp \
+  \
+  obj/src/tunitas/montara/storage/memory/Operations.cpp \
+  obj/src/tunitas/montara/storage/memory/namespace.cpp \
+  obj/src/tunitas/montara/storage/memory/Builder.cpp \
+  obj/src/tunitas/montara/storage/memory/Engine.cpp \
+  obj/src/tunitas/montara/storage/memory/State.cpp \
+  obj/src/tunitas/montara/storage/memory/Consent.cpp \
+  obj/src/tunitas/montara/storage/memory/Transfer.cpp \
+  obj/src/tunitas/montara/storage/memory/Subscription.cpp \
   \
   obj/src/tunitas/montara/storage/null/namespace.cpp \
   obj/src/tunitas/montara/storage/null/Builder.cpp \

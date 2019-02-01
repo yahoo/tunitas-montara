@@ -54,6 +54,12 @@ namespace tunitas::montara::error {
       return "not an identifier (not a number)";
     case Code::NO_SUCH_KEY_IN_CONFIGURATION:
       return "no such key in the configuration";
+    case Code::INVALID_BLOB:
+      return "invalid blob";
+    case Code::FOUND:
+      return "found";
+    case Code::NOT_FOUND:
+      return "not found";
     }
     return "error code " + std::to_string(code);
   }
