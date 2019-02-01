@@ -16,10 +16,16 @@ namespace tunitas::montara::endpoint {
 }
 #endiv
 #divert <hpp>
+#import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.storage.Consent
 #import std.string
-class tunitas::montara::endpoint::Consent_FindIdentifiersByEntity : public httpserver::Resource<Consent_FindIdentifiersByEntity> {
+class tunitas::montara::endpoint::Consent_FindIdentifiersByEntity : public httpserver::Resource<Consent_FindIdentifiersByEntity>, aspect::Storage<storage::Consent> {
+  struct ancestors {
+    using Resource = httpserver::Resource<Consent_FindIdentifiersByEntity>;
+    using Storage = aspect::Storage<storage::Consent>;
+  };
 public:
-  Consent_FindIdentifiersByEntity();
+  explicit Consent_FindIdentifiersByEntity(storage::Consent &);
   auto render_GET(Request const &, [[out]] Response **fill) -> void;
 private:
   static std::string const DUMMY_DATA;
@@ -33,7 +39,7 @@ private:
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
-  Consent_FindIdentifiersByEntity::Consent_FindIdentifiersByEntity() {
+  Consent_FindIdentifiersByEntity::Consent_FindIdentifiersByEntity(storage::Consent &store) : ancestors::Storage{store}  {
     resources::initialize_only_get(*this);
   }
   auto Consent_FindIdentifiersByEntity::render_GET(Request const &request, Response **fill) -> void {

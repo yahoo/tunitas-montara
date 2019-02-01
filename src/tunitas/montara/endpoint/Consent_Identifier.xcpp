@@ -16,8 +16,13 @@ namespace tunitas::montara::endpoint {
 }
 #endiv
 #divert <hpp>
+#import tunitas.montara.endpoint.aspect.Storage
 #import tunitas.montara.storage.Consent
-class tunitas::montara::endpoint::Consent_Identifier : public httpserver::Resource<Consent_Identifier> {
+class tunitas::montara::endpoint::Consent_Identifier : public httpserver::Resource<Consent_Identifier>, aspect::Storage<storage::Consent> {
+  struct ancestors {
+    using Resource = httpserver::Resource<Consent_Identifier>;
+    using Storage = aspect::Storage<storage::Consent>;
+  };
 public:
   explicit Consent_Identifier(storage::Consent &);
   auto render_GET(Request const &, [[out]] Response *&fill) -> void;
@@ -25,8 +30,6 @@ public:
 public: // but we wish it wasn't; we wish it wasn't even here [[REMOVEWHEN]] libhttpserver has an appropriate function signature
   auto render_GET(Request const &r, [[out]] Response **f) -> void { render_GET(r, *f); }
   auto render_PUT(Request const &r, [[out]] Response **f) -> void { render_PUT(r, *f); }
-protected:
-  storage::Consent &store;
 private:
   static std::string const DUMMY_DATA;
 };
@@ -36,7 +39,7 @@ private:
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
-  Consent_Identifier::Consent_Identifier(storage::Consent &store) : store{store} {
+  Consent_Identifier::Consent_Identifier(storage::Consent &store) : ancestors::Storage{store} {
     resources::initialize_getput(*this);
   }
   auto Consent_Identifier::render_GET(Request const &request, Response *&fill) -> void try {

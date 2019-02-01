@@ -16,9 +16,15 @@ namespace tunitas::montara::endpoint {
 }
 #endiv
 #divert <hpp>
-class tunitas::montara::endpoint::Consent_RevokeWithList : public httpserver::Resource<Consent_RevokeWithList> {
+#import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.storage.Consent
+class tunitas::montara::endpoint::Consent_RevokeWithList : public httpserver::Resource<Consent_RevokeWithList>, aspect::Storage<storage::Consent> {
+  struct ancestors {
+    using Resource = httpserver::Resource<Consent_RevokeWithList>;
+    using Storage = aspect::Storage<storage::Consent>;
+  };
 public:
-  Consent_RevokeWithList();
+  explicit Consent_RevokeWithList(storage::Consent &);
   auto render_POST(Request const &, [[out]] Response **fill) -> void;
 };
 #endiv
@@ -30,7 +36,7 @@ public:
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
-  Consent_RevokeWithList::Consent_RevokeWithList() {
+  Consent_RevokeWithList::Consent_RevokeWithList(storage::Consent &store) : ancestors::Storage{store} {
     resources::initialize_only_post(*this);
   }
   auto Consent_RevokeWithList::render_POST(Request const &request, Response **fill) -> void {

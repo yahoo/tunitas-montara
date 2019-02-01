@@ -16,15 +16,18 @@ namespace tunitas::montara::endpoint {
 }
 #endiv
 #divert <hpp>
+#import tunitas.montara.endpoint.aspect.Storage
 #import tunitas.montara.storage.Consent
-class tunitas::montara::endpoint::Consent : public httpserver::Resource<Consent> {
+class tunitas::montara::endpoint::Consent : public httpserver::Resource<Consent>, aspect::Storage<storage::Consent> {
+  struct ancestors {
+    using Resource = httpserver::Resource<Consent>;
+    using Storage = aspect::Storage<storage::Consent>;
+  };
 public:
   explicit Consent(storage::Consent &);
   auto render_POST(Request const &, [[out]] Response *&fill) -> void;
 public: // but we wish it wasn't; we wish it wasn't even here [[REMOVEWHEN]] libhttpserver has an appropriate function signature
   auto render_POST(Request const &r, [[out]] Response **f) -> void { render_POST(r, *f); }
-protected:
-  storage::Consent &store;
 };
 #endiv
 #divert <cpp>
@@ -32,7 +35,7 @@ protected:
 namespace tunitas::montara::endpoint {
   using namespace std::literals;
   using namespace constants;
-  Consent::Consent(storage::Consent &store) : store{store} {
+  Consent::Consent(storage::Consent &store) : ancestors::Storage{store} {
     resources::initialize_only_post(*this);
   }
   auto Consent::render_POST(Request const &request, Response *&fill) -> void try {

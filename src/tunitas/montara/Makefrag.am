@@ -25,6 +25,7 @@ lib_libtunitas_montara_la_XCPP_SOURCES = \
   \
   obj/src/tunitas/montara/endpoint/namespace.cpp \
   obj/src/tunitas/montara/endpoint/implementation.cpp \
+  obj/src/tunitas/montara/endpoint/aspect.Storage.cpp \
   obj/src/tunitas/montara/endpoint/Consent.cpp \
   obj/src/tunitas/montara/endpoint/Consent_CreateWithArray.cpp \
   obj/src/tunitas/montara/endpoint/Consent_CreateWithList.cpp \
@@ -62,6 +63,7 @@ lib_libtunitas_montara_la_XCPP_SOURCES = \
   obj/src/tunitas/montara/storage/Builder.cpp \
   obj/src/tunitas/montara/storage/aspect.Outcomes.cpp \
   obj/src/tunitas/montara/storage/required.Configurable.cpp \
+  obj/src/tunitas/montara/storage/required.Interface.cpp \
   obj/src/tunitas/montara/storage/configuration/namespace.cpp \
   obj/src/tunitas/montara/storage/configuration/Variant.cpp \
   obj/src/tunitas/montara/storage/configuration/Visitor.cpp \

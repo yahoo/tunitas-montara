@@ -16,9 +16,15 @@ namespace tunitas::montara::endpoint {
 }
 #endiv
 #divert <hpp>
-class tunitas::montara::endpoint::Datatransfer_FindByConsentIdentifier : public httpserver::Resource<Datatransfer_FindByConsentIdentifier> {
+#import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.storage.Transfer
+class tunitas::montara::endpoint::Datatransfer_FindByConsentIdentifier : public httpserver::Resource<Datatransfer_FindByConsentIdentifier>, aspect::Storage<storage::Transfer> {
+  struct ancestors {
+    using Resource = httpserver::Resource<Datatransfer_FindByConsentIdentifier>;
+    using Storage = aspect::Storage<storage::Transfer>;
+  };
 public:
-  Datatransfer_FindByConsentIdentifier();
+  explicit Datatransfer_FindByConsentIdentifier(storage::Transfer &);
   auto render_GET(Request const &, [[out]] Response **fill) -> void;
 private:
   static std::string const DUMMY_DATA;
@@ -32,7 +38,7 @@ private:
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
-  Datatransfer_FindByConsentIdentifier::Datatransfer_FindByConsentIdentifier() {
+  Datatransfer_FindByConsentIdentifier::Datatransfer_FindByConsentIdentifier(storage::Transfer &store) : ancestors::Storage{store} {
     resources::initialize_only_get(*this);
   }
   auto Datatransfer_FindByConsentIdentifier::render_GET(Request const &request, Response **fill) -> void {

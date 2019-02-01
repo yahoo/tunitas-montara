@@ -17,10 +17,16 @@ namespace tunitas::montara::endpoint {
 #endiv
 #divert <hpp>
 #import std.string
-class tunitas::montara::endpoint::Subscription : public httpserver::Resource<Subscription> {
+#import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.storage.Subscription
+class tunitas::montara::endpoint::Subscription : public httpserver::Resource<Subscription>, aspect::Storage<storage::Subscription> {
+  struct ancestors {
+    using Resource = httpserver::Resource<Subscription>;
+    using Storage = aspect::Storage<storage::Subscription>;
+  };
   using ancestor = httpserver::Resource<Subscription>;
 public:
-  Subscription();
+  explicit Subscription(storage::Subscription &);
   auto render_POST(Request const &, [[out]] Response **fill) -> void;
 };
 #endiv
@@ -32,7 +38,7 @@ public:
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
-  Subscription::Subscription() {
+  Subscription::Subscription(storage::Subscription &store) : ancestors::Storage{store} {
     resources::initialize_only_post(*this);
   }
   auto Subscription::render_POST(Request const &request, Response **fill) -> void {

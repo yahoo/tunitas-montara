@@ -16,9 +16,15 @@ namespace tunitas::montara::endpoint {
 }
 #endiv
 #divert <hpp>
-class tunitas::montara::endpoint::Subscription_Identifier : public httpserver::Resource<Subscription_Identifier> {
+#import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.storage.Subscription
+class tunitas::montara::endpoint::Subscription_Identifier : public httpserver::Resource<Subscription_Identifier>, aspect::Storage<storage::Subscription> {
+  struct ancestors {
+    using Resource = httpserver::Resource<Subscription_Identifier>;
+    using Storage = aspect::Storage<storage::Subscription>;
+  };
 public:
-  Subscription_Identifier();
+  explicit Subscription_Identifier(storage::Subscription &);
   auto render_GET(Request const &, [[out]] Response **fill) -> void;
   auto render_DELETE(Request const &, [[out]] Response **fill) -> void;
 private:
@@ -33,7 +39,7 @@ private:
 namespace tunitas::montara::endpoint {
   using namespace std::literals;
   using namespace constants;
-  Subscription_Identifier::Subscription_Identifier() {
+  Subscription_Identifier::Subscription_Identifier(storage::Subscription &store) : ancestors::Storage{store} {
     resources::initialize_getdelete(*this);
   }
   auto Subscription_Identifier::render_GET(Request const &request, Response **fill) -> void {

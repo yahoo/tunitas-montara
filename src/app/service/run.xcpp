@@ -90,13 +90,13 @@ auto app::service::run(Configuration const &cfg) -> void {
   endpoint::Consent consent{*engine->consent};
   service.register_resource("/consent", &consent, FAMILY_URL_SENSE);
 
-  endpoint::Consent_CreateWithArray consent_createWithArray;
+  endpoint::Consent_CreateWithArray consent_createWithArray{*engine->consent};
   service.register_resource("/consent/createWithArray", &consent_createWithArray, FAMILY_URL_SENSE);
 
-  endpoint::Consent_CreateWithList consent_createWithList;
+  endpoint::Consent_CreateWithList consent_createWithList{*engine->consent};
   service.register_resource("/consent/createWithList", &consent_createWithList, FAMILY_URL_SENSE);
 
-  endpoint::Consent_FindIdentifiersByEntity consent_findIdentifiersByEntity;
+  endpoint::Consent_FindIdentifiersByEntity consent_findIdentifiersByEntity{*engine->consent};
   service.register_resource("/consent/findIdentifiersByEntity", &consent_findIdentifiersByEntity, FAMILY_URL_SENSE);
   // the pesky aliases
   service.register_resource("/consent/findIdsByEntity", &consent_findIdentifiersByEntity, FAMILY_URL_SENSE);
@@ -104,37 +104,37 @@ auto app::service::run(Configuration const &cfg) -> void {
   endpoint::Consent_Identifier consent_identifier{*engine->consent};
   service.register_resource("/consent/{consentId}", &consent_identifier, FAMILY_URL_SENSE);
 
-  endpoint::Consent_RevokeWithArray consent_revokeWithArray;
+  endpoint::Consent_RevokeWithArray consent_revokeWithArray{*engine->consent};
   service.register_resource("/consent/revokeWithArray", &consent_revokeWithArray, FAMILY_URL_SENSE);
 
-  endpoint::Consent_RevokeWithList consent_revokeWithList;
+  endpoint::Consent_RevokeWithList consent_revokeWithList{*engine->consent};
   service.register_resource("/consent/revokeWithList", &consent_revokeWithList, FAMILY_URL_SENSE);
 
-  endpoint::Datatransfer datatransfer;
+  endpoint::Datatransfer datatransfer{*engine->transfer};
   service.register_resource("/datatransfer", &datatransfer, FAMILY_URL_SENSE);
 
-  endpoint::Datatransfer_CreateWithArray datatransfer_createWithArray;
+  endpoint::Datatransfer_CreateWithArray datatransfer_createWithArray{*engine->transfer};
   service.register_resource("/datatransfer/createWithArray", &datatransfer_createWithArray, FAMILY_URL_SENSE);
 
-  endpoint::Datatransfer_CreateWithList datatransfer_createWithList;
+  endpoint::Datatransfer_CreateWithList datatransfer_createWithList{*engine->transfer};
   service.register_resource("/datatransfer/createWithList", &datatransfer_createWithList, FAMILY_URL_SENSE);
 
-  endpoint::Datatransfer_FindByConsentIdentifier datatransfer_findByConsentIdentifier;
+  endpoint::Datatransfer_FindByConsentIdentifier datatransfer_findByConsentIdentifier{*engine->transfer};
   service.register_resource("/datatransfer/findByConsentIdentifier", &datatransfer_findByConsentIdentifier, FAMILY_URL_SENSE);
   // the pesky aliases
   service.register_resource("/datatransfer/findByConsentID", &datatransfer_findByConsentIdentifier, FAMILY_URL_SENSE);
   service.register_resource("/datatransfer/findByConsentId", &datatransfer_findByConsentIdentifier, FAMILY_URL_SENSE);
 
-  endpoint::Datatransfer_Identifier datatransfer_identifier;
+  endpoint::Datatransfer_Identifier datatransfer_identifier{*engine->transfer};
   service.register_resource("/datatransfer/{datatransferId}", &datatransfer_identifier, FAMILY_URL_SENSE);
   
-  endpoint::Subscription subscription;
+  endpoint::Subscription subscription{*engine->subscription};
   service.register_resource("/subscription", &subscription, FAMILY_URL_SENSE);
 
-  endpoint::Subscription_FindByEntity subscription_findByEntity;
+  endpoint::Subscription_FindByEntity subscription_findByEntity{*engine->subscription};
   service.register_resource("/subscription/findByEntity", &subscription_findByEntity, FAMILY_URL_SENSE);
 
-  endpoint::Subscription_Identifier subscription_identifier;
+  endpoint::Subscription_Identifier subscription_identifier{*engine->subscription};
   service.register_resource("/subscription/{subscriptionId}", &subscription_identifier, FAMILY_URL_SENSE);
   
   // There is no 'quit' method.  The service runs forever.

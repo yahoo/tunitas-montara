@@ -1,0 +1,28 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+#import tunitas.montara.storage.required.Interface
+namespace tunitas::montara::endpoint::aspect {
+  //
+  // The storage aspect which is common to all endpoints.
+  // This is a common implementation detail across all the endpoints.
+  // It avoids cut & paste.
+  // Descendants only
+  //
+  // Usage:
+  //
+  //   class my::Endpoint : public httpserver::Resource<Endpoint>, public Storage<storage::Transfer> {
+  //   public:
+  //      explicit Endpoint(storage::Transfer &);
+  //   };
+  //
+  template<storage::required::Interface API> class Storage;
+}
+#endiv
+#divert <hpp>
+template<tunitas::montara::storage::required::Interface API> class tunitas::montara::endpoint::aspect::Storage {
+protected:
+  ~Storage() = default;
+  inline Storage(API &store) : store{store} { }
+  API &store;
+};
+#endiv

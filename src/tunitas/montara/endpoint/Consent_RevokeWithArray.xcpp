@@ -16,9 +16,15 @@ namespace tunitas::montara::endpoint {
 }
 #endiv
 #divert <hpp>
-class tunitas::montara::endpoint::Consent_RevokeWithArray : public httpserver::Resource<Consent_RevokeWithArray> {
+#import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.storage.Consent
+class tunitas::montara::endpoint::Consent_RevokeWithArray : public httpserver::Resource<Consent_RevokeWithArray>, aspect::Storage<storage::Consent> {
+  struct ancestors {
+    using Resource = httpserver::Resource<Consent_RevokeWithArray>;
+    using Storage = aspect::Storage<storage::Consent>;
+  };
 public:
-  Consent_RevokeWithArray();
+  explicit Consent_RevokeWithArray(storage::Consent &);
   auto render_POST(Request const &, [[out]] Response **fill) -> void;
 private:
   static std::string const DUMMY_DATA;
@@ -32,7 +38,7 @@ private:
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
-  Consent_RevokeWithArray::Consent_RevokeWithArray() {
+  Consent_RevokeWithArray::Consent_RevokeWithArray(storage::Consent &store) : ancestors::Storage{store} {
     resources::initialize_only_post(*this);
   }
   auto Consent_RevokeWithArray::render_POST(Request const &request, Response **fill) -> void {

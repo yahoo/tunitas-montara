@@ -15,9 +15,15 @@ namespace tunitas::montara::endpoint {
 #endiv
 #divert <hpp>
 #import std.string
-class tunitas::montara::endpoint::Consent_CreateWithArray : public httpserver::Resource<Consent_CreateWithArray> {
+#import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.storage.Consent
+class tunitas::montara::endpoint::Consent_CreateWithArray : public httpserver::Resource<Consent_CreateWithArray>, aspect::Storage<storage::Consent> {
+  struct ancestors {
+    using Resource = httpserver::Resource<Consent_CreateWithArray>;
+    using Storage = aspect::Storage<storage::Consent>;
+  };
 public:
-  Consent_CreateWithArray();
+  explicit Consent_CreateWithArray(storage::Consent &);
   auto render_POST(Request const &, [[out]] Response **fill) -> void;
 };
 #endiv
@@ -29,7 +35,7 @@ public:
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
-  Consent_CreateWithArray::Consent_CreateWithArray() {
+  Consent_CreateWithArray::Consent_CreateWithArray(storage::Consent &store) : ancestors::Storage{store} {
     resources::initialize_only_post(*this);
   }
   auto Consent_CreateWithArray::render_POST(Request const &request, Response **fill) -> void {

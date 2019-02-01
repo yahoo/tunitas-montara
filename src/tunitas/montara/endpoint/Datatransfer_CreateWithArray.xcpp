@@ -16,9 +16,15 @@ namespace tunitas::montara::endpoint {
 }
 #endiv
 #divert <hpp>
-class tunitas::montara::endpoint::Datatransfer_CreateWithArray : public httpserver::Resource<Datatransfer_CreateWithArray> {
+#import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.storage.Transfer
+class tunitas::montara::endpoint::Datatransfer_CreateWithArray : public httpserver::Resource<Datatransfer_CreateWithArray>, aspect::Storage<storage::Transfer> {
+  struct ancestors {
+    using Resource = httpserver::Resource<Datatransfer_CreateWithArray>;
+    using Storage = aspect::Storage<storage::Transfer>;
+  };
 public:
-  Datatransfer_CreateWithArray();
+  explicit Datatransfer_CreateWithArray(storage::Transfer &);
   auto render_POST(Request const &, [[out]] Response **fill) -> void;
 };
 #endiv
@@ -30,7 +36,7 @@ public:
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
-  Datatransfer_CreateWithArray::Datatransfer_CreateWithArray() {
+  Datatransfer_CreateWithArray::Datatransfer_CreateWithArray(storage::Transfer &store) : ancestors::Storage{store} {
     resources::initialize_only_post(*this);
   }
   auto Datatransfer_CreateWithArray::render_POST(Request const &request, Response **fill) -> void {

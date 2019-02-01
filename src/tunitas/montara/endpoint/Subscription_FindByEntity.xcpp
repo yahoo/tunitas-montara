@@ -16,9 +16,15 @@ namespace tunitas::montara::endpoint {
 }
 #endiv
 #divert <hpp>
-class tunitas::montara::endpoint::Subscription_FindByEntity : public httpserver::Resource<Subscription_FindByEntity> {
+#import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.storage.Subscription
+class tunitas::montara::endpoint::Subscription_FindByEntity : public httpserver::Resource<Subscription_FindByEntity>, aspect::Storage<storage::Subscription> {
+  struct ancestors {
+    using Resource = httpserver::Resource<Subscription_FindByEntity>;
+    using Storage = aspect::Storage<storage::Subscription>;
+  };
 public:
-  Subscription_FindByEntity();
+  explicit Subscription_FindByEntity(storage::Subscription &);
   auto render_GET(Request const &, [[out]] Response **fill) -> void;
 private:
   static std::string const DUMMY_DATA;
@@ -32,7 +38,7 @@ private:
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
-  Subscription_FindByEntity::Subscription_FindByEntity() {
+  Subscription_FindByEntity::Subscription_FindByEntity(storage::Subscription &store) : ancestors::Storage{store} {
     resources::initialize_only_get(*this);
   }
   auto Subscription_FindByEntity::render_GET(Request const &request, Response **fill) -> void {

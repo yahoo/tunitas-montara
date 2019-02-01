@@ -16,9 +16,15 @@ namespace tunitas::montara::endpoint {
 }
 #endiv
 #divert <hpp>
-class tunitas::montara::endpoint::Datatransfer_Identifier : public httpserver::Resource<Datatransfer_Identifier> {
+#import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.storage.Transfer
+class tunitas::montara::endpoint::Datatransfer_Identifier : public httpserver::Resource<Datatransfer_Identifier>, aspect::Storage<storage::Transfer> {
+  struct ancestors {
+    using Resource = httpserver::Resource<Datatransfer_Identifier>;
+    using Storage = aspect::Storage<storage::Transfer>;
+  };
 public:
-  Datatransfer_Identifier();
+  explicit Datatransfer_Identifier(storage::Transfer &);
   auto render_GET(Request const &, [[out]] Response **fill) -> void;
 private:
   static std::string const DUMMY_DATA;
@@ -32,7 +38,7 @@ private:
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
-  Datatransfer_Identifier::Datatransfer_Identifier() {
+  Datatransfer_Identifier::Datatransfer_Identifier(storage::Transfer &store) : ancestors::Storage{store} {
     resources::initialize_only_get(*this);
   }
   auto Datatransfer_Identifier::render_GET(Request const &request, Response **fill) -> void {

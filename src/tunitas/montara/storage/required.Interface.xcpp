@@ -1,0 +1,22 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+#import tunitas.montara.storage.Consent
+#import tunitas.montara.storage.Transfer
+#import tunitas.montara.storage.Subscription
+#import std.is_same
+namespace tunitas::montara::storage::required {
+  //
+  // One of the three storage API interfaces.
+  // Characterized by enumerating them by brute force.
+  // Used in the endpoint plethora, specifically around aspect::Storage<INTERFACE>
+  //
+  // Usage:
+  //
+  //   template<required::Interface API> auto function(API &) -> ...something...
+  //
+  template<typename INTERFACE> concept bool Interface = 
+    (std::is_same<INTERFACE, Consent>::value ||
+     std::is_same<INTERFACE, Transfer>::value ||
+     std::is_same<INTERFACE, Subscription>::value);
+}
+#endiv
