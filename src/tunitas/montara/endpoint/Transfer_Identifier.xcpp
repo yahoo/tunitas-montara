@@ -2,36 +2,35 @@
 #divert <fpp>
 namespace tunitas::montara::endpoint {
   //
-  // The code behind the /consent/{ID} endpoint
+  // The code behind the /datatransfer/{datatransferId} endpoint
   //
   // Example: TBD
   //
   // Usage:
   //
-  //   endpoint::Consent_Identifier resource;
-  //   ws.register_resource("/consent/{ID}", &resource, true);
+  //   endpoint::Transfer_Identifier resource;
+  //   ws.register_resource("/datatransfer/{datatransferId}", &resource, true);
   //   ws.start(cfg.foreground);
   //   
-  class Consent_Identifier;
+  class Transfer_Identifier;
 }
 #endiv
 #divert <hpp>
 #import std.string
 #import tunitas.montara.endpoint.aspect.Operations
 #import tunitas.montara.endpoint.aspect.Storage
-#import tunitas.montara.identifier.Consent
-#import tunitas.montara.storage.Consent
-class tunitas::montara::endpoint::Consent_Identifier
-  : public httpserver::Resource<Consent_Identifier>
-  , protected aspect::Storage<storage::Consent>
-  , protected aspect::Operations<identifier::Consent, storage::Consent> {
+#import tunitas.montara.storage.Transfer
+class tunitas::montara::endpoint::Transfer_Identifier
+  : public httpserver::Resource<Transfer_Identifier>
+  , protected aspect::Storage<storage::Transfer>
+  , protected aspect::Operations<identifier::Transfer, storage::Transfer> {
   struct ancestors {
-    using Resource = httpserver::Resource<Consent_Identifier>;
-    using Storage = aspect::Storage<storage::Consent>;
-    using Operations = aspect::Operations<identifier::Consent, storage::Consent>;
+    using Resource = httpserver::Resource<Transfer_Identifier>;
+    using Storage = aspect::Storage<storage::Transfer>;
+    using Operations = aspect::Operations<identifier::Transfer, storage::Transfer>;
   };
 public:
-  inline explicit Consent_Identifier(storage::Consent &);
+  inline explicit Transfer_Identifier(storage::Transfer &);
   inline auto render_GET(Request const &, [[out]] Response *&fill) -> void;
   inline auto render_PUT(Request const &, [[out]] Response *&fill) -> void;
 public: // but we wish it wasn't; we wish it wasn't even here [[REMOVEWHEN]] libhttpserver has an appropriate function signature
@@ -43,19 +42,19 @@ protected:
   //                                                     |
   //                                                     |
   //                                                     v
-  inline static auto const PARAMETER_NAME = std::string{"consentId"};
+  inline static auto const PARAMETER_NAME = std::string{"datatransferId"};
 };
 #endiv
 #divert <ipp>
 #import tunitas.montara.resources
 namespace tunitas::montara::endpoint {
-  Consent_Identifier::Consent_Identifier(storage::Consent &store) : ancestors::Storage{store} {
+  Transfer_Identifier::Transfer_Identifier(storage::Transfer &store) : ancestors::Storage{store} {
     resources::initialize_getput(*this);
   }
-  auto Consent_Identifier::render_GET(Request const &request, Response *&fill) -> void {
+  auto Transfer_Identifier::render_GET(Request const &request, Response *&fill) -> void {
     getty(request, fill, store, PARAMETER_NAME);
   }
-  auto Consent_Identifier::render_PUT(Request const &request, Response *&fill) -> void {
+  auto Transfer_Identifier::render_PUT(Request const &request, Response *&fill) -> void {
     putty(request, fill, store, PARAMETER_NAME);
   }
 }

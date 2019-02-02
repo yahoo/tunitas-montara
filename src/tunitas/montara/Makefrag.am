@@ -26,6 +26,7 @@ lib_libtunitas_montara_la_XCPP_SOURCES = \
   obj/src/tunitas/montara/endpoint/namespace.cpp \
   obj/src/tunitas/montara/endpoint/implementation.cpp \
   obj/src/tunitas/montara/endpoint/aspect.Storage.cpp \
+  obj/src/tunitas/montara/endpoint/aspect.Operations.cpp \
   obj/src/tunitas/montara/endpoint/Consent.cpp \
   obj/src/tunitas/montara/endpoint/Consent_CreateWithArray.cpp \
   obj/src/tunitas/montara/endpoint/Consent_CreateWithList.cpp \
@@ -34,11 +35,11 @@ lib_libtunitas_montara_la_XCPP_SOURCES = \
   obj/src/tunitas/montara/endpoint/Consent_Revoke_Identifier.cpp \
   obj/src/tunitas/montara/endpoint/Consent_RevokeWithArray.cpp \
   obj/src/tunitas/montara/endpoint/Consent_RevokeWithList.cpp \
-  obj/src/tunitas/montara/endpoint/Datatransfer.cpp \
-  obj/src/tunitas/montara/endpoint/Datatransfer_CreateWithArray.cpp \
-  obj/src/tunitas/montara/endpoint/Datatransfer_CreateWithList.cpp \
-  obj/src/tunitas/montara/endpoint/Datatransfer_FindByConsentIdentifier.cpp \
-  obj/src/tunitas/montara/endpoint/Datatransfer_Identifier.cpp \
+  obj/src/tunitas/montara/endpoint/Transfer.cpp \
+  obj/src/tunitas/montara/endpoint/Transfer_CreateWithArray.cpp \
+  obj/src/tunitas/montara/endpoint/Transfer_CreateWithList.cpp \
+  obj/src/tunitas/montara/endpoint/Transfer_FindByConsentIdentifier.cpp \
+  obj/src/tunitas/montara/endpoint/Transfer_Identifier.cpp \
   obj/src/tunitas/montara/endpoint/Subscription.cpp \
   obj/src/tunitas/montara/endpoint/Subscription_FindByEntity.cpp \
   obj/src/tunitas/montara/endpoint/Subscription_Identifier.cpp \
@@ -76,8 +77,8 @@ lib_libtunitas_montara_la_XCPP_SOURCES = \
   obj/src/tunitas/montara/storage/Transfer.cpp \
   obj/src/tunitas/montara/storage/Subscription.cpp \
   \
-  obj/src/tunitas/montara/storage/memory/Operations.cpp \
   obj/src/tunitas/montara/storage/memory/namespace.cpp \
+  obj/src/tunitas/montara/storage/memory/aspect.Operations.cpp \
   obj/src/tunitas/montara/storage/memory/Builder.cpp \
   obj/src/tunitas/montara/storage/memory/Engine.cpp \
   obj/src/tunitas/montara/storage/memory/State.cpp \

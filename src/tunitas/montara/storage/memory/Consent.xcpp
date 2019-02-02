@@ -15,12 +15,15 @@ namespace tunitas::montara::storage::memory {
 #import tunitas.Outcome
 #import tunitas.montara.storage.Consent
 #import tunitas.montara.storage.memory.State
-#import tunitas.montara.storage.memory.Operations
+#import tunitas.montara.storage.memory.aspect.Operations
 #import tunitas.montara.type.Blob
 class tunitas::montara::storage::memory::Consent
   : public storage::Consent
-  , private Operations<decltype(State::consents), id::Consent, type::Blob, Outcome<type::Blob>> {
-  using ancestor = storage::Consent;
+  , private memory::aspect::Operations<decltype(State::consents), id::Consent, type::Blob, Outcome<type::Blob>> {
+  struct ancestors {
+    using Storage = storage::Consent;
+    using Operations = memory::aspect::Operations<decltype(State::consents), id::Consent, type::Blob, Outcome<type::Blob>>;
+  };
 public:
   inline explicit Consent(State &);
   inline auto GET(id::Consent) -> Outcome<type::Blob> override;

@@ -1,0 +1,142 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::endpoint::aspect {
+  //
+  // Common (basic) operations of GET, POST, PUT against an identifier
+  // This is an implementation detail.
+  // Descendants only.
+  //
+  // Usage:
+  //
+  //   class my::Endpoint : public httpserver::Resource<...>, protected aspect::Storage<...>, protected aspect::Operations<...> {
+  //     struct ancestors {
+  //       using Resource = httpserver::Resource<...>;
+  //       using Storage = aspect::Storage<...>;
+  //       using Operations = aspect::Operations<...>;
+  //     };
+  //     ...etc...
+  //   };
+  //
+  template<typename IDENTIFIER, typename STORAGE> class Operations;
+}
+#endiv
+#divert <hpp>
+template<typename IDENTIFIER, typename STORAGE> class tunitas::montara::endpoint::aspect::Operations {
+protected:
+  using Identifier = IDENTIFIER;
+  using Storage = STORAGE;
+  ~Operations() = default;
+  static auto dleet(Request const &request, Response *&fill, Storage &, std::string const &parameter_name) -> void;
+  static auto getty(Request const &request, Response *&fill, Storage &, std::string const &parameter_name) -> void;
+  static auto putty(Request const &request, Response *&fill, Storage &, std::string const &parameter_name) -> void;
+  static auto posty(Request const &request, Response *&fill, Storage &) -> void;
+};
+#endiv
+#divert <tpp>
+#import json.String
+#import json.parse
+#import json.as
+#import json.to
+#import tunitas.montara.filters
+#import tunitas.montara.responses
+#import tunitas.montara.identifier.from_chars
+#import httpserver.response.Builder
+#import std.exception
+namespace tunitas::montara::endpoint::aspect {
+  using namespace constants;
+  using namespace std::literals;
+  template<typename I, typename S> auto Operations<I,S>::dleet(Request const &request, Response *&fill, Storage &store, std::string const &parameter_name) -> void try {
+    filters::enforce_no_query_parameters(request, fill);
+    if (nullptr == fill) {
+      auto identified = identifier::from_chars<Identifier>(request.get_arg(parameter_name));
+      if (!ok(identified)) {
+	responses::bad_request(fill, "no identifier");
+      } else {
+	auto got = store.DELEET(value(identified));
+	if (ok(got)) {
+          auto const &content_body = R"text(deleted)text";
+	  auto const code = http::R200_OK;
+	  auto const &content_type = mime::APPLICATION_JSON;
+	  httpserver::response::Builder bob{content_body, code, content_type};
+	  fill = new Response{bob};
+	}
+      }
+    }
+  } catch (std::exception const &e) {
+    responses::internal_server_error(fill, e.what());
+  } catch (...) {
+    responses::internal_server_error(fill);
+  }
+  template<typename I, typename S> auto Operations<I,S>::getty(Request const &request, Response *&fill, Storage &store, std::string const &parameter_name) -> void try {
+    filters::enforce_no_query_parameters(request, fill);
+    if (nullptr == fill) {
+      auto identified = identifier::from_chars<Identifier>(request.get_arg(parameter_name));
+      if (!ok(identified)) {
+	responses::bad_request(fill, "no identifier");
+      } else {
+	auto got = store.GET(value(identified));
+	if (ok(got)) {
+	  auto const &content_body = value(got).asString();
+	  auto const code = http::R200_OK;
+	  auto const &content_type = mime::APPLICATION_JSON;
+	  httpserver::response::Builder bob{content_body, code, content_type};
+	  fill = new Response{bob};
+	}
+      }
+    }
+  } catch (std::exception const &e) {
+    responses::internal_server_error(fill, e.what());
+  } catch (...) {
+    responses::internal_server_error(fill);
+  }
+  template<typename I, typename S> auto Operations<I,S>::putty(Request const &request, Response *&fill, Storage &store, std::string const &parameter_name) -> void try {
+    filters::enforce_no_query_parameters(request, fill);
+    filters::enforce_application_json(request, fill);
+    if (nullptr == fill) {
+      json::String document = json::to(json::STRING(), request.get_content());
+      auto parsed = json::parse(json::failure::returned, document);
+      if (!ok(parsed)) {
+        responses::bad_request(fill, "json syntax");
+      } else {
+        auto identified = identifier::from_chars<Identifier>(request.get_arg(parameter_name));
+        if (!ok(identified)) {
+          responses::bad_request(fill, "no identifier");
+        } else {
+          store.PUT(value(identified), value(std::move(parsed)));
+          auto const &content_body = R"text(accepted)text";
+          auto const code = http::R202_ACCEPTED;
+          auto const &content_type = mime::TEXT_PLAIN;
+          httpserver::response::Builder bob{content_body, code, content_type};
+          fill = new Response{bob};
+        }
+      }
+    }
+  } catch (std::exception const &e) {
+    responses::internal_server_error(fill, e.what());
+  } catch (...) {
+    responses::internal_server_error(fill);
+  }
+  template<typename I, typename S> auto Operations<I,S>::posty(Request const &request, Response *&fill, Storage &store) -> void try {
+    filters::enforce_no_query_parameters(request, fill);
+    filters::enforce_application_json(request, fill);
+    if (nullptr == fill) {
+      json::String document = json::to(json::STRING(), request.get_content());
+      auto parsed = json::parse(json::failure::returned, document);
+      if (!ok(parsed)) {
+	responses::bad_request(fill, "json syntax");
+      } else {
+	store.POST(value(std::move(parsed)));
+	auto const &content_body = R"text(accepted)text";
+	auto const code = http::R202_ACCEPTED;
+	auto const &content_type = mime::TEXT_PLAIN;
+	httpserver::response::Builder bob{content_body, code, content_type};
+	fill = new Response{bob};
+      }
+    }
+  } catch (std::exception const &e) {
+    responses::internal_server_error(fill, e.what());
+  } catch (...) {
+    responses::internal_server_error(fill);
+  }
+}
+#endiv

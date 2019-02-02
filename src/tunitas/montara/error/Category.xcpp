@@ -60,6 +60,8 @@ namespace tunitas::montara::error {
       return "found";
     case Code::NOT_FOUND:
       return "not found";
+    case Code::STORAGE_FAILED:
+      return "storage failure";
     }
     return "error code " + std::to_string(code);
   }

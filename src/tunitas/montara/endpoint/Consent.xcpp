@@ -3,6 +3,7 @@
 namespace tunitas::montara::endpoint {
   //
   // The code behind the /consent endpoint
+  // Reminder: /consent/{consentId} is nearby in class Consent_Identifier
   //
   // Example: TBD
   // 
@@ -16,50 +17,34 @@ namespace tunitas::montara::endpoint {
 }
 #endiv
 #divert <hpp>
+#import tunitas.montara.endpoint.aspect.Operations
 #import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.identifier.Consent
 #import tunitas.montara.storage.Consent
-class tunitas::montara::endpoint::Consent : public httpserver::Resource<Consent>, aspect::Storage<storage::Consent> {
+class tunitas::montara::endpoint::Consent
+  : public httpserver::Resource<Consent>
+  , protected aspect::Storage<storage::Consent>
+  , protected aspect::Operations<identifier::Consent, storage::Consent> {
   struct ancestors {
     using Resource = httpserver::Resource<Consent>;
     using Storage = aspect::Storage<storage::Consent>;
+    using Operations = aspect::Operations<identifier::Consent, storage::Consent>;
   };
 public:
-  explicit Consent(storage::Consent &);
-  auto render_POST(Request const &, [[out]] Response *&fill) -> void;
+  inline explicit Consent(storage::Consent &);
+  inline auto render_POST(Request const &, [[out]] Response *&fill) -> void;
 public: // but we wish it wasn't; we wish it wasn't even here [[REMOVEWHEN]] libhttpserver has an appropriate function signature
-  auto render_POST(Request const &r, [[out]] Response **f) -> void { render_POST(r, *f); }
+  inline auto render_POST(Request const &r, [[out]] Response **f) -> void { render_POST(r, *f); }
 };
 #endiv
-#divert <cpp>
-#import tunitas.montara.endpoint.implementation
+#divert <ipp>
+#import tunitas.montara.resources
 namespace tunitas::montara::endpoint {
-  using namespace std::literals;
-  using namespace constants;
   Consent::Consent(storage::Consent &store) : ancestors::Storage{store} {
     resources::initialize_only_post(*this);
   }
-  auto Consent::render_POST(Request const &request, Response *&fill) -> void try {
-    filters::enforce_no_query_parameters(request, fill);
-    filters::enforce_application_json(request, fill);
-    if (nullptr == fill) {
-      json::String document = json::to(json::STRING(), request.get_content());
-      auto parsed = json::parse(json::failure::returned, document);
-      if (!ok(parsed)) {
-        responses::bad_request(fill, "json syntax");
-      } else {
-        store.POST(value(std::move(parsed)));
-        // [[FIXTHIS]] accept the body and put it in a database or a queue (but only if there wasn't any before)
-        auto const &content_body = R"text(accepted)text";
-        auto const code = http::R202_ACCEPTED;
-        auto const &content_type = mime::TEXT_PLAIN;
-        httpserver::response::Builder bob{content_body, code, content_type};
-        fill = new Response{bob};
-      }
-    }
-  } catch (std::exception const &e) {
-    responses::internal_server_error(fill, e.what());
-  } catch (...) {
-    responses::internal_server_error(fill);
+  auto Consent::render_POST(Request const &request, Response *&fill) -> void {
+    posty(request, fill, store);
   }
 }
 #endiv

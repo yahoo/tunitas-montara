@@ -15,14 +15,18 @@ namespace tunitas::montara::storage::memory {
 #import tunitas.Outcome
 #import tunitas.montara.storage.Subscription
 #import tunitas.montara.storage.memory.State
-#import tunitas.montara.storage.memory.Operations
+#import tunitas.montara.storage.memory.aspect.Operations
 #import tunitas.montara.type.Blob
 class tunitas::montara::storage::memory::Subscription
   : public storage::Subscription
-  , private Operations<decltype(State::subscriptions), id::Subscription, type::Blob, Outcome<type::Blob>> {
-  using ancestor = storage::Subscription;
+  , private memory::aspect::Operations<decltype(State::subscriptions), id::Subscription, type::Blob, Outcome<type::Blob>> {
+  struct ancestors {
+    using Storage = storage::Subscription;
+    using Operations = memory::aspect::Operations<decltype(State::subscriptions), id::Subscription, type::Blob, Outcome<type::Blob>>;
+  };
 public:
   inline explicit Subscription(State &);
+  inline auto DELEET(id::Subscription) -> outcome::Success override;
   inline auto GET(id::Subscription) -> Outcome<type::Blob> override;
   inline auto GET(type::Entity const &what_is_an_entity) -> Outcome<type::Blob> override;
   inline auto PUT(id::Subscription, type::Blob) -> outcome::Success override;
@@ -35,6 +39,9 @@ protected:
 namespace tunitas::montara::storage::memory {
   Subscription::Subscription(State &state)
     : state{state} { }
+  auto Subscription::DELEET(id::Subscription key) -> outcome::Success {
+    return Operations::dleet(state.exclusion, state.subscriptions, key);
+  }
   auto Subscription::GET(id::Subscription key) -> Outcome<type::Blob> {
     return Operations::getty(state.exclusion, state.subscriptions, key);
   }

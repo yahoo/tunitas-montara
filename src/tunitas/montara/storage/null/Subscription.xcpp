@@ -18,6 +18,7 @@ class tunitas::montara::storage::null::Subscription : public storage::Subscripti
   using ancestor = storage::Subscription;
 public:
   inline explicit Subscription(State &);
+  auto DELEET(id::Subscription) -> outcome::Success override;
   auto GET(id::Subscription) -> Outcome<type::Blob> override;
   auto GET(type::Entity const &what_is_an_entity) -> Outcome<type::Blob> override;
   auto PUT(id::Subscription, type::Blob) -> outcome::Success override;
@@ -33,6 +34,12 @@ tunitas::montara::storage::null::Subscription::Subscription(State &state)
 #divert <cpp>
 #import std.lock_guard
 namespace tunitas::montara::storage::null {
+  auto Subscription::DELEET(id::Subscription) -> outcome::Success {
+    using Result = outcome::Success;
+    State::mutex::Guard guard{state.exclusion};
+    state.log << "Subscription::" << __FUNCTION__ << '\n';
+    return Result{};
+  }
   auto Subscription::GET(id::Subscription) -> Outcome<type::Blob> {
     using Result = Outcome<type::Blob>;
     // do nothing

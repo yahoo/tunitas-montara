@@ -38,11 +38,11 @@ namespace httpserver { using Service = Webserver; namespace service { using Crea
 #import tunitas.montara.endpoint.Consent_Identifier
 #import tunitas.montara.endpoint.Consent_RevokeWithArray
 #import tunitas.montara.endpoint.Consent_RevokeWithList
-#import tunitas.montara.endpoint.Datatransfer
-#import tunitas.montara.endpoint.Datatransfer_CreateWithArray
-#import tunitas.montara.endpoint.Datatransfer_CreateWithList
-#import tunitas.montara.endpoint.Datatransfer_FindByConsentIdentifier
-#import tunitas.montara.endpoint.Datatransfer_Identifier
+#import tunitas.montara.endpoint.Transfer
+#import tunitas.montara.endpoint.Transfer_CreateWithArray
+#import tunitas.montara.endpoint.Transfer_CreateWithList
+#import tunitas.montara.endpoint.Transfer_FindByConsentIdentifier
+#import tunitas.montara.endpoint.Transfer_Identifier
 #import tunitas.montara.endpoint.Subscription
 #import tunitas.montara.endpoint.Subscription_FindByEntity
 #import tunitas.montara.endpoint.Subscription_Identifier
@@ -110,23 +110,23 @@ auto app::service::run(Configuration const &cfg) -> void {
   endpoint::Consent_RevokeWithList consent_revokeWithList{*engine->consent};
   service.register_resource("/consent/revokeWithList", &consent_revokeWithList, FAMILY_URL_SENSE);
 
-  endpoint::Datatransfer datatransfer{*engine->transfer};
-  service.register_resource("/datatransfer", &datatransfer, FAMILY_URL_SENSE);
+  endpoint::Transfer transfer{*engine->transfer};
+  service.register_resource("/datatransfer", &transfer, FAMILY_URL_SENSE);
 
-  endpoint::Datatransfer_CreateWithArray datatransfer_createWithArray{*engine->transfer};
-  service.register_resource("/datatransfer/createWithArray", &datatransfer_createWithArray, FAMILY_URL_SENSE);
+  endpoint::Transfer_CreateWithArray transfer_createWithArray{*engine->transfer};
+  service.register_resource("/datatransfer/createWithArray", &transfer_createWithArray, FAMILY_URL_SENSE);
 
-  endpoint::Datatransfer_CreateWithList datatransfer_createWithList{*engine->transfer};
-  service.register_resource("/datatransfer/createWithList", &datatransfer_createWithList, FAMILY_URL_SENSE);
+  endpoint::Transfer_CreateWithList transfer_createWithList{*engine->transfer};
+  service.register_resource("/datatransfer/createWithList", &transfer_createWithList, FAMILY_URL_SENSE);
 
-  endpoint::Datatransfer_FindByConsentIdentifier datatransfer_findByConsentIdentifier{*engine->transfer};
-  service.register_resource("/datatransfer/findByConsentIdentifier", &datatransfer_findByConsentIdentifier, FAMILY_URL_SENSE);
+  endpoint::Transfer_FindByConsentIdentifier transfer_findByConsentIdentifier{*engine->transfer};
+  service.register_resource("/datatransfer/findByConsentIdentifier", &transfer_findByConsentIdentifier, FAMILY_URL_SENSE);
   // the pesky aliases
-  service.register_resource("/datatransfer/findByConsentID", &datatransfer_findByConsentIdentifier, FAMILY_URL_SENSE);
-  service.register_resource("/datatransfer/findByConsentId", &datatransfer_findByConsentIdentifier, FAMILY_URL_SENSE);
+  service.register_resource("/datatransfer/findByConsentID", &transfer_findByConsentIdentifier, FAMILY_URL_SENSE);
+  service.register_resource("/datatransfer/findByConsentId", &transfer_findByConsentIdentifier, FAMILY_URL_SENSE);
 
-  endpoint::Datatransfer_Identifier datatransfer_identifier{*engine->transfer};
-  service.register_resource("/datatransfer/{datatransferId}", &datatransfer_identifier, FAMILY_URL_SENSE);
+  endpoint::Transfer_Identifier transfer_identifier{*engine->transfer};
+  service.register_resource("/datatransfer/{datatransferId}", &transfer_identifier, FAMILY_URL_SENSE);
   
   endpoint::Subscription subscription{*engine->subscription};
   service.register_resource("/subscription", &subscription, FAMILY_URL_SENSE);

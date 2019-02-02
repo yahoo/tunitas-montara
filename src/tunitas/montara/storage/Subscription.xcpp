@@ -24,6 +24,7 @@ protected:
   Subscription() = default;
 public:
   virtual ~Subscription() = default;
+  virtual auto DELEET(id::Subscription) -> outcome::Success = 0;
   virtual auto GET(id::Subscription) -> Outcome<type::Blob> = 0;
   virtual auto GET(type::Entity const &what_is_an_entity) -> Outcome<type::Blob> = 0;
   virtual auto PUT(id::Subscription, type::Blob) -> outcome::Success = 0;

@@ -12,7 +12,7 @@ The PrivacyChain specification is documented in the [IAB PrivacyChain Specificat
 
 {id}{consentType}{entity}{expires}{attributes}{status}
 
-`PUT /consent Update` an existing consent.
+`PUT /consent/{consentId} Update an existing consent.
 
 {id}{consentType}{entity}{expires}{attributes}{status}
 
@@ -67,6 +67,8 @@ The PrivacyChain specification is documented in the [IAB PrivacyChain Specificat
 `GET /subscription/findByEntity` Return subscriptions for an entity.
 
 `GET /subscription/{subscriptionId}` Find subscription by subscription ID
+
+`PUT /subscription/{subscriptionId}` Update subscription by subscription ID
 
 `DELETE /subscription/{subscriptionId}` Delete subscription by subscription ID.
 

@@ -21,6 +21,7 @@ class tunitas::montara::storage::aspect::Outcomes {
 protected:
   ~Outcomes() = default;
   // These are a very very long way to go to save some cut & paste
+  template<typename OUTCOME> inline static auto FAILED() -> OUTCOME;
   template<typename OUTCOME> inline static auto INVALID() -> OUTCOME;
   template<typename OUTCOME> inline static auto PRESENT() -> OUTCOME;
   template<typename OUTCOME> inline static auto MISSING() -> OUTCOME;
@@ -30,6 +31,9 @@ protected:
 #import tunitas.montara.error.Code
 #import std.error_code
 namespace tunitas::montara::storage::aspect {
+  template<typename OUTCOME> auto Outcomes::FAILED() -> OUTCOME {
+    return OUTCOME{std::error_code{error::Code::STORAGE_FAILED}};
+  }
   template<typename OUTCOME> auto Outcomes::INVALID() -> OUTCOME {
     return OUTCOME{std::error_code{error::Code::INVALID_BLOB}};
   }

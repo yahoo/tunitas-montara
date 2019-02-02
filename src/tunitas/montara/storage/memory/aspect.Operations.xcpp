@@ -1,6 +1,6 @@
 // This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
 #divert <fpp>
-namespace tunitas::montara::storage::memory {
+namespace tunitas::montara::storage::memory::aspect {
   //
   // The generic in-memory operations on a map-type data structure.
   // Avoid cut & paste across Consent, Transfer, Subscription
@@ -21,7 +21,7 @@ namespace tunitas::montara::storage::memory {
 #import tunitas.montara.type.Entity
 #import tunitas.montara.storage.aspect.Outcomes
 #import tunitas.montara.storage.State
-template<typename MAP, typename ID, typename VALUE, typename RESULT> class tunitas::montara::storage::memory::Operations : protected storage::aspect::Outcomes {
+template<typename MAP, typename ID, typename VALUE, typename RESULT> class tunitas::montara::storage::memory::aspect::Operations : protected storage::aspect::Outcomes {
 protected:
   ~Operations() = default;
   using Mutex = storage::State::Mutex;
@@ -34,6 +34,7 @@ protected:
     using Payload = RESULT;
     using Success = outcome::Success;
   };
+  static auto dleet(Mutex &, Map &, Identifier key) -> typename results::Success;
   static auto getty(Mutex &, Map const &, Identifier key) -> typename results::Payload;
   static auto getty(Mutex &, Map const &, Entity const &) -> typename results::Payload;
   static auto putty(Mutex &, Map &, Identifier key, Value) -> typename results::Success;
@@ -42,10 +43,27 @@ protected:
 #endiv
 #divert <tpp>
 #import json.exception.Generic
+#import std.exception
 #import std.lock_guard
 #import std.move
 #import tunitas.montara.storage.State
-namespace tunitas::montara::storage::memory {
+namespace tunitas::montara::storage::memory::aspect {
+  template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::dleet(Mutex &mut, Map &map, Identifier key) -> typename results::Success {
+    using Result = typename results::Success;
+    try {
+      Guard guard{mut};
+      auto const found = map.find(key);
+      auto const end = map.end();
+      if (end == found) {
+	return MISSING<Result>();
+      } else {
+	map.erase(found);
+	return Result{outcome::SUCCESS};
+      }
+    } catch (std::exception const &) {
+      return FAILED<Result>();
+    }
+  }
   template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::getty(Mutex &mut, Map const &map, Identifier key) -> typename results::Payload {
     using Result = typename results::Payload;
     try {
@@ -59,6 +77,8 @@ namespace tunitas::montara::storage::memory {
       }
     } catch (json::exception::Generic const &) {
       return INVALID<Result>();
+    } catch (std::exception const &) {
+      return FAILED<Result>();
     }
   }
   template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::getty(Mutex &mut, Map const &map, Entity const &match) -> typename results::Payload {
@@ -74,6 +94,8 @@ namespace tunitas::montara::storage::memory {
       return MISSING<Result>();
     } catch (json::exception::Generic const &) {
       return INVALID<Result>();
+    } catch (std::exception const &) {
+      return FAILED<Result>();
     }
   } 
   template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::putty(Mutex &mut, Map &map, Identifier key, Value value) -> typename results::Success {
@@ -99,6 +121,8 @@ namespace tunitas::montara::storage::memory {
       }
     } catch (json::exception::Generic const &) {
       return INVALID<Result>();
+    } catch (std::exception const &) {
+      return FAILED<Result>();
     }
   }
   template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::posty(Mutex &mut, Map &map, Value value) -> typename results::Success {
@@ -120,8 +144,9 @@ namespace tunitas::montara::storage::memory {
       }
     } catch (json::exception::Generic const &) {
       return INVALID<Result>();
+    } catch (std::exception const &) {
+      return FAILED<Result>();
     }
-
   } 
 }
 #endiv

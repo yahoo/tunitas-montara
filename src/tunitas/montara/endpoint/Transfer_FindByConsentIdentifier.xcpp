@@ -2,29 +2,29 @@
 #divert <fpp>
 namespace tunitas::montara::endpoint {
   //
-  // The code behind the /datatransfer/{datatransferId} endpoint
+  // The code behind the /datatransfer/findByConsentId endpoint
   //
   // Example: TBD
   //
   // Usage:
   //
-  //   endpoint::Datatransfer_Identifier resource;
-  //   ws.register_resource("/datatransfer/{datatransferId}", &resource, true);
+  //   endpoint::Transfer_FindByConsentIdentifier resource;
+  //   ws.register_resource("/datatransfer/findByConsentId/{ID}", &resource, true);
   //   ws.start(cfg.foreground);
   //   
-  class Datatransfer_Identifier;
+  class Transfer_FindByConsentIdentifier;
 }
 #endiv
 #divert <hpp>
 #import tunitas.montara.endpoint.aspect.Storage
 #import tunitas.montara.storage.Transfer
-class tunitas::montara::endpoint::Datatransfer_Identifier : public httpserver::Resource<Datatransfer_Identifier>, aspect::Storage<storage::Transfer> {
+class tunitas::montara::endpoint::Transfer_FindByConsentIdentifier : public httpserver::Resource<Transfer_FindByConsentIdentifier>, aspect::Storage<storage::Transfer> {
   struct ancestors {
-    using Resource = httpserver::Resource<Datatransfer_Identifier>;
+    using Resource = httpserver::Resource<Transfer_FindByConsentIdentifier>;
     using Storage = aspect::Storage<storage::Transfer>;
   };
 public:
-  explicit Datatransfer_Identifier(storage::Transfer &);
+  explicit Transfer_FindByConsentIdentifier(storage::Transfer &);
   auto render_GET(Request const &, [[out]] Response **fill) -> void;
 private:
   static std::string const DUMMY_DATA;
@@ -38,10 +38,10 @@ private:
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
-  Datatransfer_Identifier::Datatransfer_Identifier(storage::Transfer &store) : ancestors::Storage{store} {
+  Transfer_FindByConsentIdentifier::Transfer_FindByConsentIdentifier(storage::Transfer &store) : ancestors::Storage{store} {
     resources::initialize_only_get(*this);
   }
-  auto Datatransfer_Identifier::render_GET(Request const &request, Response **fill) -> void {
+  auto Transfer_FindByConsentIdentifier::render_GET(Request const &request, Response **fill) -> void {
     filters::enforce_no_query_parameters(request, *fill);
     if (nullptr == *fill) {
       // [[FIXTHIS]] recover the segments from a database

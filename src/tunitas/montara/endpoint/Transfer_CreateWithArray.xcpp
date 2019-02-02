@@ -8,23 +8,23 @@ namespace tunitas::montara::endpoint {
   //
   // Usage:
   //
-  //   endpoint::Datatransfer_CreateWithArray resource;
+  //   endpoint::Transfer_CreateWithArray resource;
   //   ws.register_resource("/datatransfer/createWithArray", &resource, true);
   //   ws.start(cfg.foreground);
   //   
-  class Datatransfer_CreateWithArray;
+  class Transfer_CreateWithArray;
 }
 #endiv
 #divert <hpp>
 #import tunitas.montara.endpoint.aspect.Storage
 #import tunitas.montara.storage.Transfer
-class tunitas::montara::endpoint::Datatransfer_CreateWithArray : public httpserver::Resource<Datatransfer_CreateWithArray>, aspect::Storage<storage::Transfer> {
+class tunitas::montara::endpoint::Transfer_CreateWithArray : public httpserver::Resource<Transfer_CreateWithArray>, aspect::Storage<storage::Transfer> {
   struct ancestors {
-    using Resource = httpserver::Resource<Datatransfer_CreateWithArray>;
+    using Resource = httpserver::Resource<Transfer_CreateWithArray>;
     using Storage = aspect::Storage<storage::Transfer>;
   };
 public:
-  explicit Datatransfer_CreateWithArray(storage::Transfer &);
+  explicit Transfer_CreateWithArray(storage::Transfer &);
   auto render_POST(Request const &, [[out]] Response **fill) -> void;
 };
 #endiv
@@ -36,10 +36,10 @@ public:
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
-  Datatransfer_CreateWithArray::Datatransfer_CreateWithArray(storage::Transfer &store) : ancestors::Storage{store} {
+  Transfer_CreateWithArray::Transfer_CreateWithArray(storage::Transfer &store) : ancestors::Storage{store} {
     resources::initialize_only_post(*this);
   }
-  auto Datatransfer_CreateWithArray::render_POST(Request const &request, Response **fill) -> void {
+  auto Transfer_CreateWithArray::render_POST(Request const &request, Response **fill) -> void {
     filters::enforce_no_query_parameters(request, *fill);
     if (nullptr == *fill) {
       // [[FIXTHIS]] accept the body and put it in a database or a queue, but only if the ID's segments already exists.
