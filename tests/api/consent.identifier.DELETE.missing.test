@@ -1,0 +1,9 @@
+#!/bin/bash
+source ${0%/*}/rigging.sh || exit 70
+code=$(curlish \
+    -H 'Content-Type: application/json' \
+    -X DELETE \
+    ${URLHOSTPORT?}/consent/$((RANDOM*RANDOM*RANDOM*RANDOM)) \
+    ${end})
+# This will fail because there is no consent by that id to delete.
+assert 0 == $? and 405 == ${code?}

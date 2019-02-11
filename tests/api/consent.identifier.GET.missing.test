@@ -1,0 +1,8 @@
+#!/bin/bash
+source ${0%/*}/rigging.sh || exit 70
+curl \
+    -H 'Content-Type: application/json' \
+    -X GET \
+    ${URLHOSTPORT?}/consent/$((RANDOM*RANDOM*RANDOM*RANDOM)) \
+    ${end}
+# This will still succeed even though this identifier does not exist

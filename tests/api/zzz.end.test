@@ -2,4 +2,6 @@
 source ${0%/*}/rigging.sh || exit 70
 : ${pidfile?}
 pid=$(< ${pidfile?})
+echo "DEBUG pid=${pid-(unset)}"
+ps -ef | grep montara | sed -e 's/^/DEBUG: /'
 kill -HUP ${pid:-0}

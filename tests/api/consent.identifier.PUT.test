@@ -1,9 +1,8 @@
 #!/bin/bash
 source ${0%/*}/rigging.sh || exit 70
-code=$(curlish \
+curl \
     -H 'Content-Type: application/json' \
-    -X POST \
+    -X PUT \
     -d @${0%.test}.json \
-    $URLHOSTPORT/consent \
-    ${end})
-assert 0 == $? and 202 == ${code?}
+    ${URLHOSTPORT?}/consent/4904844222432 \
+    ${end}

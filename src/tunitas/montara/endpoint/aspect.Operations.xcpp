@@ -48,17 +48,22 @@ namespace tunitas::montara::endpoint::aspect {
   template<typename I, typename S> auto Operations<I,S>::dleet(Request const &request, Response *&fill, Storage &store, std::string const &parameter_name) -> void try {
     filters::enforce_no_query_parameters(request, fill);
     if (nullptr == fill) {
-      auto identified = identifier::from_chars<Identifier>(request.get_arg(parameter_name));
-      if (!ok(identified)) {
+      auto const parameter = request.get_arg(parameter_name);
+      if (parameter.empty()) {
 	responses::bad_request(fill, "no identifier");
       } else {
-	auto got = store.DELEET(value(identified));
-	if (ok(got)) {
-          auto const &content_body = R"text(deleted)text";
-	  auto const code = http::R200_OK;
-	  auto const &content_type = mime::APPLICATION_JSON;
-	  httpserver::response::Builder bob{content_body, code, content_type};
-	  fill = new Response{bob};
+	auto identified = identifier::from_chars<Identifier>(parameter);
+	if (!ok(identified)) {
+	  responses::bad_request(fill, "bad identifier " + error_code(identified).message());
+	} else {
+	  auto got = store.DELEET(value(identified));
+	  if (ok(got)) {
+	    auto const &content_body = R"text(deleted)text";
+	    auto const code = http::R200_OK;
+	    auto const &content_type = mime::APPLICATION_JSON;
+	    httpserver::response::Builder bob{content_body, code, content_type};
+	    fill = new Response{bob};
+	  }
 	}
       }
     }
@@ -70,17 +75,22 @@ namespace tunitas::montara::endpoint::aspect {
   template<typename I, typename S> auto Operations<I,S>::getty(Request const &request, Response *&fill, Storage &store, std::string const &parameter_name) -> void try {
     filters::enforce_no_query_parameters(request, fill);
     if (nullptr == fill) {
-      auto identified = identifier::from_chars<Identifier>(request.get_arg(parameter_name));
-      if (!ok(identified)) {
+      auto const parameter = request.get_arg(parameter_name);
+      if (parameter.empty()) {
 	responses::bad_request(fill, "no identifier");
       } else {
-	auto got = store.GET(value(identified));
-	if (ok(got)) {
-	  auto const &content_body = value(got).asString();
-	  auto const code = http::R200_OK;
-	  auto const &content_type = mime::APPLICATION_JSON;
-	  httpserver::response::Builder bob{content_body, code, content_type};
-	  fill = new Response{bob};
+	auto identified = identifier::from_chars<Identifier>(parameter);
+	if (!ok(identified)) {
+	  responses::bad_request(fill, "bad identifier " + error_code(identified).message());
+	} else {
+	  auto got = store.GET(value(identified));
+	  if (ok(got)) {
+	    auto const &content_body = value(got).asString();
+	    auto const code = http::R200_OK;
+	    auto const &content_type = mime::APPLICATION_JSON;
+	    httpserver::response::Builder bob{content_body, code, content_type};
+	    fill = new Response{bob};
+	  }
 	}
       }
     }
@@ -98,16 +108,21 @@ namespace tunitas::montara::endpoint::aspect {
       if (!ok(parsed)) {
         responses::bad_request(fill, "json syntax");
       } else {
-        auto identified = identifier::from_chars<Identifier>(request.get_arg(parameter_name));
-        if (!ok(identified)) {
+	auto const parameter = request.get_arg(parameter_name);
+	if (parameter.empty()) {
           responses::bad_request(fill, "no identifier");
-        } else {
-          store.PUT(value(identified), value(std::move(parsed)));
-          auto const &content_body = R"text(accepted)text";
-          auto const code = http::R202_ACCEPTED;
-          auto const &content_type = mime::TEXT_PLAIN;
-          httpserver::response::Builder bob{content_body, code, content_type};
-          fill = new Response{bob};
+	} else {
+	  auto identified = identifier::from_chars<Identifier>(parameter);
+	  if (!ok(identified)) {
+	    responses::bad_request(fill, "bad identifier " + error_code(identified).message());
+	  } else {
+	    store.PUT(value(identified), value(std::move(parsed)));
+	    auto const &content_body = R"text(accepted)text";
+	    auto const code = http::R202_ACCEPTED;
+	    auto const &content_type = mime::TEXT_PLAIN;
+	    httpserver::response::Builder bob{content_body, code, content_type};
+	    fill = new Response{bob};
+	  }
         }
       }
     }

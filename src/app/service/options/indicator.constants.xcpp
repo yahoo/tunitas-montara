@@ -8,5 +8,6 @@ namespace app::service::options::indicator {
   inline auto const BACKGROUND_MODE = Code::CODE_252; // [[FIXTHIS]] use pred(FOREGROUND_MODE)
   inline auto const STORAGE_ENGINE = Code::CODE_251;
   inline auto const EMIT_PID = Code::CODE_250;
+  inline auto const PID_FILEPATH = Code::CODE_249;
 }
 #endiv

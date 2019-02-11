@@ -1,4 +1,7 @@
 #!/bin/bash
 source ${0%/*}/rigging.sh || exit 70
 rm -f ${pidfile?}
-../../sbin/montara-service --background --pid --port $PORT > ${pidfile?}
+montara-service --background --pidfile=${pidfile?} --port $PORT
+sleep 0.25
+echo "DEBUG pid is $(< ${pidfile?})"
+ps -ef | grep montara | sed -e 's/^/DEBUG: /'

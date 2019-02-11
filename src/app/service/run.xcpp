@@ -24,13 +24,16 @@ namespace app::service {
 #divert <cpp>
 #import app.service.constants
 #import app.service.defaults
+#import app.service.Pidfile
 #import app.service.Quitting
-#import getpid
 #import httpserver.Webserver
 #import httpserver.Create_Webserver
 namespace httpserver { using Service = Webserver; namespace service { using Create = httpserver::Create_Webserver; } }
+#import std.boolalpha
 #import std.cout
 #import std.cerr
+#import std.exception
+#import tunitas.app.exception.Generic
 #import tunitas.montara.endpoint.Consent
 #import tunitas.montara.endpoint.Consent_CreateWithArray
 #import tunitas.montara.endpoint.Consent_CreateWithList
@@ -48,27 +51,29 @@ namespace httpserver { using Service = Webserver; namespace service { using Crea
 #import tunitas.montara.endpoint.Subscription_Identifier
 #import tunitas.montara.storage.factory
 #import tunitas.montara.storage.Configuration
+#import want.sys.posix.daemon
+#include <signal.h>
 auto app::service::run(Configuration const &cfg) -> void {
+  signal(SIGPIPE, SIG_IGN); // not checking the return code ... hope it worked
+
   namespace endpoint = tunitas::montara::endpoint;
   namespace storage = tunitas::montara::storage;
   httpserver::Service service{[&cfg]() {
         httpserver::service::Create specification;
         using namespace constants::server;
+	auto with_port = cfg.port.value_or(defaults::SERVICE_PORT);
+	debug(cfg) << "port=" << with_port << '\n';
         specification.debug();
         specification.use_ipv6().start_method(METHOD).max_threads(THREADS);
         specification.regex_checking();
-	specification.port(cfg.port.value_or(defaults::SERVICE_PORT));
+	specification.port(with_port);
         return std::move(specification);
       }()};
-
-  if (cfg.emit_pid.value_or(defaults::EMIT_PID)) {
-    std::cout << getpid() << std::flush;
-  }
-  // [[FIXTHIS]] ignore sigpipe
-  // [[FIXTHIS]] daemonize and drop privileges
+#warning [[FIXTHIS]] drop privileges
 
   auto engine = [&cfg]() {
     auto storage_name = cfg.storage_engine.value_or(defaults::STORAGE_ENGINE);
+    debug(cfg) << "engine=" << storage_name << '\n';
     auto ordered = storage::factory().order(storage_name);
     auto const could_not = [&cfg, &storage_name](char const *verb, std::error_code ec) {
       std::cerr << "error: could not " << verb << " storage engine '" << /*[[FIXTHIS]] format::q(...)*/ storage_name << "' because " << ec.message() << '\n';
@@ -85,6 +90,28 @@ auto app::service::run(Configuration const &cfg) -> void {
     }
     return value(std::move(built));
   }();
+
+  try {
+    Pidfile pidfile{cfg.pid_filepath, cfg.emit_pid.value_or(defaults::EMIT_PID)};
+    pidfile.manual();
+    auto foreground_mode = cfg.foreground_mode.value_or(defaults::FOREGROUND_MODE);
+    debug(cfg) << "foreground mode = " << std::boolalpha << foreground_mode << '\n';
+    if (!foreground_mode) {
+      using namespace want::sys::posix;
+      auto ized = daemon(Chdir::YES, Close::YES);
+      if (!ok(ized)) {
+	error(cfg) << "could not daemonize because " << error_code(ized).message() << '\n';
+	throw Quitting{cfg.NAME, sys::exits::FAIL};
+      }
+    }
+    pidfile.emit();
+    pidfile.close();
+  } catch (tunitas::app::exception::Generic const &e) {
+    throw;
+  } catch (std::exception const &e) {
+    error(cfg) << "failed to write the pid file " << cfg.pid_filepath.value_or("stderr") << " because " << e.what() << '\n';
+    throw Quitting{cfg.NAME, sys::exits::FAIL};
+  }
 
   auto const FAMILY_URL_SENSE = false;
   endpoint::Consent consent{*engine->consent};
@@ -139,6 +166,6 @@ auto app::service::run(Configuration const &cfg) -> void {
   
   // There is no 'quit' method.  The service runs forever.
   // To stop it, you have to kill it, e.g., systemctl stop montara
-  service.start(cfg.foreground_mode.value_or(defaults::FOREGROUND_MODE));
+  service.start(constants::server::BLOCKING);
 }
 #endiv

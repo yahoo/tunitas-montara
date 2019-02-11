@@ -1,0 +1,13 @@
+#!/bin/bash
+source ${0%/*}/rigging.sh || exit 70
+code=$(curlish \
+    -H 'Content-Type: application/json' \
+    -X POST \
+    -d @${0%.test}.json \
+    ${URLHOSTPORT?}/consent/9670452929035038 \
+    ${end})
+# This is supposed to fail because there is no 'POST /consent/{consentId}'
+# Instead there is 'POST /consent' where the payload contains {consentId}
+# Instead there is 'PUT /consent/{consentId}' which overwrites a document.
+assert 0 == $? and 405 == ${code?}
+

@@ -21,12 +21,14 @@ namespace app::service {
 #divert <hpp>
 #import std.uint16_t // [[FIXTHIS]] use ip::in::port_t when available
 #import std.optional
+#import std.filesystem.path
 #import tunitas.app.Configuration
 class app::service::Configuration : public tunitas::app::Configuration {
   using ancestor = tunitas::app::Configuration;
 public:
   using ancestor::Configuration;
   std::optional<bool> emit_pid;
+  std::optional<std::filesystem::path> pid_filepath;
   std::optional<bool> foreground_mode;
   std::optional<std::uint16_t> port;
   std::optional<std::string> storage_engine;

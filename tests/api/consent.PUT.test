@@ -1,6 +1,11 @@
 #!/bin/bash
 source ${0%/*}/rigging.sh || exit 70
-curl \
+code=$(curlish \
     -H 'Content-Type: application/json' \
-    -X POST \
-    -d @${0%.test}.json
+    -X PUT \
+    -d @${0%.test}.json \
+    ${URLHOSTPORT?}/consent \
+    ${end})
+# This is supposed to fail because there is no 'PUT /consent'
+# Instead there is only 'PUT /consent/{consentId}'
+assert 0 == $? and 405 == ${code?}

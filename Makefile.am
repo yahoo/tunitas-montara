@@ -82,11 +82,13 @@ check_PROGRAMS = \
   $(bin_unit) \
   $(end)
 
+include tests/api/Makefrag.am
 include tests/service/Makefrag.am
 include tests/unit/Makefrag.am
 TESTS = \
   $(tests_unit_TESTS) \
   $(tests_service_TESTS) \
+  $(tests_api_TESTS) \
   $(end)
 
 SEARCHPATH = $(SEARCHPATH_SCOLD_MODULES)

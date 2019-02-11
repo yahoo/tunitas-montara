@@ -1,8 +1,31 @@
-tests_api_XFAIL_TESTS = \
-tests_api_TESTS = \
-  tests/api/aaa.start.test \
+tests_api_FIRST_LOGS = $(patsubst %.test, %.log,$(tests_api_FIRST_TESTS))
+tests_api_FIRST_TESTS = tests/api/aaa.start.test
+tests_api_LAST_LOGS = $(patsubst %.test, %.log,$(tests_api_LAST_TESTS))
+tests_api_LAST_TESTS = tests/api/zzz.end.test
+tests_api_MID_LOGS = $(patsubst %.test, %.log,$(tests_api_MID_TESTS))
+tests_api_MID_TESTS = \
   $(tests_api_XFAIL_TESTS) \
+  tests/api/consent.DELETE.test \
+  tests/api/consent.GET.test \
+  tests/api/consent.POST.test \
   tests/api/consent.POST.test \
   tests/api/consent.PUT.test \
-  tests/api/zzz.end.test \
+  tests/api/consent.identifier.DELETE.found.test \
+  tests/api/consent.identifier.DELETE.missing.test \
+  tests/api/consent.identifier.GET.found.test \
+  tests/api/consent.identifier.GET.missing.test \
+  tests/api/consent.identifier.POST.test \
+  tests/api/consent.identifier.PUT.test \
   $(end)
+# WATCHOUT - these are executed concurrently unless otherwise ordered via the dependencies
+# WATCHOUT - and you MUST have FIRST start the server and LAST terminate the server
+tests_api_XFAIL_TESTS = \
+  $(end)
+tests_api_TESTS = \
+  $(tests_api_FIRST_TESTS) \
+  $(tests_api_MID_TESTS) \
+  $(tests_api_LAST_TESTS) \
+  $(end)
+
+$(tests_api_MID_LOGS) : $(tests_api_FIRST_LOGS)
+$(tests_api_LAST_LOGS) : $(tests_api_MID_LOGS) $(tests_api_FIRST_LOGS)
