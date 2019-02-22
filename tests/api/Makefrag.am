@@ -7,15 +7,16 @@ tests_api_MID_TESTS = \
   $(tests_api_XFAIL_TESTS) \
   tests/api/consent.DELETE.test \
   tests/api/consent.GET.test \
-  tests/api/consent.POST.test \
-  tests/api/consent.POST.test \
+  tests/api/consent.POST.missing.test \
+  tests/api/consent.POST.present.test \
   tests/api/consent.PUT.test \
-  tests/api/consent.identifier.DELETE.found.test \
   tests/api/consent.identifier.DELETE.missing.test \
-  tests/api/consent.identifier.GET.found.test \
+  tests/api/consent.identifier.DELETE.present.test \
   tests/api/consent.identifier.GET.missing.test \
+  tests/api/consent.identifier.GET.present.test \
   tests/api/consent.identifier.POST.test \
-  tests/api/consent.identifier.PUT.test \
+  tests/api/consent.identifier.PUT.missing.test \
+  tests/api/consent.identifier.PUT.present.test \
   $(end)
 # WATCHOUT - these are executed concurrently unless otherwise ordered via the dependencies
 # WATCHOUT - and you MUST have FIRST start the server and LAST terminate the server

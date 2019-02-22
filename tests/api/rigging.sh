@@ -53,7 +53,9 @@ function assert() {
 		;;
 	    ( 400 | 401 | 402 | 403 | 404 | 405 )
 		test ${expected_hcode} == ${actual_hcode:-UNSET-ACTUAL} &&
-		grep -qie '^Method not Allowed$' ${outfile?} &&
+		{ grep -qie '^Found$' ${outfile?} ||
+		  grep -qie '^Not found$' ${outfile?} ||
+		  grep -qie '^Method not Allowed$' ${outfile?} ; } &&
 		true
 		;;
 	    ( 500 )

@@ -18,10 +18,11 @@ class tunitas::montara::storage::null::Consent : public storage::Consent {
   using ancestor = storage::Consent;
 public:
   inline explicit Consent(State &);
+  auto DELEET(id::Consent) -> outcome::Success override;
   auto GET(id::Consent) -> Outcome<type::Blob> override;
   auto GET(type::Entity const &what_is_an_entity) -> Outcome<type::Blob> override;
-  auto PUT(id::Consent, type::Blob) -> outcome::Success override;
   auto POST(type::Blob) -> outcome::Success override;
+  auto PUT(id::Consent, type::Blob) -> outcome::Success override;
 protected:
   State &state;
 };
@@ -33,6 +34,13 @@ tunitas::montara::storage::null::Consent::Consent(State &state)
 #divert <cpp>
 #import std.lock_guard
 namespace tunitas::montara::storage::null {
+  auto Consent::DELEET(id::Consent) -> outcome::Success {
+    using Result = outcome::Success;
+    // do nothing
+    State::mutex::Guard guard{state.exclusion};
+    state.log << "Consent::" << __FUNCTION__ << '\n';
+    return Result{};
+  } 
   auto Consent::GET(id::Consent) -> Outcome<type::Blob> {
     using Result = Outcome<type::Blob>;
     // do nothing
@@ -47,14 +55,14 @@ namespace tunitas::montara::storage::null {
     state.log << "Consent::" << __FUNCTION__ << '\n';
     return Result{};
   } 
-  auto Consent::PUT(id::Consent, type::Blob) -> outcome::Success {
+  auto Consent::POST(type::Blob) -> outcome::Success {
     using Result = outcome::Success;
     // do nothing
     State::mutex::Guard guard{state.exclusion};
     state.log << "Consent::" << __FUNCTION__ << '\n';
     return Result{};
   } 
-  auto Consent::POST(type::Blob) -> outcome::Success {
+  auto Consent::PUT(id::Consent, type::Blob) -> outcome::Success {
     using Result = outcome::Success;
     // do nothing
     State::mutex::Guard guard{state.exclusion};

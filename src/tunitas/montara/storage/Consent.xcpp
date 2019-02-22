@@ -23,9 +23,10 @@ protected:
   Consent() = default;
 public:
   virtual ~Consent() = default;
+  virtual auto DELEET(id::Consent) -> outcome::Success = 0;
   virtual auto GET(id::Consent) -> Outcome<type::Blob> = 0;
   virtual auto GET(type::Entity const &what_is_an_entity) -> Outcome<type::Blob> = 0;
-  virtual auto PUT(id::Consent, type::Blob) -> outcome::Success = 0;
   virtual auto POST(type::Blob) -> outcome::Success = 0;
+  virtual auto PUT(id::Consent, type::Blob) -> outcome::Success = 0;
 };
 #endiv

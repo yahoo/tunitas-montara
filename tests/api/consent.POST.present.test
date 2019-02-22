@@ -1,0 +1,22 @@
+#!/bin/bash
+source ${0%/*}/rigging.sh || exit 70
+code=$(curlish \
+    -H 'Content-Type: application/json' \
+    -X POST \
+    -d @${0%.test}.json \
+    $URLHOSTPORT/consent \
+    ${end}) &&
+assert 0 == $? and 202 == ${code?} &&
+: posting the same data into the endpoint the 2nd time will fail &&
+code=$(curlish \
+    -H 'Content-Type: application/json' \
+    -X POST \
+    -d @${0%.test}.json \
+    $URLHOSTPORT/consent \
+    ${end})
+# This fails because you cannot POST to a full endpoint (you must use PUT)
+set -xv
+assert 0 == $? and 400 == ${code?}
+e=$?
+echo exit $e
+exit $e

@@ -2,7 +2,14 @@
 #divert <fpp>
 namespace tunitas::montara::endpoint {
   //
-  // The code behind the /consent/revoke{consentId} endpoint
+  // The code behind the /consent/revoke/{consentId} endpoint
+  //
+  // POSTing to this endpoint does a DELETE on the storage for the referenced consent record.
+  // The consent is gone.
+  // In an alternative implementation, a consent revocation would be *recorded* and cached
+  // record of revocation would be written into immutability; revocation of consent being a permanent mark.
+  //
+  // Protocol question for API v2, why not just surface DELETE as a verb against /consent/{consentId}.
   //
   // Example: TBD
   //
@@ -16,19 +23,34 @@ namespace tunitas::montara::endpoint {
 }
 #endiv
 #divert <hpp>
+#import tunitas.montara.endpoint.aspect.Operations
 #import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.identifier.Consent
 #import tunitas.montara.storage.Consent
-class tunitas::montara::endpoint::Consent_Revoke_Identifier : public httpserver::Resource<Consent_Revoke_Identifier>, aspect::Storage<storage::Consent> {
+class tunitas::montara::endpoint::Consent_Revoke_Identifier
+  : public httpserver::Resource<Consent_Revoke_Identifier>
+  , protected aspect::Storage<storage::Consent>
+  , protected aspect::Operations<identifier::Consent, storage::Consent> {
   struct ancestors {
     using Resource = httpserver::Resource<Consent_Revoke_Identifier>;
     using Storage = aspect::Storage<storage::Consent>;
+    using Operations = aspect::Operations<identifier::Consent, storage::Consent>;
   };
 public:
-  explicit Consent_Revoke_Identifier(storage::Consent &);
-  auto render_POST(Request const &, [[out]] Response **fill) -> void;
+  inline explicit Consent_Revoke_Identifier(storage::Consent &);
+  inline auto render_POST(Request const &, [[out]] Response *&fill) -> void;
+public: // but we wish it wasn't; we wish it wasn't even here [[REMOVEWHEN]] libhttpserver has an appropriate function signature
+  inline auto render_POST(Request const &r, [[out]] Response **f) -> void { render_POST(r, *f); }
+protected:
+  // [[FIXTHIS]] construct the URL in run.cpp so that these to guarantee to match
+  // this must match the name used in run.cpp -----------\ (here)
+  //                                                     |
+  //                                                     |
+  //                                                     v
+  inline static auto const PARAMETER_NAME = std::string{"consentId"};
 };
 #endiv
-#divert <cpp>
+#divert <ipp>
 #import std.string_literals
 #import tunitas.montara.filters
 #import tunitas.montara.constants
@@ -39,16 +61,8 @@ namespace tunitas::montara::endpoint {
   Consent_Revoke_Identifier::Consent_Revoke_Identifier(storage::Consent &store) : ancestors::Storage{store}  {
     resources::initialize_only_post(*this);
   }
-  auto Consent_Revoke_Identifier::render_POST(Request const &request, Response **fill) -> void {
-    filters::enforce_no_query_parameters(request, *fill);
-    if (nullptr == *fill) {
-      // [[FIXTHIS]] accept the body and put it in a database or a queue
-      auto const &content_body = R"text(accepted)text"s;
-      auto const code = http::R202_ACCEPTED;
-      auto const &content_type = mime::TEXT_PLAIN;
-      httpserver::response::Builder bob{content_body, code, content_type};
-      *fill = new Response{bob};
-    }
+  auto Consent_Revoke_Identifier::render_POST(Request const &request, Response *&fill) -> void {
+    dleet(request, fill, store, PARAMETER_NAME);
   }
 }
 #endiv

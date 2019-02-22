@@ -1,11 +1,11 @@
 #!/bin/bash
 source ${0%/*}/rigging.sh || exit 70
-consentId=11730792982779486
+consentId=115394546930515520
 curl \
     -H 'Content-Type: application/json' \
-    -X PUT \
+    -X POST \
     -d @${0%.test}.json \
-    ${URLHOSTPORT?}/consent/${consentId?} \
+    ${URLHOSTPORT?}/consent \
     ${end} &&
 curl \
     -H 'Content-Type: application/json' \

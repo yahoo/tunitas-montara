@@ -21,8 +21,8 @@ public:
   auto DELEET(id::Subscription) -> outcome::Success override;
   auto GET(id::Subscription) -> Outcome<type::Blob> override;
   auto GET(type::Entity const &what_is_an_entity) -> Outcome<type::Blob> override;
-  auto PUT(id::Subscription, type::Blob) -> outcome::Success override;
   auto POST(type::Blob) -> outcome::Success override;
+  auto PUT(id::Subscription, type::Blob) -> outcome::Success override;
 protected:
   State &state;
 };

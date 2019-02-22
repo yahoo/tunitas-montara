@@ -37,6 +37,11 @@ protected:
 #import json.parse
 #import json.as
 #import json.to
+#import json.writer.stream.Builder
+#import json.writer.Stream
+#import std.unique_ptr
+#import std.ostringstream
+#import std.string
 #import tunitas.montara.filters
 #import tunitas.montara.responses
 #import tunitas.montara.identifier.from_chars
@@ -85,12 +90,48 @@ namespace tunitas::montara::endpoint::aspect {
 	} else {
 	  auto got = store.GET(value(identified));
 	  if (ok(got)) {
-	    auto const &content_body = value(got).asString();
+	    auto stringify = [](json::Value const &value) -> std::string {
+			       // [[FIXTHIS]] Wow ... there is no better way to linearize one of these than this!  Rly?
+			       std::ostringstream buf;
+			       json::writer::stream::Builder builder;
+			       builder["commentStyle"] = "None";
+			       builder["indentation"] = "   ";  // or whatever you like
+			       std::unique_ptr<json::writer::Stream> writer(builder.newStreamWriter());
+			       writer->write(value, &buf);
+			       return buf.str();
+			     };
+	    auto const &content_body = stringify(value(got));
 	    auto const code = http::R200_OK;
 	    auto const &content_type = mime::APPLICATION_JSON;
 	    httpserver::response::Builder bob{content_body, code, content_type};
 	    fill = new Response{bob};
 	  }
+	}
+      }
+    }
+  } catch (std::exception const &e) {
+    responses::internal_server_error(fill, e.what());
+  } catch (...) {
+    responses::internal_server_error(fill);
+  }
+  template<typename I, typename S> auto Operations<I,S>::posty(Request const &request, Response *&fill, Storage &store) -> void try {
+    filters::enforce_no_query_parameters(request, fill);
+    filters::enforce_application_json(request, fill);
+    if (nullptr == fill) {
+      json::String document = json::to(json::STRING(), request.get_content());
+      auto parsed = json::parse(json::failure::returned, document);
+      if (!ok(parsed)) {
+	responses::bad_request(fill, "json syntax");
+      } else {
+	auto stored = store.POST(value(std::move(parsed)));
+	if (!ok(stored)) {
+	  responses::bad_request(fill, error_code(stored).message());
+	} else {
+	  auto const &content_body = R"text(accepted)text";
+	  auto const code = http::R202_ACCEPTED;
+	  auto const &content_type = mime::TEXT_PLAIN;
+	  httpserver::response::Builder bob{content_body, code, content_type};
+	  fill = new Response{bob};
 	}
       }
     }
@@ -116,36 +157,18 @@ namespace tunitas::montara::endpoint::aspect {
 	  if (!ok(identified)) {
 	    responses::bad_request(fill, "bad identifier " + error_code(identified).message());
 	  } else {
-	    store.PUT(value(identified), value(std::move(parsed)));
-	    auto const &content_body = R"text(accepted)text";
-	    auto const code = http::R202_ACCEPTED;
-	    auto const &content_type = mime::TEXT_PLAIN;
-	    httpserver::response::Builder bob{content_body, code, content_type};
-	    fill = new Response{bob};
+	    auto put = store.PUT(value(identified), value(std::move(parsed)));
+	    if (!ok(put)) {
+	      responses::bad_request(fill, error_code(put).message());
+	    } else {
+	      auto const &content_body = R"text(accepted)text";
+	      auto const code = http::R202_ACCEPTED;
+	      auto const &content_type = mime::TEXT_PLAIN;
+	      httpserver::response::Builder bob{content_body, code, content_type};
+	      fill = new Response{bob};
+	    }
 	  }
         }
-      }
-    }
-  } catch (std::exception const &e) {
-    responses::internal_server_error(fill, e.what());
-  } catch (...) {
-    responses::internal_server_error(fill);
-  }
-  template<typename I, typename S> auto Operations<I,S>::posty(Request const &request, Response *&fill, Storage &store) -> void try {
-    filters::enforce_no_query_parameters(request, fill);
-    filters::enforce_application_json(request, fill);
-    if (nullptr == fill) {
-      json::String document = json::to(json::STRING(), request.get_content());
-      auto parsed = json::parse(json::failure::returned, document);
-      if (!ok(parsed)) {
-	responses::bad_request(fill, "json syntax");
-      } else {
-	store.POST(value(std::move(parsed)));
-	auto const &content_body = R"text(accepted)text";
-	auto const code = http::R202_ACCEPTED;
-	auto const &content_type = mime::TEXT_PLAIN;
-	httpserver::response::Builder bob{content_body, code, content_type};
-	fill = new Response{bob};
       }
     }
   } catch (std::exception const &e) {

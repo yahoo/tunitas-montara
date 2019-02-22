@@ -1,0 +1,10 @@
+#!/bin/bash
+source ${0%/*}/rigging.sh || exit 70
+code=$(curlish \
+    -H 'Content-Type: application/json' \
+    -X PUT \
+    -d @${0%.test}.json \
+    ${URLHOSTPORT?}/consent/39326615453893824 \
+    ${end})
+# This fails because you cannot PUT on a resource that does not exist
+assert 0 == $? and 400 == ${code?}

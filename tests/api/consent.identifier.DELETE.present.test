@@ -1,6 +1,6 @@
 #!/bin/bash
 source ${0%/*}/rigging.sh || exit 70
-consentId=162544028272820320
+consentId=1026091649776896
 code=$(curlish \
     -H 'Content-Type: application/json' \
     -X POST \
@@ -12,7 +12,12 @@ code=$(curlish \
     -H 'Content-Type: application/json' \
     -X GET \
     ${URLHOSTPORT?}/consent/${consentId?} \
+    ${end}) &&
+code=$(curlish \
+    -H 'Content-Type: application/json' \
+    -X DELETE \
+    ${URLHOSTPORT?}/consent/${consentId?} \
     ${end})
 # This fails because there is no 'DELETE /consent/{consentId}' at all.
 # Instead you can revoke your consent with 'POST /consent/revoke/{consentId} (which appends new records)
-assert 0 == $? and 500 == ${code?}
+assert 0 == $? and 405 == ${code?}

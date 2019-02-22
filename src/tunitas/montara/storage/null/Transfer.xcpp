@@ -18,11 +18,11 @@ class tunitas::montara::storage::null::Transfer : public storage::Transfer {
   using ancestor = storage::Transfer;
 public:
   inline explicit Transfer(State &);
-  auto GET(id::Transfer) -> Outcome<type::Blob> override;
   auto GET(id::Consent) -> Outcome<type::Blob> override;
+  auto GET(id::Transfer) -> Outcome<type::Blob> override;
   auto GET(type::Entity const &what_is_an_entity) -> Outcome<type::Blob> override;
-  auto PUT(id::Transfer, type::Blob) -> outcome::Success override;
   auto POST(type::Blob) -> outcome::Success override;
+  auto PUT(id::Transfer, type::Blob) -> outcome::Success override;
 protected:
   State &state;
 };
@@ -34,14 +34,14 @@ tunitas::montara::storage::null::Transfer::Transfer(State &state)
 #divert <cpp>
 #import std.lock_guard
 namespace tunitas::montara::storage::null {
-  auto Transfer::GET(id::Transfer) -> Outcome<type::Blob> {
+  auto Transfer::GET(id::Consent) -> Outcome<type::Blob> {
     using Result = Outcome<type::Blob>;
     // do nothing
     State::mutex::Guard guard{state.exclusion};
     state.log << "Transfer::" << __FUNCTION__ << '\n';
     return Result{};
   } 
-  auto Transfer::GET(id::Consent) -> Outcome<type::Blob> {
+  auto Transfer::GET(id::Transfer) -> Outcome<type::Blob> {
     using Result = Outcome<type::Blob>;
     // do nothing
     State::mutex::Guard guard{state.exclusion};
@@ -55,6 +55,13 @@ namespace tunitas::montara::storage::null {
     state.log << "Transfer::" << __FUNCTION__ << '\n';
     return Result{};
   } 
+  auto Transfer::POST(type::Blob) -> outcome::Success {
+    using Result = outcome::Success;
+    // do nothing
+    State::mutex::Guard guard{state.exclusion};
+    state.log << "Transfer::" << __FUNCTION__ << '\n';
+    return Result{};
+  }
   auto Transfer::PUT(id::Transfer, type::Blob) -> outcome::Success {
     using Result = outcome::Success;
     // do nothing
@@ -62,12 +69,5 @@ namespace tunitas::montara::storage::null {
     state.log << "Transfer::" << __FUNCTION__ << '\n';
     return Result{};
   } 
-  auto Transfer::POST(type::Blob) -> outcome::Success {
-    using Result = outcome::Success;
-    // do nothing
-    State::mutex::Guard guard{state.exclusion};
-    state.log << "Transfer::" << __FUNCTION__ << '\n';
-    return Result{};
-  }}
-
+}
 #endiv

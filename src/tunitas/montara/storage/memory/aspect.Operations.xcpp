@@ -35,10 +35,10 @@ protected:
     using Success = outcome::Success;
   };
   static auto dleet(Mutex &, Map &, Identifier key) -> typename results::Success;
-  static auto getty(Mutex &, Map const &, Identifier key) -> typename results::Payload;
   static auto getty(Mutex &, Map const &, Entity const &) -> typename results::Payload;
-  static auto putty(Mutex &, Map &, Identifier key, Value) -> typename results::Success;
+  static auto getty(Mutex &, Map const &, Identifier key) -> typename results::Payload;
   static auto posty(Mutex &, Map &, Value keyvalue) -> typename results::Success;
+  static auto putty(Mutex &, Map &, Identifier key, Value) -> typename results::Success;
 };
 #endiv
 #divert <tpp>
@@ -98,6 +98,29 @@ namespace tunitas::montara::storage::memory::aspect {
       return FAILED<Result>();
     }
   } 
+  template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::posty(Mutex &mut, Map &map, Value value) -> typename results::Success {
+    using Result = typename results::Success;
+    try {
+      auto const &obj{value["id"]};
+      if (obj.isNull()) {
+	return Result{std::error_code{error::Code::INVALID_BLOB}};
+      }
+      auto const key = Identifier{obj.asUInt64()};
+      Guard guard{mut};
+      auto const found = map.find(key);
+      auto const end = map.end();
+      if (end != found) {
+	return PRESENT<Result>();
+      } else {
+	map[key] = std::move(value);
+	return Result{outcome::SUCCESS};
+      }
+    } catch (json::exception::Generic const &) {
+      return INVALID<Result>();
+    } catch (std::exception const &) {
+      return FAILED<Result>();
+    }
+  }
   template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::putty(Mutex &mut, Map &map, Identifier key, Value value) -> typename results::Success {
     using Result = typename results::Success;
     try {
@@ -125,28 +148,5 @@ namespace tunitas::montara::storage::memory::aspect {
       return FAILED<Result>();
     }
   }
-  template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::posty(Mutex &mut, Map &map, Value value) -> typename results::Success {
-    using Result = typename results::Success;
-    try {
-      auto const &obj{value["id"]};
-      if (obj.isNull()) {
-	return Result{std::error_code{error::Code::INVALID_BLOB}};
-      }
-      auto const key = Identifier{obj.asUInt64()};
-      Guard guard{mut};
-      auto const found = map.find(key);
-      auto const end = map.end();
-      if (end != found) {
-	return PRESENT<Result>();
-      } else {
-	map[key] = std::move(value);
-	return Result{outcome::SUCCESS};
-      }
-    } catch (json::exception::Generic const &) {
-      return INVALID<Result>();
-    } catch (std::exception const &) {
-      return FAILED<Result>();
-    }
-  } 
 }
 #endiv

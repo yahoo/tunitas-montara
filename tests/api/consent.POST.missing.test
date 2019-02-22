@@ -1,0 +1,16 @@
+#!/bin/bash
+source ${0%/*}/rigging.sh || exit 70
+code=$(curlish \
+    -H 'Content-Type: application/json' \
+    -X POST \
+    -d @${0%.test}.json \
+    $URLHOSTPORT/consent \
+    ${end})
+echo code=$code
+# This works because you can POST against a resoure that does not yet exist
+#assert 0 == $? and 202 == ${code?}
+curl -v \
+    -H 'Content-Type: application/json' \
+    -X GET \
+    $URLHOSTPORT/consent/30178678208481660 \
+    ${end}

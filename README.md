@@ -477,7 +477,7 @@ It is not clear that updating a transfer is meaningful at all.
 If the transfer has occurred and has been recorded then the expectation is that it is immutable in the database.
 
 #### Preconditions
-A consent record alreayd exists at `{consentId}`.
+A consent record already exists at `{consentId}`.
 
 If supplied, the `{id}` of the document must match the `{transferId}` of the path.
 

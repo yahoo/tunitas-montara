@@ -1,7 +1,8 @@
 #!/bin/bash
 source ${0%/*}/rigging.sh || exit 70
 rm -f ${pidfile?}
-montara-service --background --pidfile=${pidfile?} --port $PORT
+# WATCHOUT - unless you say '--engine=memory' you'll get vacuous "success" from all APIs
+montara-service --engine=memory --background --pidfile=${pidfile?} --port $PORT
 sleep 0.25
 echo "DEBUG pid is $(< ${pidfile?})"
 ps -ef | grep montara | sed -e 's/^/DEBUG: /'
