@@ -1,0 +1,50 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+#divert <fpp>
+namespace tunitas::montara::responses {
+  //
+  // The reponse Replacer
+  //
+  // If there was another response already set up then it is destroyed.
+  //
+  // Usage:
+  //
+  //   Replacer replacer{fill};
+  //   replacer = new Response{bob};
+  //
+  class Replacer;
+}
+#endiv
+#divert <hpp>
+#import tunitas.montara.service
+#import std.unique_ptr
+class tunitas::montara::responses::Replacer {
+public:
+  using Value = service::Response;
+  inline explicit Replacer(Value *&lhs);
+  inline auto operator=(Value *rhs) -> Replacer &;
+protected:
+  Value *&lhs;
+  using Pointer = std::unique_ptr<Value>;
+  inline auto cleanout() -> void;
+};
+#endiv
+#divert <ipp>
+#import std.swap
+namespace tunitas::montara::responses {
+  Replacer::Replacer(Value *&lhs)
+    : lhs{lhs} {
+    // We've committee to replacing so ... it's gone on RAII
+    cleanout();
+  }
+  auto Replacer::operator=(Value *rhs) -> Replacer & {
+    cleanout();
+    lhs = rhs;
+    return *this;
+  }
+  auto Replacer::cleanout() -> void {
+    Value *tmp{nullptr};
+    std::swap(tmp, lhs);
+    Pointer doomed{tmp};
+  }
+}
+#endiv

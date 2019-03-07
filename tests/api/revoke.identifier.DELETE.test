@@ -1,0 +1,10 @@
+#!/bin/bash
+source ${0%/*}/rigging.sh || exit 70
+code=$(curlish \
+    -H 'Content-Type: application/json' \
+    -X DELETE \
+    $URLHOSTPORT/consent/revoke/$((RANDOM*RANDOM*RANDOM*RANDOM)) \
+    ${end})
+# This will fail because you cannot DELETE on /consent/revoke/{consentId} at all.
+# Instead you must say 'POST /consent/revoke/{consentId}'
+assert 0 == $? and 405 == ${code?}

@@ -62,6 +62,10 @@ namespace tunitas::montara::endpoint {
     resources::initialize_only_post(*this);
   }
   auto Consent_Revoke_Identifier::render_POST(Request const &request, Response *&fill) -> void {
+    // Get the content and drop it.
+    // The important thing is that content is pulled in and the socket is closed.
+    // Blik.  Because browsers cannot do DELETE, they have to do POST with empty bodies.
+    // NOT request.get_content();
     dleet(request, fill, store, PARAMETER_NAME);
   }
 }

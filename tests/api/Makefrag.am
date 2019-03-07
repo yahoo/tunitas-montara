@@ -17,6 +17,11 @@ tests_api_MID_TESTS = \
   tests/api/consent.identifier.POST.test \
   tests/api/consent.identifier.PUT.missing.test \
   tests/api/consent.identifier.PUT.present.test \
+  tests/api/revoke.identifier.DELETE.test \
+  tests/api/revoke.identifier.GET.test \
+  tests/api/revoke.identifier.POST.missing.test \
+  tests/api/revoke.identifier.POST.present.test \
+  tests/api/revoke.identifier.PUT.test \
   $(end)
 # WATCHOUT - these are executed concurrently unless otherwise ordered via the dependencies
 # WATCHOUT - and you MUST have FIRST start the server and LAST terminate the server

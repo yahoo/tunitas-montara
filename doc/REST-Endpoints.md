@@ -183,7 +183,7 @@ None.
 ### Postconditions
 Depending upon the success or the failure of the recovery.
 
-#### Success
+gi#### Success
 Response: `200` OK
 
 The response document is returned.

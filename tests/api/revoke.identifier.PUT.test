@@ -1,0 +1,11 @@
+#!/bin/bash
+source ${0%/*}/rigging.sh || exit 70
+code=$(curlish \
+    -H 'Content-Type: application/json' \
+    -X PUT \
+    -d @/dev/null \
+    $URLHOSTPORT/consent/revoke/$((RANDOM*RANDOM*RANDOM*RANDOM)) \
+    ${end})
+# This will fail because you cannot PUT on /consent/revoke/{consentId} at all.
+# Instead the endpoint only allows 'POST /consent/revoke/{consentId}'
+assert 0 == $? and 405 == ${code?}

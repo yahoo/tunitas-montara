@@ -41,6 +41,7 @@ namespace httpserver { using Service = Webserver; namespace service { using Crea
 #import tunitas.montara.endpoint.Consent_Identifier
 #import tunitas.montara.endpoint.Consent_RevokeWithArray
 #import tunitas.montara.endpoint.Consent_RevokeWithList
+#import tunitas.montara.endpoint.Consent_Revoke_Identifier
 #import tunitas.montara.endpoint.Transfer
 #import tunitas.montara.endpoint.Transfer_CreateWithArray
 #import tunitas.montara.endpoint.Transfer_CreateWithList
@@ -136,6 +137,9 @@ auto app::service::run(Configuration const &cfg) -> void {
 
   endpoint::Consent_RevokeWithList consent_revokeWithList{*engine->consent};
   service.register_resource("/consent/revokeWithList", &consent_revokeWithList, FAMILY_URL_SENSE);
+
+  endpoint::Consent_Revoke_Identifier consent_revoke_identifier{*engine->consent};
+  service.register_resource("/consent/revoke/{consentId}", &consent_revoke_identifier, FAMILY_URL_SENSE);
 
   endpoint::Transfer transfer{*engine->transfer};
   service.register_resource("/datatransfer", &transfer, FAMILY_URL_SENSE);

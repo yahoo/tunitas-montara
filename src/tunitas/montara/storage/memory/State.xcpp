@@ -4,6 +4,10 @@ namespace tunitas::montara::storage::memory {
   //
   // Implements the memory state
   //
+  // The in-memory storage offers very (very) simple data structures.
+  // CRUD is by the identifier.
+  // Search for non-primary key is by sequential scan of the whole data structure.
+  //
   // Usage: see tunitas.montara.storage.State
   //
   class State;

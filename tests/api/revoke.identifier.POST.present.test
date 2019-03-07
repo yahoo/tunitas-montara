@@ -1,0 +1,22 @@
+#!/bin/bash
+source ${0%/*}/rigging.sh || exit 70
+consentId=5530647414600
+curl \
+    -H 'Content-Type: application/json' \
+    -X POST \
+    -d @${0%.test}.json \
+    $URLHOSTPORT/consent \
+    ${end} &&
+curl \
+    -H 'Content-Type: application/json' \
+    -X GET \
+    $URLHOSTPORT/consent/${consentId} \
+    ${end} &&
+code=$(curlish --verbose \
+    -H 'Content-Type: application/json' \
+    -X POST \
+    -d @${0%.test}.json \
+    $URLHOSTPORT/consent/revoke/${consentId} \
+    ${end})
+# This will succeed because the consent record exists and the appropriate verb was used
+assert 0 == $? and 200 == ${code?}

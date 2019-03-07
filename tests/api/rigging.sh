@@ -48,7 +48,8 @@ function assert() {
 	    case ${expected_hcode:-UNSET-EXPECTED} in
 	    ( 200 | 201 | 202 )
 		test ${expected_hcode} == ${actual_hcode:-UNSET-ACTUAL} &&
-		grep -qie '^Accepted$' ${outfile?} &&
+		{ grep -qie '^OK$' ${outfile?} ||
+		  grep -qie '^Accepted$' ${outfile?} ; } &&
 		true
 		;;
 	    ( 400 | 401 | 402 | 403 | 404 | 405 )

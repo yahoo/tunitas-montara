@@ -60,7 +60,7 @@ namespace tunitas::montara::storage::memory {
 #import tunitas.montara.storage.State
 namespace tunitas::montara::storage::memory {
   auto Transfer::GET(id::Consent match) -> Outcome<type::Blob> {
-    // This is not an application of Operations::getty(...) because must do a sequential scan
+    // This is not an application of Operations::getty(...) because it must do a sequential scan
     // of the data structure searching for any where consentId equals match.
     // There is no secondary indexing capability in this reference implementation.
     using Result = Outcome<type::Blob>;

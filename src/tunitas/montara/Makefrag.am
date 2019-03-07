@@ -21,6 +21,7 @@ lib_libtunitas_montara_la_XCPP_SOURCES = \
   obj/src/tunitas/montara/log.cpp \
   obj/src/tunitas/montara/resources.cpp \
   obj/src/tunitas/montara/responses.cpp \
+  obj/src/tunitas/montara/responses.Replacer.cpp \
   obj/src/tunitas/montara/service.cpp \
   \
   obj/src/tunitas/montara/endpoint/namespace.cpp \

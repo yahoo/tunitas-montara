@@ -1,8 +1,9 @@
 // This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
 #divert <hpp>
 #import tunitas.montara.service
+#import std.string
+#import std.error_code
 namespace tunitas::montara::responses {
-  using namespace service;
   //
   // Standardized (server) responses
   //
@@ -17,41 +18,58 @@ namespace tunitas::montara::responses {
   //     internal_server_error(*fill);
   //   }
   //
-  inline auto internal_server_error(Response *&fill) -> void;
-  inline auto internal_server_error(Response *&fill, std::string const &reason) -> void;
-  //
-  // There was some problem with the input data
-  //
-  inline auto bad_request(Response *&fill) -> void;
-  inline auto bad_request(Response *&fill, std::string const &reason) -> void;
+  namespace packaging {
+    using namespace service;
+    inline auto internal_server_error(Response *&fill) -> void;
+    inline auto internal_server_error(Response *&fill, std::string const &reason) -> void;
+    //
+    // There was some problem with the input data
+    //
+    inline auto bad_request(Response *&fill) -> void; // always 400
+    inline auto bad_request(Response *&fill, std::string const &reason) -> void; // always 400
+    inline auto bad_request(Response *&fill, std::error_code reason) -> void; // via error_code
+  }
+  using packaging::internal_server_error;
+  using packaging::bad_request;
 }
 #endiv
 #divert <ipp>
+#import tunitas.montara.responses.Replacer
 #import httpserver.response.Builder
 #import std.unique_ptr
 #import tunitas.montara.constants
-auto tunitas::montara::responses::internal_server_error(Response *&fill) -> void {
+auto tunitas::montara::responses::packaging::internal_server_error(Response *&fill) -> void {
   internal_server_error(fill, "internal server error");
 }
-auto tunitas::montara::responses::internal_server_error(Response *&fill, std::string const &reason) -> void {
+auto tunitas::montara::responses::packaging::internal_server_error(Response *&fill, std::string const &reason) -> void {
+  Replacer rob{fill};
   using namespace constants;
   auto const &content_body = reason;
   auto const code = http::R500_INTERNAL_SERVER_ERROR;
   auto const &content_type = mime::TEXT_PLAIN;
   httpserver::response::Builder bob{content_body, code, content_type};
-  std::unique_ptr<Response> doomed(fill);
-  fill = new Response{bob};
+  rob = new Response{bob};
 }
-auto tunitas::montara::responses::bad_request(Response *&fill) -> void {
+auto tunitas::montara::responses::packaging::bad_request(Response *&fill) -> void {
   bad_request(fill, "bad request");
 }
-auto tunitas::montara::responses::bad_request(Response *&fill, std::string const &reason) -> void {
+auto tunitas::montara::responses::packaging::bad_request(Response *&fill, std::string const &reason) -> void {
+  Replacer rob{fill};
   using namespace constants;
   auto const &content_body = reason;
   auto const code = http::R400_BAD_REQUEST;
   auto const &content_type = mime::TEXT_PLAIN;
   httpserver::response::Builder bob{content_body, code, content_type};
-  std::unique_ptr<Response> doomed(fill);
-  fill = new Response{bob};
+  rob = new Response{bob};
+}
+#import tunitas.montara.error.Code
+auto tunitas::montara::responses::packaging::bad_request(Response *&fill, std::error_code reason) -> void {
+  Replacer rob{fill};
+  using namespace constants;
+  auto const &content_body = reason.message();;
+  auto const code = error::Code::NOT_FOUND == reason ? http::R404_NOT_FOUND : http::R400_BAD_REQUEST;
+  auto const &content_type = mime::TEXT_PLAIN;
+  httpserver::response::Builder bob{content_body, code, content_type};
+  rob = new Response{bob};
 }
 #endiv

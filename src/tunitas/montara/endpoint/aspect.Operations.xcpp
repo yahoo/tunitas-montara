@@ -33,6 +33,7 @@ protected:
 };
 #endiv
 #divert <tpp>
+#import std.cerr
 #import json.String
 #import json.parse
 #import json.as
@@ -61,9 +62,11 @@ namespace tunitas::montara::endpoint::aspect {
 	if (!ok(identified)) {
 	  responses::bad_request(fill, "bad identifier " + error_code(identified).message());
 	} else {
-	  auto got = store.DELEET(value(identified));
-	  if (ok(got)) {
-	    auto const &content_body = R"text(deleted)text";
+	  auto del = store.DELEET(value(identified));
+	  if (!ok(del)) {
+	    responses::bad_request(fill, error_code(del));
+	  } else {
+	    auto const &content_body = R"text(OK)text";
 	    auto const code = http::R200_OK;
 	    auto const &content_type = mime::APPLICATION_JSON;
 	    httpserver::response::Builder bob{content_body, code, content_type};
@@ -72,6 +75,7 @@ namespace tunitas::montara::endpoint::aspect {
 	}
       }
     }
+
   } catch (std::exception const &e) {
     responses::internal_server_error(fill, e.what());
   } catch (...) {
@@ -89,7 +93,9 @@ namespace tunitas::montara::endpoint::aspect {
 	  responses::bad_request(fill, "bad identifier " + error_code(identified).message());
 	} else {
 	  auto got = store.GET(value(identified));
-	  if (ok(got)) {
+	  if (!ok(got)) {
+	    responses::bad_request(fill, error_code(got));
+	  } else {
 	    auto stringify = [](json::Value const &value) -> std::string {
 			       // [[FIXTHIS]] Wow ... there is no better way to linearize one of these than this!  Rly?
 			       std::ostringstream buf;
@@ -125,7 +131,7 @@ namespace tunitas::montara::endpoint::aspect {
       } else {
 	auto stored = store.POST(value(std::move(parsed)));
 	if (!ok(stored)) {
-	  responses::bad_request(fill, error_code(stored).message());
+	  responses::bad_request(fill, error_code(stored));
 	} else {
 	  auto const &content_body = R"text(accepted)text";
 	  auto const code = http::R202_ACCEPTED;
@@ -159,9 +165,9 @@ namespace tunitas::montara::endpoint::aspect {
 	  } else {
 	    auto put = store.PUT(value(identified), value(std::move(parsed)));
 	    if (!ok(put)) {
-	      responses::bad_request(fill, error_code(put).message());
+	      responses::bad_request(fill, error_code(put));
 	    } else {
-	      auto const &content_body = R"text(accepted)text";
+	      auto const &content_body = R"text(Accepted)text";
 	      auto const code = http::R202_ACCEPTED;
 	      auto const &content_type = mime::TEXT_PLAIN;
 	      httpserver::response::Builder bob{content_body, code, content_type};
