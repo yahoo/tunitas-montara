@@ -1,4 +1,5 @@
-# A GNU -*- Makefile -*- which is managed by automake
+# This is a GNU -*- Makefile -*- fragment which is managed by automake
+# Copyright 2019, Oath Inc. Licensed under the terms of the Apache-2.0 license. See LICENSE file in https://github.com/yahoo/tunitas-montara/blob/master/LICENSE for terms.
 
 # merely a convenience library
 lib_libapp_la = lib/libapp.la

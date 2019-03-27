@@ -1,4 +1,5 @@
-# -*- Makefile -*-
+# This is a GNU -*- Makefile -*- which is managed by automake
+# Copyright 2019, Oath Inc. Licensed under the terms of the Apache-2.0 license. See LICENSE file in https://github.com/yahoo/tunitas-montara/blob/master/LICENSE for terms.
 
 # [[FIXTHIS]] - ACLOCAL_AMFLAGS is evaluted by automake *before* make even runs
 # It uses /bin/bash eval to evaluate the line ...
