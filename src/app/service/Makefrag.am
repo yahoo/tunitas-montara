@@ -1,5 +1,7 @@
-# This is a GNU -*- Makefile -*- fragment which is managed by automake
-# Copyright 2019, Oath Inc. Licensed under the terms of the Apache-2.0 license. See LICENSE file in https://github.com/yahoo/tunitas-montara/blob/master/LICENSE for terms.
+# This is a GNU -*- Makefile -*- fragment that is included by Automake
+# Copyright 2018-2019, Oath Inc.
+# Licensed under the terms of the Apache-2.0 license.
+# See the LICENSE file in https://github.com/yahoo/tunitas-rockaway/blob/master/LICENSE for terms.
 
 sbin_montara_service = sbin/montara-service
 sbin_montara_service_LDADD = \
