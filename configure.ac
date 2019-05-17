@@ -1,4 +1,11 @@
-dnl -*- autoconf -*-
+dnl This is a GNU -*- autoconf -*- specification that is processed by Autoconf.
+dnl Copyright 2018-2019, Oath Inc.
+dnl Licensed under the terms of the Apache-2.0 license.
+dnl See the LICENSE file in https://github.com/yahoo/tunitas-montara/blob/master/LICENSE for terms.
+dnl
+dnl Build Instructions are in the nearby README.md
+dnl
+dnl ./maintenance/nearby is a developer-centric build recipe; it guesses about nearby source trees
 dnl
 dnl ./buildconf &&
 dnl ./configure --prefix=/opt/tunitas &&
@@ -7,7 +14,7 @@ dnl make check &&
 dnl make install &&
 dnl echo OK DONE
 dnl
-AC_INIT([montara], [0.0.0], [/dev/null@verizonmedia.com])
+AC_INIT([montara], [0.1.0], [tunitas@verizonmedia.com])
 TF_INIT(AC_PACKAGE_NAME, AC_PACKAGE_VERSION, AC_PACKAGE_BUGREPORT)
 
 dnl These options are also in the Makefile.am in AUTOMAKE_OPTIONS

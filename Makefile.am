@@ -1,6 +1,9 @@
-# -*- Makefile -*-
-
-# [[FIXTHIS]] - ACLOCAL_AMFLAGS is evaluted by automake *before* make even runs
+# This is a GNU -*- Makefile -*- fragment that is included by Automake
+# Copyright 2018-2019, Oath Inc.
+# Licensed under the terms of the Apache-2.0 license.
+# See the LICENSE file in https://github.com/yahoo/tunitas-montara/blob/master/LICENSE for terms.
+#
+# [[FIXTHIS]] - ACLOCAL_AMFLAGS is evaluated by automake *before* make even runs
 # It uses /bin/bash eval to evaluate the line ...
 #    so make variables $(...) look like backticks
 #    but make variables ${...} look like shell variables with defaults
@@ -18,7 +21,7 @@ default:
 # SUBDIRS = @subdirs@
 include @temerarious_flagship_datadir@/am/build.mk
 
-# These match with HGTW_WITH_MODULE in configure.ac
+# These match with TF_WITH_MODULE in configure.ac
 DEVELOPMENT_AREAS = \
   @module_httpserver_prefix@ \
   @module_json_prefix@ \
