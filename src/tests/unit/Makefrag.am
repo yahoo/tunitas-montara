@@ -1,7 +1,7 @@
 # This is a GNU -*- Makefile -*- fragment that is included by Automake
 # Copyright 2018-2019, Oath Inc.
 # Licensed under the terms of the Apache-2.0 license.
-# See the LICENSE file in https://github.com/yahoo/tunitas-rockaway/blob/master/LICENSE for terms.
+# See the LICENSE file in https://github.com/yahoo/tunitas-montara/blob/master/LICENSE for terms.
 
 bin_unit = bin/unit
 bin_unit_LDADD = \
