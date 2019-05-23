@@ -26,6 +26,7 @@ The main body of documentation for the Tunitas family of components and services
 
 The Montara service is a member of the Tunitas family of components and services. It depends upon certain other core components of the Tunitas family.  These are:
   * [Tunitas Basics](https://github.com/yahoo/tunitas-basics) package for core components.
+  * [Tunitas Butano](https://github.com/yahoo/tunitas-butano) package of components for the IAB's Transparency & Consent Framework.
   * [Temerarious Flagship](https://github.com/yahoo/temerarious-flagship), the build system
 
 * [Design Changes](https://git.ouroath.com/tunitas/montara/blob/master/doc/Design-Changes.md)
@@ -96,15 +97,15 @@ sudo dnf install tunitas-montara
 The configuration of the service is through the systemd unit files which are supplied.
 
 ``` bash
-systemctl enable montara-service
-systemctl start montara-service
+systemctl enable montara
+systemctl start montara
 ```
 
 ## References
 
 ### IAB PrivacyChain
 
-Documents pertaining to the the [IAB PrivacyChain](https://github.com/InteractiveAdvertisingBureau/PrivacyChain) operation and governance as well as a separate reference implementation of the Technology Specification are available at the [main site](https://github.com/InteractiveAdvertisingBureau).
+The authoritative specification can be found the IAB as [REST-API](https://github.com/Interactive-Advertising-Bureau/PrivacyChain/blob/master/doc/REST-API.md). Documents pertaining to the the [IAB PrivacyChain](https://github.com/InteractiveAdvertisingBureau/PrivacyChain) operation and governance as well as a separate reference implementation of the Technology Specification are available at the [main site](https://github.com/InteractiveAdvertisingBureau).
 
 ### API
 
