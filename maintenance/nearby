@@ -32,10 +32,10 @@ cd ${0%/*}/.. || exit 70
 : ${with_tunitas_basics:=${with_siblings?}/basics}
 if [[ -d ${PWD%/*}/nearby ]] ; then
     : ${with_nearby:=${PWD%/*}/nearby}
-    : ${with_module_rigging:=${with_nearby?}/module-rigging}
+elif [[ -d /build/scold ]] ; then
+    : ${with_nearby:=/build/scold}
 else
     : ${with_nearby:=no}
-    : ${with_module_rigging:=no}
 fi
 : ${with_submodules:=no} # nope ..... : ${with_submodules:=${PWD}/submodules} # must be a full path
 declare __subnearby
@@ -51,22 +51,28 @@ else
 fi
 if [[ no == ${__subnearby:-no} ]] ; then
     : ${with_hypogeal_twilight:=$with_std_scold}
+    : ${with_module_httpserver:=no}
+    : ${with_module_nonstd:=no}
     : ${with_module_options:=no}
+    : ${with_module_posix:=no}
+    : ${with_module_rigging:=no}
     : ${with_module_std:=no}
+    : ${with_module_string:=no}
 elif [[ yes == ${__subnearby:-no} ]] ; then
     echo "${0##*/}: error, submodules or nearby cannot be merely 'yes'" 1>&2
     exit 78
 else
     : ${with_hypogeal_twilight:=${__subnearby?}/hypogeal-twilight}
+    : ${with_module_httpserver:=${__subnearby?}/module-httpserver}
+    : ${with_module_nonstd:=${__subnearby?}/module-nonstd}
     : ${with_module_options:=${__subnearby?}/module-options}
+    : ${with_module_posix:=${__subnearby?}/module-posix}
+    : ${with_module_rigging:=${with_nearby?}/module-rigging}
     : ${with_module_std:=${__subnearby?}/module-std}
+    : ${with_module_string:=${__subnearby?}/module-string}
 fi
-: ${with_module_httpserver:=no}
 # required: at least nonstd-libhttpserver-0.9.0-8.1.ipv6+poll+regex
 : ${with_nonstd_libhttpserver:=/opt/nonstd/libhttpserver}
-: ${with_module_nonstd:=no}
-: ${with_module_posix:=no}
-: ${with_module_string:=no}
 eval \
     ${prefix:+prefix=$prefix} \
     ${with_hypogeal_twilight:+with_hypogeal_twilight=$with_hypogeal_twilight} \
