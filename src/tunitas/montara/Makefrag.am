@@ -4,10 +4,12 @@
 # See the LICENSE file in https://github.com/yahoo/tunitas-montara/blob/master/LICENSE for terms.
 
 lib_libtunitas_montara_la = lib/libtunitas-montara.la
+# [[FIXTHIS]] - -ltunitas-app is required here because tunitas::montara::Version uses it
+# [[FIXTHIS]] - need a way to provide tunitas-montara that doesn't need the TXUI of -ltuintas-app
 lib_libtunitas_montara_la_LIBADD = \
   $(lib_libwant_la) \
   -ljson-module \
-  -ltunitas \
+  -ltunitas-app \
   -lhttpserver \
   $(end)
 lib_libtunitas_montara_la_LDFLAGS = $(PACKAGE_LDFLAGS_SET)
