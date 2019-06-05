@@ -4,8 +4,6 @@ This repository contains a reference implementation of the "Northbound API servi
 
 The main body of documentation for the Tunitas family of components and services can be found with the [packaging](https://github.com/yahoo/tunitas-packaging) and with [build system](https://github.com/yahoo/temerarious-flagship]).  The overview and administrative declarations herein are necessarily summary in nature. The declarations and definitions in the packaging and build system areas are complete and should be interpreted as superceding these when the two are in conflict.
 
-![banner](logo.png)
-
 ## Table of Contents
 
 - [Background](#background)
@@ -20,8 +18,6 @@ The main body of documentation for the Tunitas family of components and services
 - [License](#license)
 - [Origin of the Name](#Origin_of_the_name)
 
-[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-
 ## Background
 
 The Montara service is a member of the Tunitas family of components and services. It depends upon certain other core components of the Tunitas family.  These are:
@@ -32,7 +28,7 @@ The Montara service is a member of the Tunitas family of components and services
 * [Design Changes](https://git.ouroath.com/tunitas/montara/blob/master/doc/Design-Changes.md)
 * [The Data Types](https://git.ouroath.com/tunitas/montara/blob/master/doc/Data-Types.md)
 * [The Response Codes](https://git.ouroath.com/tunitas/montara/blob/master/doc/Response-Codes.md)
-* [The REST API Endpoints)(https://git.ouroath.com/tunitas/montara/blob/master/doc/REST-Endpoints.md)
+* [The REST API Endpoints](https://git.ouroath.com/tunitas/montara/blob/master/doc/REST-Endpoints.md)
 
 ## Dependencies
 
