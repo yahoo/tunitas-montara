@@ -1,6 +1,6 @@
 # Tunitas Montara
 
-This repository contains a reference implementation of the "Northbound API service for the Interactive Advertising Bureau's (IAB) [Transparency and Consent Framework (TCF)](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework). It is an an application hosted within the <em>httpserver</em> surface of [microhttpd](https://www.gnu.org/software/libmicrohttpd/).  As such, it is a "<em>micro</em>service" approach to delivering the north-facing API services.
+This repository contains a reference implementation of the "Northbound API service for the Interactive Advertising Bureau's (IAB) [PrivacyChain](https://github.com/InteractiveAdvertisingBureau/PrivacyChain). It is an an application hosted within the <em>httpserver</em> surface of [microhttpd](https://www.gnu.org/software/libmicrohttpd/).  As such, it is a "<em>micro</em>service" approach to delivering the north-facing API services.
 
 The main body of documentation for the Tunitas family of components and services can be found with the [packaging](https://github.com/yahoo/tunitas-packaging) and with [build system](https://github.com/yahoo/temerarious-flagship]).  The overview and administrative declarations herein are necessarily summary in nature. The declarations and definitions in the packaging and build system areas are complete and should be interpreted as superceding these when the two are in conflict.
 
