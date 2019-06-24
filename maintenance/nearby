@@ -1,6 +1,9 @@
 #!/bin/bash
+# Copyright 2018-2019, Oath Inc.
+# Licensed under the terms of the Apache-2.0 license.
+# See the LICENSE file in https://github.com/yahoo/tunitas-montara/blob/master/LICENSE for terms.
 #
-# the full end-to-end build
+# the full end-to-end build, using nearby development sources, if available
 #
 #   buildconf
 #   configure
@@ -9,48 +12,81 @@
 #
 # Usage:
 #
-#   ./maintenance/e2e     (no options)
+#   ./maintenance/nearby     (no options)
 #
 #   prefix=/usr/local \
 #   with_std_tunitas=/opt/tunitas \
 #   with_temerarious_flagship=/opt/tunitas \
-#   ./maintenance/e2e
+#   ./maintenance/nearby
 # 
 # to build without submodules
 #
-#  with_submodules=no ./maintenance/e2e       (this works because --with-THING=no is --without-THING)
+#  with_submodules=no ./maintenance/nearby       (this works because --with-THING=no is --without-THING)
 #
 # The scold module "with" variables will naturally default to /opt/scold
 # The tunitas "with" variables would be expected to be in /opt/tunitas
 #
 cd ${0%/*}/.. || exit 70
 : ${prefix:=/exp/tunitas}
-: ${with_std_tunitas:=/opt/tunitas}
-: ${with_std_scold:=${with_std_tunitas%/*}/scold}
+if ! [[ -d ${prefix} ]] ; then
+    # no /exp/tunitas, maybe no /opt/tunitas either, we'll take that risk
+    : ${with_std_tunitas:=/opt/tunitas}
+elif [[ -z ${with_std_tunitas} ]] ; then
+    # no /opt/tunitas, but yes /exp/tunitas
+    if [[ -d /opt/tunitas ]] ; then
+        : ${with_std_tunitas:=/opt/tunitas}
+    else
+        : ${with_std_tunitas:=${prefix}}
+    fi
+fi
+if [[ -z ${with_std_scold} ]] ; then
+    if [[ -d /opt/scold ]] ; then
+        : ${with_std_scold:=/opt/scold}
+    else
+        : ${with_std_scold:=${with_std_tunitas%/*}/scold}
+    fi
+fi
 : ${with_siblings:=${PWD%/*}}
-: ${with_temerarious_flagship:=${with_siblings?}/temerarious-flagship}
-: ${with_tunitas_basics:=${with_siblings?}/basics}
+#
+# What is in the "nearby" area?
+# but priority for anything below us in the submodules?
+#
 if [[ -d ${PWD%/*}/nearby ]] ; then
     : ${with_nearby:=${PWD%/*}/nearby}
-elif [[ -d /build/scold ]] ; then
-    : ${with_nearby:=/build/scold}
+    : ${with_tunitas_nearby:=${with_nearby?}}
+    : ${with_scold_nearby:=${with_nearby?}}
+elif [[ -d /build/tunitas ]] && [[ -d /build/scold ]] ; then
+    : ${with_nearby:=/build}
+    : ${with_tunitas_nearby:=${with_nearby?}/tunitas}
+    : ${with_scold_nearby:=${with_nearby?}/scold}
 else
     : ${with_nearby:=no}
+    : ${with_tunitas_nearby:=${with_nearby?}}
+    : ${with_scold_nearby:=${with_nearby?}}
 fi
 : ${with_submodules:=no} # nope ..... : ${with_submodules:=${PWD}/submodules} # must be a full path
-declare __subnearby
+declare __submodules_nearby
 if [[ no == ${with_submodules:-no} ]] ; then
     # could be no
-    __subnearby=${with_nearby?}
-elif [[ yes == ${__subnearby:-no} ]] ; then
-    echo "${0##*/}: error, submodules cannot be merely 'yes'" 1>&2
-    exit 78
+    __submodules_nearby=no
+elif [[ yes == ${__submodules_nearby:-no} ]] ; then
+    __submodules_nearby=$(realpath ./submodules)
+    { echo "${0##*/}: warning, submodules should not be merely 'yes'"
+      echo "${0##*/}: warning, submodules should be a full path"
+      echo "${0##*/}: notice, continuing with ${__submodules_nearby?}"; } 1>&2
 else
     # [[unchecked]] musn't be merely 'yes' or a non-existent directory 
-    __subnearby=${with_submodules?}
+    __submodules_nearby=$(realpath ${with_submodules?})
 fi
-if [[ no == ${__subnearby:-no} ]] ; then
-    : ${with_hypogeal_twilight:=$with_std_scold}
+#
+# Decide the defaults
+# you can always override the defaults from the command line, but that can be onerous
+#
+function set_all_defaults_no() {
+    : ${with_hypogeal_twilight:=no} # ${with_hypogeal_twilight:=$with_std_scold}
+    : ${with_module_crypto:=no}
+    : ${with_module_json:=no}
+    : ${with_module_half:=no}
     : ${with_module_httpserver:=no}
     : ${with_module_nonstd:=no}
     : ${with_module_options:=no}
@@ -58,45 +94,71 @@ if [[ no == ${__subnearby:-no} ]] ; then
     : ${with_module_rigging:=no}
     : ${with_module_std:=no}
     : ${with_module_string:=no}
-elif [[ yes == ${__subnearby:-no} ]] ; then
+}
+function set_all_defaults_relatively() {
+    : ${with_hypogeal_twilight:=$1/hypogeal-twilight}
+    : ${with_module_crypto:=$1/module-crypto}
+    : ${with_module_json:=$1/module-json}
+    : ${with_module_half:=$1/module-half}
+    : ${with_module_httpserver:=$1/module-httpserver}
+    : ${with_module_nonstd:=$1/module-nonstd}
+    : ${with_module_options:=$1/module-options}
+    : ${with_module_posix:=$1/module-posix}
+    : ${with_module_rigging:=$1/module-rigging}
+    : ${with_module_std:=$1/module-std}
+    : ${with_module_string:=$1/module-string}
+}
+if [[ no == ${__submodules_nearby:-no} ]] && [[ no == ${with_scold_nearby} ]] ; then
+    set_all_defaults_no
+elif [[ yes == ${__submodules_nearby:-no} ]] ; then
+    # this was supposed to be caught before
     echo "${0##*/}: error, submodules or nearby cannot be merely 'yes'" 1>&2
     exit 78
+elif [[ no != ${__submodules_nearby:-no} ]] ; then
+    set_all_defaults_relatively ${__submodules_nearby?}
+elif [[ no != ${with_scold_nearby} ]] ; then
+    set_all_defaults_relatively ${with_scold_nearby?}
 else
-    : ${with_hypogeal_twilight:=${__subnearby?}/hypogeal-twilight}
-    : ${with_module_httpserver:=${__subnearby?}/module-httpserver}
-    : ${with_module_nonstd:=${__subnearby?}/module-nonstd}
-    : ${with_module_options:=${__subnearby?}/module-options}
-    : ${with_module_posix:=${__subnearby?}/module-posix}
-    : ${with_module_rigging:=${with_nearby?}/module-rigging}
-    : ${with_module_std:=${__subnearby?}/module-std}
-    : ${with_module_string:=${__subnearby?}/module-string}
+    set_all_defaults_no
 fi
-# required: at least nonstd-libhttpserver-0.9.0-8.1.ipv6+poll+regex
-: ${with_nonstd_libhttpserver:=/opt/nonstd/libhttpserver}
+: ${with_nonstd_libhttpserver:=/opt/nonstd/libhttpserver} # ... REQUIRED: at least nonstd-libhttpserver-0.9.0-8.1.ipv6+poll+regex
+: ${with_nonstd_half:=/opt/nonstd/half} # ..................... REQUIRED because there is no "standard half"
+# ${with_nonstd_jsoncpp:=/opt/nonstd/jsoncpp} # ............... OPTIONAL
+: ${with_temerarious_flagship:=${with_siblings?}/temerarious-flagship}
+: ${with_tunitas_basics:=${with_siblings?}/basics}
 eval \
     ${prefix:+prefix=$prefix} \
     ${with_hypogeal_twilight:+with_hypogeal_twilight=$with_hypogeal_twilight} \
     ${with_temerarious_flagship:+with_temerarious_flagship=$with_temerarious_flagship} \
     ./buildconf &&
 ./configure \
-    --enable-configure-verbose \
+    ${enable_dependency_tracking:+--enable-dependency-tracking=$enable_dependency_tracking} \
+    ${enable_configure_verbose:+--enable-configure-verbose=$enable_configure_verbose} \
+    ${enable_configure_debug:+--enable-configure-debug=$enable_configure_debug} \
     --disable-mock-build \
     ${prefix:+--prefix=$prefix} \
     ${with_nearby:+--with-nearby=$with_nearby} ${with_external:+--with-external=$with_external} \
     ${with_submodules:+--with-submodules=$with_submodules} \
     ${with_hypogeal_twilight:+--with-hypogeal-twilight=$with_hypogeal_twilight} \
     ${with_temerarious_flagship:+--with-temerarious-flagship=$with_temerarious_flagship} \
+    ${with_module_c:+--with-module-c=$with_module_c} \
+    ${with_module_crypto:+--with-module-crypto=$with_module_crypto} \
+    ${with_module_json:+--with-module-json=$with_module_json} \
+    ${with_nonstd_jsoncpp:+--with-nonstd-jsoncpp=$with_nonstd_jsoncpp} \
+    ${with_module_half:+--with-module-half=$with_module_half} \
+    ${with_nonstd_half:+--with-nonstd-half=$with_nonstd_half} \
     ${with_module_httpserver:+--with-module-httpserver=$with_module_httpserver} \
     ${with_nonstd_libhttpserver:+--with-nonstd-libhttpserver=$with_nonstd_libhttpserver} \
-    ${with_module_string:+--with-module-c-string=$with_module_string} \
     ${with_module_nonstd:+--with-module-nonstd=$with_module_nonstd} \
     ${with_module_options:+--with-module-options=$with_module_options} \
     ${with_module_posix:+--with-module-posix=$with_module_posix} \
-    ${with_module_std:+--with-module-sys=$with_module_std} \
     ${with_module_rigging:+--with-module-rigging=$with_module_rigging} \
+    ${with_module_std:+--with-module-std=$with_module_std} \
+    ${with_module_string:+--with-module-string=$with_module_string} \
     ${with_tunitas_basics:+--with-tunitas-basics=$with_tunitas_basics} \
     ${with_std_tunitas:+--with-std-tunitas=$with_std_tunitas} \
     ${with_std_scold:+--with-std-scold=$with_std_scold} \
+    ${with_nonstd_libhttpserver:+--with-nonstd-libhttpserver=$with_nonstd_libhttpserver} \
     ${end} &&
 make &&
 make check &&
