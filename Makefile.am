@@ -23,34 +23,34 @@ include @temerarious_flagship_datadir@/am/build.mk
 
 # These match with TF_WITH_MODULE in configure.ac
 DEVELOPMENT_AREAS = \
-  @module_httpserver_prefix@ \
-  @module_json_prefix@ \
-  @module_options_prefix@ \
-  @module_posix_prefix@ \
-  @module_std_prefix@ \
-  @module_string_prefix@ \
-  @module_sys_prefix@ \
-  @tunitas_basics_prefix@ \
+  $(module_httpserver_prefix) \
+  $(module_json_prefix) \
+  $(module_options_prefix) \
+  $(module_posix_prefix) \
+  $(module_std_prefix) \
+  $(module_string_prefix) \
+  $(module_sys_prefix) \
+  $(tunitas_basics_prefix) \
   $(end)
 TESTING_AREAS = \
-  @module_cppunit_prefix@ \
-  @module_rigging_prefix@ \
+  $(module_cppunit_prefix) \
+  $(module_rigging_prefix) \
   $(end)
 INSTALLATION_AREAS = \
-  @nonstd_cppunit_prefix@ \
-  @nonstd_gcc_prefix@ \
-  @nonstd_jsoncpp_prefix@ \
-  @nonstd_libhttpserver_prefix@ \
-  @std_scold_prefix@ \
-  @std_tunitas_prefix@ \
+  $(nonstd_cppunit_prefix) \
+  $(nonstd_gcc_prefix) \
+  $(nonstd_jsoncpp_prefix) \
+  $(nonstd_libhttpserver_prefix) \
+  $(std_scold_prefix) \
+  $(std_tunitas_prefix) \
   $(end)
 
 default: all
 
-module_SOURCE_SET = $(none)
 module_BB_SOURCE_SET = \
   $(warning module_BB_SOURCE_SET is deprecated, instead use module_SOURCE_SET) \
-  $(module_SOURCE_SET) \
+  $(filter-out %DUMMY_DATA.cpp, $(lib_libtunitas_montara_la_SOURCES)) \
+  $(lib_libwant_la_SOURCES) \
   $(end)
 
 .PHONY: clean-local mostlyclean-local distclean-local
