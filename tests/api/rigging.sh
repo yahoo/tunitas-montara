@@ -27,7 +27,7 @@ export PATH="${__topdir?}/bin:${__topdir?}/sbin:$PATH"
 #
 function assert() {
     echo "DEBUG assert $@" 1>&2
-    echo "DEBUG assert outfile $(head -n 1 ${outfile?} < /dev/null)" 1>&2
+    echo "DEBUG assert outfile $(head -n 1 ${outfile?} < /dev/null 2>&1)" 1>&2
     local args=( "$@" )
     if [[ 7 != $# ]] ; then
 	echo "$0: error, assertion is missing arguments [[ assert ${args[@]} ]]" 1>&2

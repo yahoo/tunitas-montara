@@ -105,14 +105,14 @@ LOADPATH   = $(LOADPATHPATH_SCOLD_MODULES)
 # -ggdb      ... and recall that -ggdb and -O2 don't play well together
 
 Makefile_COMPILER_CPPFLAGS_SET =
-Makefile_COMPILER_CFLAGS_SET   = -Wall @CFLAGS_gcc@   @CFLAGS_gdb@
-Makefile_COMPILER_CXXFLAGS_SET = -Wall @CXXFLAGS_gcc@ @CXXFLAGS_gdb@
+Makefile_COMPILER_CFLAGS_SET   = -Wall @CFLAGS_gcc@   @CFLAGS_gdb@   -pthread
+Makefile_COMPILER_CXXFLAGS_SET = -Wall @CXXFLAGS_gcc@ @CXXFLAGS_gdb@ -pthread
 Makefile_COMPILER_LDFLAGS_SET  = -Wall @LDFLAGS_gcc@  @LDFLAGS_gdb@
 
-Makefile_nonstd_PACKAGE_CPPFLAGS_SET = 
-Makefile_nonstd_PACKAGE_CFLAGS_SET   = 
-Makefile_nonstd_PACKAGE_CXXFLAGS_SET = 
-Makefile_nonstd_PACKAGE_LDFLAGS_SET  = 
+Makefile_nonstd_PACKAGE_CPPFLAGS_SET = @nonstd_libhttpserver_CPPFLAGS@
+Makefile_nonstd_PACKAGE_CFLAGS_SET   = @nonstd_libhttpserver_CLAGS@
+Makefile_nonstd_PACKAGE_CXXFLAGS_SET = @nonstd_libhttpserver_CXXFLAGS@
+Makefile_nonstd_PACKAGE_LDFLAGS_SET  = @nonstd_libhttpserver_LDFLAGS@
 
 Makefile_PACKAGE_CPPFLAGS_SET = @CPPFLAGS_jsoncpp@
 Makefile_PACKAGE_CFLAGS_SET   =   @CFLAGS_jsoncpp@
