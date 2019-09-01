@@ -38,10 +38,10 @@ namespace tunitas::montara {
     using Result = Outcome<IDENTIFIER>;
     using Underlying = typename std::underlying_type<IDENTIFIER>::type;
     Underlying potential;
-    auto first = candidate.begin();
-    auto last = candidate.end();
-    auto result = std::from_chars(&*first, &*last, potential);
-    if (&*last == result.ptr) {
+    auto const first = candidate.data();
+    auto const last = first + candidate.size();
+    auto result = std::from_chars(first, last, potential);
+    if (last == result.ptr) {
       return Result{IDENTIFIER(potential)};
     } else {
       // Consulting https://en.cppreference.com/w/cpp/utility/from_chars
