@@ -108,3 +108,17 @@ function curlpure() {
 function curlish() {
     curl -6 --silent --write-out %{http_code} -o ${outfile?} "$@"
 }
+#
+# used in aaa.start.test
+# used in zzz.end.test
+#
+function debug_show_service() {
+    local keyword=$1; shift
+    local tag="DEBUG ${keyword?}"
+    echo "${tag?} pid=${pid:-(unset)}"
+    echo "${tag?} pidfile=${pidfile:-(unset)}"
+    echo "${tag?} pidfile contains $(< ${pidfile?})"
+    echo "${tag?} BEGIN"
+    ps -ef | sed -n -e "/montara-service/ s/^/${tag?}: /p"
+    echo "${tag?} END"
+}

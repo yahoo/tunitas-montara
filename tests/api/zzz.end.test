@@ -2,6 +2,13 @@
 source ${0%/*}/rigging.sh || exit 70
 : ${pidfile?}
 pid=$(< ${pidfile?})
-echo "DEBUG pid=${pid:-(unset)}"
-ps -ef | grep montara | sed -e 's/^/DEBUG: /'
-echo DO NOT kill -HUP ${pid:-0}
+if ((0 != $?)); then
+    echo "WARNING: could not read pidfile from pidfile=$pidfile:-(unset)}"
+fi 1>&2
+debug_show_service BEFORE
+if ((0 != ${pid:-0})) ; then
+    # DO NOT kill -HUP 0 because that is this shell (script) ... it doesn't help and only makes this test fail
+    # DO kill the running server that was started in aaa.test with pid put in the pidfile
+    kill -HUP ${pid?}
+fi
+debug_show_service AFTER

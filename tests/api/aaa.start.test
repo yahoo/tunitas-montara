@@ -8,5 +8,4 @@ else
     montara-service --engine=memory --foreground --pidfile=${pidfile?} --port $PORT >& ${0%/*}/montara-service.$$ </dev/null & 
 fi
 sleep 0.25
-echo "DEBUG pid is $(< ${pidfile?})"
-ps -ef | grep montara | sed -e 's/^/DEBUG: /'
+debug_show_service LAUNCHED
