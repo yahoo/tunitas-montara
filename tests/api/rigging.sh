@@ -27,7 +27,7 @@ export PATH="${__topdir?}/bin:${__topdir?}/sbin:$PATH"
 #
 function assert() {
     echo "DEBUG assert $@" 1>&2
-    echo "DEBUG assert outfile $(head -n 1 ${outfile?} < /dev/null)" 1>&2
+    echo "DEBUG assert outfile $(head -n 1 ${outfile?} < /dev/null 2>&1)" 1>&2
     local args=( "$@" )
     if [[ 7 != $# ]] ; then
 	echo "$0: error, assertion is missing arguments [[ assert ${args[@]} ]]" 1>&2
@@ -73,6 +73,52 @@ function assert() {
 	fi
     fi
 }
+#
+# https://wiki.tunitas.technology/page/Issue/Fedora_LXC_/etc/hosts_is_wrong_for_localhost_in_IPv6
+# WATCHOUT - the -6 here is REQUIRED for use in LXC containers with an incorrect /etc/hosts.
+#
+# See /etc/hosts
+#     127.0.0.1  localhost.localdomain   localhost  Fedora-27 <-------------- the name of the original LXC container as inherited
+#     ::1        localhost6.localdomain6 localhost6 <------------------------ INSUFFICIENT
+#
+#     MISSING
+#     ::1        localhost.localdomain localhost <--------------------------- BETTER
+#
+# See /etc/nsswitch.conf
+#     hosts:      files dns myhostname
+#
+#
+# So by demanding that curl use IPv6, it will go up to DNS to get "localhost" which will properly resolve to ::1
+#
+# Exhibition of the failure
+#
+# $ curl --verbose --write-out '%{http_code}' -o ./consent.PUT.out -H 'Content-Type: application/json' -X PUT -d @./consent.PUT.json http://localhost:23118/consent
+#  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+#                                 Dload  Upload   Total   Spent    Left  Speed
+#  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 127.0.0.1...
+# * TCP_NODELAY set
+# * connect to 127.0.0.1 port 23118 failed: Connection refused
+# * Failed to connect to localhost port 23118: Connection refused
+# * Closing connection 0
+# curl: (7) Failed to connect to localhost port 23118: Connection refused
+#
+function curlpure() {
+    curl -6 "$@"
+}
 function curlish() {
-    curl --silent --write-out %{http_code} -o ${outfile?} "$@"
+    curl -6 --silent --write-out %{http_code} -o ${outfile?} "$@"
+}
+#
+# used in aaa.start.test
+# used in zzz.end.test
+#
+function debug_show_service() {
+    local keyword=$1; shift
+    local tag="DEBUG ${keyword?}"
+    echo "${tag?} pid=${pid:-(unset)}"
+    echo "${tag?} pidfile=${pidfile:-(unset)}"
+    echo "${tag?} pidfile contains $(< ${pidfile?})"
+    echo "${tag?} BEGIN"
+    ps -ef | sed -n -e "/montara-service/ s/^/${tag?}: /p"
+    echo "${tag?} END"
 }

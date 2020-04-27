@@ -23,34 +23,34 @@ include @temerarious_flagship_datadir@/am/build.mk
 
 # These match with TF_WITH_MODULE in configure.ac
 DEVELOPMENT_AREAS = \
-  @module_httpserver_prefix@ \
-  @module_json_prefix@ \
-  @module_options_prefix@ \
-  @module_posix_prefix@ \
-  @module_std_prefix@ \
-  @module_string_prefix@ \
-  @module_sys_prefix@ \
-  @tunitas_basics_prefix@ \
+  $(module_httpserver_prefix) \
+  $(module_json_prefix) \
+  $(module_options_prefix) \
+  $(module_posix_prefix) \
+  $(module_std_prefix) \
+  $(module_string_prefix) \
+  $(module_sys_prefix) \
+  $(tunitas_basics_prefix) \
   $(end)
 TESTING_AREAS = \
-  @module_cppunit_prefix@ \
-  @module_rigging_prefix@ \
+  $(module_cppunit_prefix) \
+  $(module_rigging_prefix) \
   $(end)
 INSTALLATION_AREAS = \
-  @nonstd_cppunit_prefix@ \
-  @nonstd_gcc_prefix@ \
-  @nonstd_jsoncpp_prefix@ \
-  @nonstd_libhttpserver_prefix@ \
-  @std_scold_prefix@ \
-  @std_tunitas_prefix@ \
+  $(nonstd_cppunit_prefix) \
+  $(nonstd_gcc_prefix) \
+  $(nonstd_jsoncpp_prefix) \
+  $(nonstd_libhttpserver_prefix) \
+  $(std_scold_prefix) \
+  $(std_tunitas_prefix) \
   $(end)
 
 default: all
 
-module_SOURCE_SET = $(none)
 module_BB_SOURCE_SET = \
   $(warning module_BB_SOURCE_SET is deprecated, instead use module_SOURCE_SET) \
-  $(module_SOURCE_SET) \
+  $(filter-out %DUMMY_DATA.cpp, $(lib_libtunitas_montara_la_SOURCES)) \
+  $(lib_libwant_la_SOURCES) \
   $(end)
 
 .PHONY: clean-local mostlyclean-local distclean-local
@@ -105,14 +105,14 @@ LOADPATH   = $(LOADPATHPATH_SCOLD_MODULES)
 # -ggdb      ... and recall that -ggdb and -O2 don't play well together
 
 Makefile_COMPILER_CPPFLAGS_SET =
-Makefile_COMPILER_CFLAGS_SET   = -Wall @CFLAGS_gcc@   @CFLAGS_gdb@
-Makefile_COMPILER_CXXFLAGS_SET = -Wall @CXXFLAGS_gcc@ @CXXFLAGS_gdb@
+Makefile_COMPILER_CFLAGS_SET   = -Wall @CFLAGS_gcc@   @CFLAGS_gdb@   -pthread
+Makefile_COMPILER_CXXFLAGS_SET = -Wall @CXXFLAGS_gcc@ @CXXFLAGS_gdb@ -pthread
 Makefile_COMPILER_LDFLAGS_SET  = -Wall @LDFLAGS_gcc@  @LDFLAGS_gdb@
 
-Makefile_nonstd_PACKAGE_CPPFLAGS_SET = 
-Makefile_nonstd_PACKAGE_CFLAGS_SET   = 
-Makefile_nonstd_PACKAGE_CXXFLAGS_SET = 
-Makefile_nonstd_PACKAGE_LDFLAGS_SET  = 
+Makefile_nonstd_PACKAGE_CPPFLAGS_SET = @nonstd_libhttpserver_CPPFLAGS@
+Makefile_nonstd_PACKAGE_CFLAGS_SET   = @nonstd_libhttpserver_CLAGS@
+Makefile_nonstd_PACKAGE_CXXFLAGS_SET = @nonstd_libhttpserver_CXXFLAGS@
+Makefile_nonstd_PACKAGE_LDFLAGS_SET  = @nonstd_libhttpserver_LDFLAGS@
 
 Makefile_PACKAGE_CPPFLAGS_SET = @CPPFLAGS_jsoncpp@
 Makefile_PACKAGE_CFLAGS_SET   =   @CFLAGS_jsoncpp@

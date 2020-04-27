@@ -15,7 +15,6 @@ code=$(curlish \
     $URLHOSTPORT/consent \
     ${end})
 # This fails because you cannot POST to a full endpoint (you must use PUT)
-set -xv
 assert 0 == $? and 400 == ${code?}
 e=$?
 echo exit $e

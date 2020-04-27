@@ -68,7 +68,7 @@ auto tunitas::montara::responses::packaging::bad_request(Response *&fill, std::s
 auto tunitas::montara::responses::packaging::bad_request(Response *&fill, std::error_code reason) -> void {
   Replacer rob{fill};
   using namespace constants;
-  auto const &content_body = reason.message();;
+  auto const &content_body = reason.message();
   auto const code = error::Code::NOT_FOUND == reason ? http::R404_NOT_FOUND : http::R400_BAD_REQUEST;
   auto const &content_type = mime::TEXT_PLAIN;
   httpserver::response::Builder bob{content_body, code, content_type};

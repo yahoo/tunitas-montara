@@ -9,7 +9,7 @@ code=$(curlish \
 echo code=$code
 # This works because you can POST against a resoure that does not yet exist
 #assert 0 == $? and 202 == ${code?}
-curl -v \
+curlpure -v \
     -H 'Content-Type: application/json' \
     -X GET \
     $URLHOSTPORT/consent/30178678208481660 \

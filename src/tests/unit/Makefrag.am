@@ -9,6 +9,9 @@ bin_unit_LDADD = \
   $(lib_libwant_la) \
   -lunit-bench-module \
   $(end)
+$(bin_unit_OBJECTS): AM_CPPFLAGS+=$(AND_CHECK_CPPFLAGS_SET)
+$(bin_unit_OBJECTS): AM_CXXFLAGS+=$(AND_CHECK_CXXFLAGS_SET) -Wno-deprecated-declarations
+# reminder: autotools does not put $(AM_LDFLAGS) into bin_unit_LDFLAGS, like it does with CPPFLAGS and CXXFLAGS
 bin_unit_LDFLAGS = $(CHECK_LDFLAGS_SET)
 bin_unit_MODULES = $(call TF_SOURCEStoMODULES, $(bin_unit_SOURCES))
 bin_unit_SOURCES = \
