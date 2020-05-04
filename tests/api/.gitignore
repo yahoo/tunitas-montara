@@ -1,1 +1,3 @@
 run.pid
+# these are the debugging scripts
+montara-service.*

@@ -1,0 +1,82 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright 2019, Oath Inc.
+// Licensed under the terms of the Apache-2.0 license. See the LICENSE file in https://github.com/yahoo/tunitas-montara/blob/master/LICENSE for terms.
+#divert <fpp>
+namespace app::exception {
+  //
+  // The package version, as an application exception.
+  //
+  // Usage:
+  //
+  //   throw Version{"program"};
+  //
+  // Usage:
+  //
+  //   try {
+  //     ...
+  //     throw Version{"program"};
+  //     ...
+  //   } catch (tunitas::app::exception::Generic const &g) {
+  //     g.stream() << g << '\n';
+  //     return g.code();          ... equivalently ::exit(g.code());
+  //   }
+  //
+  class [[nodiscard]] Version;
+}
+#endiv
+#divert <hpp>
+#import tunitas.exception.Aspect
+#import tunitas.app.exception.Aspect
+#import tunitas.app.exception.feature.Version
+#import tunitas.exception.feature.Messaging
+#import std.string
+#import std.exception
+class app::exception::Version : public tunitas::exception::Aspect,
+                                public tunitas::app::exception::Aspect,
+                                public tunitas::app::exception::feature::Version,
+                                public tunitas::exception::feature::Messaging,
+                                public std::exception {
+  struct Ancestors {
+    struct Aspects {
+      using Tunitas = tunitas::exception::Aspect;
+      using App = tunitas::app::exception::Aspect;
+    };
+    struct Features {
+      using Version = tunitas::app::exception::feature::Version;
+      using Messaging = tunitas::exception::feature::Messaging;
+    };
+    using Exception = std::exception;
+  };
+public:
+  inline explicit Version(std::string const &NAME);
+  auto what() const noexcept -> char const * final;
+  auto code() const noexcept -> sys::exits::Code final;
+  auto stream() const noexcept -> std::ostream & final;
+private:
+  static auto format(std::string const &NAME) -> std::string;
+};
+#import std.is_abstract
+static_assert(!std::is_abstract_v<app::exception::Version>);
+#endiv
+#divert <ipp>
+#import sys.exits.constants
+app::exception::Version::Version(std::string const &NAME)
+  : Ancestors::Features::Version{}
+  , Ancestors::Features::Messaging{format(NAME)}
+  , Ancestors::Exception{}
+{ }
+#endiv
+#divert <cpp>
+namespace app::exception {
+  auto Version::what() const noexcept -> char const * { return Ancestors::Features::Messaging::what(); }
+  auto Version::code() const noexcept -> sys::exits::Code { return Ancestors::Features::Version::code(); }
+  auto Version::stream() const noexcept -> std::ostream & { return Ancestors::Features::Version::stream(); }
+}
+#import std.ostringstream
+auto app::exception::Version::format(std::string const &NAME) -> std::string {
+  std::ostringstream buf;
+  auto const vstring = "v1.0.0"; // [[FIXTHIS]] to acquire the version from configure.ac; a.k.a. config.h, autotools::autoconf::Config<CONFIG>::version_string()
+  buf << "version: " << NAME << " " << vstring;
+  return buf.str();
+}
+#endiv

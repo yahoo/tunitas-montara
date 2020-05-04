@@ -127,7 +127,7 @@ namespace tunitas::montara::endpoint::aspect {
     filters::enforce_application_json(request, fill);
     if (nullptr == fill) {
       json::String document = json::to(json::STRING(), request.get_content());
-      auto parsed = json::parse(json::failure::returned, document);
+      auto parsed = json::parse(json::failure::RETURNING, document);
       if (!ok(parsed)) {
 	responses::bad_request(fill, "json syntax");
       } else {
@@ -153,7 +153,7 @@ namespace tunitas::montara::endpoint::aspect {
     filters::enforce_application_json(request, fill);
     if (nullptr == fill) {
       json::String document = json::to(json::STRING(), request.get_content());
-      auto parsed = json::parse(json::failure::returned, document);
+      auto parsed = json::parse(json::failure::RETURNING, document);
       if (!ok(parsed)) {
         responses::bad_request(fill, "json syntax");
       } else {

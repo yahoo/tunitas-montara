@@ -18,13 +18,13 @@ auto main(int c, char *v[]) -> int {
 #import std.string
 #import sys.exits.constants
 #import app // cascades from namespace tunitas::app
+#import app.exception.Quitting
 #import app.service.run
 #import app.service.Configuration
 #import app.service.options.Parser
 #import app.service.options.Specification
-#import app.service.Quitting
 #import tunitas.app.Program
-#import tunitas.app.exception.Generic
+#import tunitas.app.exception.Aspect
 auto app::service::main(options::Args args) -> sys::exits::Code {
   Program NAME{args.front()};
   try {
@@ -34,7 +34,7 @@ auto app::service::main(options::Args args) -> sys::exits::Code {
     auto parsed = parser.parse(args);
     if (!ok(parsed)) {
       error(cfg) << "could not parse the options, quitting\n";
-      throw Quitting{NAME};
+      throw exception::Quitting{NAME};
     }
     if (cfg.dry_run_mode) {
       verbose(cfg) << "nothing to do in dry-run mode\n";
@@ -43,8 +43,8 @@ auto app::service::main(options::Args args) -> sys::exits::Code {
       run(cfg);
     }
     return sys::exits::OK;
-  } catch (app::exception::Generic const &g) {
-    g.stream() << g << '\n';
+  } catch (tunitas::app::exception::Aspect const &g) {
+    g.stream() << g.what() << '\n';
     return g.code();
   } catch (std::exception const &e) {
     std::cerr << NAME << ": fatal, an unexpected error - " << e.what() << '\n';

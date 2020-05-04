@@ -1,4 +1,5 @@
 #!/bin/sh
-export PATH="${0%/*}/../../bin:$PATH"
+__topdir="${0%/*}/../.."
+export PATH="${__topdir}/check/bin:${__topdir}/bin:$PATH"
 # --list is a feature of unit-rigging after [what is it? v0.1.?]
 unit --list || echo "FIXME get module-unit-rigging with '--list'"

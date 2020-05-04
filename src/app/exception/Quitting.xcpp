@@ -1,0 +1,59 @@
+// This is -*- c++ -*- in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright 2019, Oath Inc.
+// Licensed under the terms of the Apache-2.0 license. See the LICENSE file in https://github.com/yahoo/tunitas-montara/blob/master/LICENSE for terms.
+#divert <fpp>
+namespace app::exception { class Quitting; }
+#endiv
+#divert <hpp>
+#import tunitas.exception.Aspect
+#import tunitas.app.exception.Aspect
+#import tunitas.app.exception.feature.Quitting
+#import std.runtime_error
+#import std.string
+#import sys.exits.Code
+class app::exception::Quitting : public tunitas::exception::Aspect,
+                                 public tunitas::app::exception::Aspect,
+                                 public tunitas::app::exception::feature::Quitting,
+                                 public std::runtime_error {
+  struct Ancestors {
+    struct Aspects {
+      using Tunitas = tunitas::exception::Aspect;
+      using App = tunitas::app::exception::Aspect;
+    };
+    using Feature = tunitas::app::exception::feature::Quitting;
+    using Exception = std::runtime_error;
+  };
+public:
+  inline explicit Quitting(std::string const &NAME);
+  inline explicit Quitting(std::string const &NAME, sys::exits::Code);
+  auto what() const noexcept -> char const * final;
+  auto code() const noexcept -> sys::exits::Code final;
+  auto stream() const noexcept -> std::ostream & final;
+};
+// Of course this is test code
+#import tunitas.app.required.exception.Quitting
+#import std.is_abstract
+namespace {
+  namespace tests {
+    static_assert(!std::is_abstract_v<app::exception::Quitting>);
+    static_assert(tunitas::app::required::exception::Quitting<app::exception::Quitting>);
+  }
+}
+#endiv
+#divert <ipp>
+#import sys.exits.constants
+app::exception::Quitting::Quitting(std::string const &NAME)
+  : Quitting{NAME, sys::exits::OK}
+{ }
+app::exception::Quitting::Quitting(std::string const &NAME, sys::exits::Code code)
+  : Ancestors::Feature{code}
+  , Ancestors::Exception{NAME + ": quitting"}
+{ }
+#endiv
+#divert <cpp>
+namespace app::exception {
+  auto Quitting::what() const noexcept -> char const * { return Ancestors::Exception::what(); }
+  auto Quitting::code() const noexcept -> sys::exits::Code { return Ancestors::Feature::code(); }
+  auto Quitting::stream() const noexcept -> std::ostream & { return Ancestors::Feature::stream(); }
+}
+#endiv

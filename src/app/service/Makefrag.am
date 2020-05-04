@@ -14,25 +14,27 @@ sbin_montara_service_MODULES = $(call TF_SOURCEStoMODULES, $(sbin_montara_servic
 sbin_montara_service_SOURCES = \
   obj/src/app/service/main.cpp \
   obj/src/app/service/namespace.cpp \
+  obj/src/app/service/Configuration.cpp \
+  obj/src/app/service/Pidfile.cpp \
+  obj/src/app/service/constants.cpp \
+  obj/src/app/service/defaults.cpp \
+  obj/src/app/service/exception.Usage.cpp \
+  obj/src/app/service/run.cpp \
+  \
   obj/src/app/service/options/namespace.cpp \
   obj/src/app/service/options/indicator.cpp \
   obj/src/app/service/options/indicator.constants.cpp \
   obj/src/app/service/options/Specification.cpp \
   obj/src/app/service/options/Parser.cpp \
   obj/src/app/service/options/Parser.Result.cpp \
-  obj/src/app/service/Configuration.cpp \
-  obj/src/app/service/Pidfile.cpp \
-  obj/src/app/service/Quitting.cpp \
-  obj/src/app/service/constants.cpp \
-  obj/src/app/service/defaults.cpp \
-  obj/src/app/service/run.cpp \
-  obj/src/app/service/Usage.cpp \
   $(end)
 
+$(sbin_montara_service_SOURCES) : obj/src/%.cpp : src/%.xcpp
+	$(TV_V_DIS) $(call TF_DISAGGREGATE_COMPILE, $@)
+	$(TF_V_DUN) test -e $@
 $(scold_cxxdir)/app/service/dependencies.mk:
-	$(AM_V_BB1ST) $(call TF_DISAGGREGATE_COMPILE, $(sbin_montara_service_SOURCES))
-	$(AM_V_BB2ND) $(call TF_DEPENDENCIES_COMPILE, $(sbin_montara_service_SOURCES))
-	test -e $@
+	$(TF_V_COM) $(call TF_COMPILE, $(sbin_montara_service_SOURCES))
+	$(TF_V_DUN) test -e $@
 include $(scold_cxxdir)/app/service/dependencies.mk
 clean-dependencies::
 	rm -f $(scold_cxxdir)/app/service/dependencies.mk

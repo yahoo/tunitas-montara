@@ -3,8 +3,6 @@
 // Licensed under the terms of the Apache-2.0 license. See the LICENSE file in https://github.com/yahoo/tunitas-montara/blob/master/LICENSE for terms.
 #divert <fpp>
 #import options.indicator
-#warning FIXTHIS misspelling namespace options::indic----i----ator { }
-namespace options::indicator { }
 namespace app::service::options::indicator {
   using namespace ::options::indicator; // cascade the namespaces
 }

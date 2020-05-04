@@ -14,7 +14,7 @@ dnl make check &&
 dnl make install &&
 dnl echo OK DONE
 dnl
-AC_INIT([montara], [0.1.6], [tunitas@verizonmedia.com])
+AC_INIT([montara], [0.2.0], [tunitas@verizonmedia.com])
 TF_INIT(AC_PACKAGE_NAME, AC_PACKAGE_VERSION, AC_PACKAGE_BUGREPORT)
 
 dnl These options are also in the Makefile.am in AUTOMAKE_OPTIONS
@@ -37,6 +37,7 @@ TF_COMPONENT_METADIRECTORY_TIERS
 TF_ENABLE_GNU
 TF_ENABLE_GDB
 TF_ENABLE_GCC
+TF_ENABLE_LIBTOOL_NO_INSTALL
 TF_ENABLE_MOCK_BUILD
 
 TF_WITH_STD([scold])
@@ -74,5 +75,22 @@ TF_PROG_DC
 
 TF_CHECK_CPPUNIT
 TF_CHECK_JSONCPP
+
+#
+# Supplied by
+#
+#   nonstd-libhttpserver-devel-0.9.0-10.1.ipv6+poll+regex+api+tdd.fc29.gcc8.x86_64
+#                                         <----------+---------->
+#                                                    |
+#   WATCHOUT - you MUST have all these --------------/
+#                                       patches to make it work
+#
+TF_CHECK_PACKAGES([httpserver.Service], [nonstd-libhttpserver-devel])
+TF_CHECK_PACKAGES([httpserver.Service.Create], [nonstd-libhttpserver-devel])
+
+m4_include([ac/with-pkgconfigdir.m4])
+MONTARA_WITH_PKGCONFIGDIR
+pkgconfdir='${prefix}/tunitas/montara'
+AC_DEFINE_UNQUOTED([TUNITAS_MONTARA_PKGCONFDIR], ["$tunitas_montara_pkgconfdir"], [directory containing the configuration files, e.g. /etc/tunitas/montara])
 
 TF_FINALIZE

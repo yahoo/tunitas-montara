@@ -5,16 +5,20 @@
 
 # merely a convenience library
 lib_libapp_la = lib/libapp.la
-lib_libapp_la_LIBADD = $(none)
-
+lib_libapp_la_LIBADD = -ltunitas-app
+lib_libapp_la_MODULES = $(call TF_SOURCEStoMODULES, $(lib_libapp_la_SOURCES))
 lib_libapp_la_SOURCES = \
   obj/src/app/namespace.cpp \
+  obj/src/app/exception/namespace.cpp \
+  obj/src/app/exception/Quitting.cpp \
+  obj/src/app/exception/Version.cpp \
   $(end)
-
+$(lib_libapp_la_SOURCES) : obj/src/%.cpp : src/%.xcpp
+	$(TF_V_DIS) $(call TF_DISAGGREGATE_COMPILE, $@)
+	$(TF_V_DUN) test -e $@
 $(scold_cxxdir)/app/dependencies.mk:
-	$(AM_V_BB1ST) $(call TF_DISAGGREGATE_COMPILE, $(lib_libapp_la_SOURCES))
-	$(AM_V_BB2ND) $(call TF_DEPENDENCIES_COMPILE, $(lib_libapp_la_SOURCES))
-	test -e $@
+	$(TF_V_COM) $(call TF_COMPILE, $(lib_libapp_la_SOURCES))
+	$(TF_V_DUN) test -e $@
 include $(scold_cxxdir)/app/dependencies.mk
 clean-dependencies::
 	rm -f $(scold_cxxdir)/app/dependencies.mk

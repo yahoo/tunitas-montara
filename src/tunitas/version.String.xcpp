@@ -1,0 +1,39 @@
+// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Verizon Media
+// Licensed under the terms of the Apache-2.0 license.
+// For terms, see the LICENSE file at https://github.com/yahoo/tunitas-basics/blob/master/LICENSE
+// For terms, see the LICENSE file at https://git.tunitas.technology/all/components/basics/tree/LICENSE
+#divert <fpp>
+namespace tunitas::version {
+  //
+  // The version string.
+  // Final.
+  //
+  // This is a constant-producing class.
+  //
+  // Usage:
+  //
+  //   auto vvv = Version{};
+  //   cerr << vvv;
+  //
+  class String;
+}
+#endiv
+#divert <hpp>
+#import options.version.String
+#import autotools.autoconf.Config.tunitas.CONFIG
+class tunitas::version::String : public ::options::version::String {
+  using Ancestor = ::options::version::String;
+public:
+  inline String() noexcept(false);  // because of the unfortunate ancestry in std::vector<...>
+private:
+  using AC = autotools::autoconf::Config<CONFIG>;
+};
+#endiv
+#divert <ipp>
+namespace tunitas::version {
+  String::String() noexcept(false)
+    : Ancestor{AC::package_major(), AC::package_minor(), AC::package_patch()}
+  { }
+}
+#endiv

@@ -3,18 +3,18 @@
 # Licensed under the terms of the Apache-2.0 license.
 # See the LICENSE file in https://github.com/yahoo/tunitas-montara/blob/master/LICENSE for terms.
 
-bin_unit = bin/unit
-bin_unit_LDADD = \
+check_bin_unit = check/bin/unit
+check_bin_unit_LDADD = \
   $(lib_libtunitas_montara_la) \
   $(lib_libwant_la) \
   -lunit-bench-module \
   $(end)
-$(bin_unit_OBJECTS): AM_CPPFLAGS+=$(AND_CHECK_CPPFLAGS_SET)
-$(bin_unit_OBJECTS): AM_CXXFLAGS+=$(AND_CHECK_CXXFLAGS_SET) -Wno-deprecated-declarations
-# reminder: autotools does not put $(AM_LDFLAGS) into bin_unit_LDFLAGS, like it does with CPPFLAGS and CXXFLAGS
-bin_unit_LDFLAGS = $(CHECK_LDFLAGS_SET)
-bin_unit_MODULES = $(call TF_SOURCEStoMODULES, $(bin_unit_SOURCES))
-bin_unit_SOURCES = \
+$(check_bin_unit_OBJECTS): AM_CPPFLAGS+=$(AND_CHECK_CPPFLAGS_SET)
+$(check_bin_unit_OBJECTS): AM_CXXFLAGS+=$(AND_CHECK_CXXFLAGS_SET) -Wno-deprecated-declarations
+# reminder: autotools does not put $(AM_LDFLAGS) into check_bin_unit_LDFLAGS, like it does with CPPFLAGS and CXXFLAGS
+check_bin_unit_LDFLAGS = $(CHECK_LDFLAGS_SET)
+check_bin_unit_MODULES = $(call TF_SOURCEStoMODULES, $(check_bin_unit_SOURCES))
+check_bin_unit_SOURCES = \
   obj/src/tests/unit/main.cpp \
   obj/src/tests/unit/namespace.cpp \
   \
@@ -28,10 +28,12 @@ bin_unit_SOURCES = \
   obj/src/tests/unit/storage.memory.Fixture.cpp \
   obj/src/tests/unit/want.Fixture.cpp \
   $(end)
-
+$(check_bin_unit_SOURCES) : obj/src/%.cpp : src/%.xcpp
+	$(TF_V_DIS) $(call TF_DISAGGREGATE_COMPILE, $@)
+	$(TF_V_DUN) test -e $@
 $(scold_cxxdir)/tests/unit/dependencies.mk: Makefile
-	$(AM_V_BB1ST) $(call TF_DISAGGREGATE_COMPILE, $(bin_unit_SOURCES))
-	$(AM_V_BB2ND) $(call TF_DEPENDENCIES_COMPILE, $(bin_unit_SOURCES))
+	$(TF_V_COM) $(call TF_COMPILE, $(check_bin_unit_SOURCES))
+	$(TF_V_DUN) test -e $@
 include $(scold_cxxdir)/tests/unit/dependencies.mk
 clean-dependencies::
 	rm -f $(scold_cxxdir)/tests/unit/dependencies.mk

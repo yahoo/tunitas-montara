@@ -24,18 +24,17 @@ namespace app::service {
 }
 #endiv
 #divert <cpp>
+#import app.exception.Quitting
 #import app.service.constants
 #import app.service.defaults
 #import app.service.Pidfile
-#import app.service.Quitting
-#import httpserver.Webserver
-#import httpserver.Create_Webserver
-namespace httpserver { using Service = Webserver; namespace service { using Create = httpserver::Create_Webserver; } }
+#import httpserver.Service // nonstd-libhttpserver-devel-0.9.0-10.1.ipv6+poll+regex+api+tdd.fc29.gcc8.x86_64
+#import httpserver.service.Create // ibidem.  (should have been vetted in configure.ac
 #import std.boolalpha
 #import std.cout
 #import std.cerr
 #import std.exception
-#import tunitas.app.exception.Generic
+#import tunitas.app.exception.Aspect
 #import tunitas.montara.endpoint.Consent
 #import tunitas.montara.endpoint.Consent_CreateWithArray
 #import tunitas.montara.endpoint.Consent_CreateWithList
@@ -70,7 +69,7 @@ auto app::service::run(Configuration const &cfg) -> void {
         specification.use_ipv6().start_method(METHOD).max_threads(THREADS);
         specification.regex_checking();
 	specification.port(with_port);
-        return std::move(specification);
+        return specification;
       }()};
 #warning [[FIXTHIS]] drop privileges
 
@@ -80,7 +79,7 @@ auto app::service::run(Configuration const &cfg) -> void {
     auto ordered = storage::factory().order(storage_name);
     auto const could_not = [&cfg, &storage_name](char const *verb, std::error_code ec) {
       std::cerr << "error: could not " << verb << " storage engine '" << /*[[FIXTHIS]] format::q(...)*/ storage_name << "' because " << ec.message() << '\n';
-      throw Quitting{cfg.NAME, sys::exits::UNAVAILABLE};
+      throw exception::Quitting{cfg.NAME, sys::exits::UNAVAILABLE};
     };
     if (!ok(ordered)) {
       could_not("acquire", error_code(ordered));
@@ -104,16 +103,16 @@ auto app::service::run(Configuration const &cfg) -> void {
       auto ized = daemon(Chdir::YES, Close::YES);
       if (!ok(ized)) {
 	error(cfg) << "could not daemonize because " << error_code(ized).message() << '\n';
-	throw Quitting{cfg.NAME, sys::exits::FAIL};
+	throw exception::Quitting{cfg.NAME, sys::exits::FAIL};
       }
     }
     pidfile.emit();
     pidfile.close();
-  } catch (tunitas::app::exception::Generic const &e) {
+  } catch (tunitas::app::exception::Aspect const &e) {
     throw;
   } catch (std::exception const &e) {
     error(cfg) << "failed to write the pid file " << cfg.pid_filepath.value_or("stderr") << " because " << e.what() << '\n';
-    throw Quitting{cfg.NAME, sys::exits::FAIL};
+    throw exception::Quitting{cfg.NAME, sys::exits::FAIL};
   }
 
   auto const FAMILY_URL_SENSE = false;

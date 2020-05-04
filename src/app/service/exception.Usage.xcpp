@@ -2,7 +2,9 @@
 // Copyright 2019, Oath Inc.
 // Licensed under the terms of the Apache-2.0 license. See the LICENSE file in https://github.com/yahoo/tunitas-montara/blob/master/LICENSE for terms.
 #divert <fpp>
-namespace app::service {
+#import app.exception
+namespace app::service::exception { using namespace app::exception; } // cascade until such time as there are many herein
+namespace app::service::exception {
   //
   // The usage message, as an application exception
   //
@@ -25,39 +27,60 @@ namespace app::service {
 }
 #endiv
 #divert <hpp>
-#import tunitas.app.exception.Usage
-#import tunitas.app.exception.Messaging
+#import tunitas.exception.Aspect
+#import tunitas.app.exception.Aspect
+#import tunitas.app.exception.feature.Usage
+#import tunitas.exception.feature.Messaging
 #import std.exception
 #import std.string
-class app::service::Usage : public tunitas::app::exception::Usage, public tunitas::app::exception::Messaging, public std::exception {
-  struct ancestors {
-    using Usage = tunitas::app::exception::Usage;
-    using Messaging = tunitas::app::exception::Messaging;
+class app::service::exception::Usage : public tunitas::exception::Aspect,
+                                       public tunitas::app::exception::Aspect,
+                                       public tunitas::app::exception::feature::Usage,
+                                       public tunitas::exception::feature::Messaging,
+                                       public std::exception {
+  struct Ancestors {
+    struct Aspects {
+      using Tunitas = tunitas::exception::Aspect;
+      using App = tunitas::app::exception::Aspect;
+    };
+    struct Features {
+      using Usage = tunitas::app::exception::feature::Usage;
+      using Messaging = tunitas::exception::feature::Messaging;
+    };
     using Exception = std::exception;
   };
 public:
   inline explicit Usage(std::string const &NAME);
   inline Usage(std::string const &NAME, sys::exits::Code);
   auto what() const noexcept -> char const * final;
+  auto code() const noexcept -> sys::exits::Code final;
+  auto stream() const noexcept -> std::ostream & final;
 private:
   static auto format(std::string const &NAME) -> std::string;
 };
+#import std.is_abstract
+static_assert(!std::is_abstract_v<app::service::exception::Usage>);
 #endiv
 #divert <ipp>
 #import sys.exits.constants
-app::service::Usage::Usage(std::string const &NAME)
+app::service::exception::Usage::Usage(std::string const &NAME)
   : Usage{NAME, sys::exits::OK}
 { }
-app::service::Usage::Usage(std::string const &NAME, sys::exits::Code code)
-  : ancestors::Usage{code}
-  , ancestors::Messaging{format(NAME)}
-  , ancestors::Exception{}
+app::service::exception::Usage::Usage(std::string const &NAME, sys::exits::Code code)
+  : Ancestors::Features::Usage{code}
+  , Ancestors::Features::Messaging{format(NAME)}
+  , Ancestors::Exception{}
 { }
 #endiv
 #divert <cpp>
+namespace app::service::exception {
+  auto Usage::what() const noexcept -> char const * { return Ancestors::Features::Messaging::what(); }
+  auto Usage::code() const noexcept -> sys::exits::Code { return Ancestors::Features::Usage::code(); }
+  auto Usage::stream() const noexcept -> std::ostream & { return Ancestors::Features::Usage::stream(); }
+}
 #import std.ostringstream
 #import app.service.defaults
-auto app::service::Usage::format(std::string const &NAME) -> std::string {
+auto app::service::exception::Usage::format(std::string const &NAME) -> std::string {
   std::ostringstream buf;
   buf << "usage: " << NAME << " [...options...]\n"
       << "\n"
@@ -79,8 +102,5 @@ auto app::service::Usage::format(std::string const &NAME) -> std::string {
       << "--verbose, -v                      be verbose (independent of --quiet)\n"
       << "--debug, -d                        debug output (you should not need this)"; // no '\n'
   return buf.str();
-}
-auto app::service::Usage::what() const noexcept -> char const * {
-  return ancestors::Messaging::what();
 }
 #endiv

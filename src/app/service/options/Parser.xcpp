@@ -53,28 +53,28 @@ app::service::options::Parser::Parser(Configuration &modified, Specification con
   : cfg{modified}
   , specification{specification}
 { }
-#import app.service.Quitting
+#import app.exception.Quitting
 #import tunitas.app.options.get_identifier
 auto app::service::options::Parser::get_engine(Step const &step) -> std::string {
-  return tunitas::app::options::get_identifier<Quitting>(cfg, step, "storage engine name");
+  return tunitas::app::options::get_identifier<exception::Quitting>(cfg, step, "storage engine name");
 }
 #import tunitas.app.options.get_filepath
 auto app::service::options::Parser::get_filepath(Step const &step) -> std::filesystem::path {
-  return tunitas::app::options::get_filepath<Quitting>(cfg, step, "pid file");
+  return tunitas::app::options::get_filepath<exception::Quitting>(cfg, step, "pid file");
 }
 #import tunitas.app.options.get_port
 auto app::service::options::Parser::get_port(Step const &step) -> std::uint16_t {
-  return tunitas::app::options::get_port<Quitting>(cfg, step, "service port");
+  return tunitas::app::options::get_port<exception::Quitting>(cfg, step, "service port");
 }
 #endiv
 #divert <cpp>
-#import app.service.Quitting
-#import app.service.Usage
+#import app.exception.Quitting
+#import app.exception.Version
+#import app.service.exception.Usage
 #import app.service.options.Parser.Result
 #import app.service.options.indicator.constants
 #import options.longish.Getter
 #import options.longish.Step
-#import tunitas.montara.Version
 auto app::service::options::Parser::parse(Args &args) -> Result {
   using namespace ::options::longish;
   Getter getter{specification.shortish, specification.longish, args};
@@ -83,10 +83,10 @@ auto app::service::options::Parser::parse(Args &args) -> Result {
     switch (code(step)) {
     case oi::CHR_h:
     case oi::USAGE_SUBCOMMAND:
-      throw Usage{cfg.NAME};
+      throw exception::Usage{cfg.NAME};
     case oi::CHR_V:
     case oi::VERSION_SUBCOMMAND:
-      throw tunitas::montara::Version{cfg.NAME};
+      throw exception::Version{cfg.NAME};
     case oi::CHR_b:
     case oi::BACKGROUND_MODE:
       cfg.foreground_mode = false;
@@ -134,15 +134,15 @@ auto app::service::options::Parser::parse(Args &args) -> Result {
       break;
     case oi::MISSING:
       error(cfg) << "missing value for " << word_in_error(step) << '\n';
-      throw Quitting{cfg.NAME, sys::exits::CONFIG};
+      throw exception::Quitting{cfg.NAME, sys::exits::CONFIG};
     case oi::UNKNOWN:
       error(cfg) << "unknown option " << word_in_error(step) << '\n';
-      throw Quitting{cfg.NAME, sys::exits::CONFIG};
+      throw exception::Quitting{cfg.NAME, sys::exits::CONFIG};
     default:
       // This is a programmer error (reasonably it is a logic_error) because some option from the argv line wasn't configured.
       // It is also substantially untestable in a correctly configured system.
       error(cfg) << "unconfigured option '" << char(code(step)) << "'\n";
-      throw Quitting{cfg.NAME, sys::exits::SOFTWARE};
+      throw exception::Quitting{cfg.NAME, sys::exits::SOFTWARE};
     }
   }
   auto const SUCCESS = true;
