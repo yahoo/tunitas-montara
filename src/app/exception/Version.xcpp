@@ -27,12 +27,13 @@ namespace app::exception {
 }
 #endiv
 #divert <hpp>
-#import tunitas.exception.Aspect
+#import std.exception
+#import std.string
 #import tunitas.app.exception.Aspect
 #import tunitas.app.exception.feature.Version
+#import tunitas.exception.Aspect
 #import tunitas.exception.feature.Messaging
-#import std.string
-#import std.exception
+#import tunitas.montara.version.String
 class app::exception::Version : public tunitas::exception::Aspect,
                                 public tunitas::app::exception::Aspect,
                                 public tunitas::app::exception::feature::Version,
@@ -54,6 +55,8 @@ public:
   auto what() const noexcept -> char const * final;
   auto code() const noexcept -> sys::exits::Code final;
   auto stream() const noexcept -> std::ostream & final;
+  using String = tunitas::montara::version::String;
+  inline auto version() const -> String;
 private:
   static auto format(std::string const &NAME) -> std::string;
 };
@@ -67,6 +70,9 @@ app::exception::Version::Version(std::string const &NAME)
   , Ancestors::Features::Messaging{format(NAME)}
   , Ancestors::Exception{}
 { }
+auto app::exception::Version::version() const -> String {
+  return String{};
+}
 #endiv
 #divert <cpp>
 namespace app::exception {
@@ -77,8 +83,7 @@ namespace app::exception {
 #import std.ostringstream
 auto app::exception::Version::format(std::string const &NAME) -> std::string {
   std::ostringstream buf;
-  auto const vstring = "v1.0.0"; // [[FIXTHIS]] to acquire the version from configure.ac; a.k.a. config.h, autotools::autoconf::Config<CONFIG>::version_string()
-  buf << "version: " << NAME << " " << vstring;
+  buf << "version: " << NAME << " " << String{};
   return buf.str();
 }
 #endiv
