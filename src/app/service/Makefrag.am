@@ -29,13 +29,14 @@ sbin_montara_service_SOURCES = \
   obj/src/app/service/options/Parser.cpp \
   obj/src/app/service/options/Parser.Result.cpp \
   $(end)
-
+#
+$(scold_cxxdir)/app/service/dependencies.mk: $(sbin_montara_service_SOURCES)
 $(sbin_montara_service_SOURCES) : obj/src/%.cpp : src/%.xcpp
-	$(TV_V_DIS) $(call TF_DISAGGREGATE_COMPILE, $@)
-	$(TF_V_DUN) test -e $@
+	$(TF_V_DIS) $(call TF_XCPP2CPP, $^)
+	$(TF_V_DONE) test -e $@
 $(scold_cxxdir)/app/service/dependencies.mk:
-	$(TF_V_COM) $(call TF_COMPILE, $(sbin_montara_service_SOURCES))
-	$(TF_V_DUN) test -e $@
+	$(TF_V_DEP) $(call TF_DEPENDENCIES, $^)
+	$(TF_V_DONE) test -e $@
 include $(scold_cxxdir)/app/service/dependencies.mk
 clean-dependencies::
 	rm -f $(scold_cxxdir)/app/service/dependencies.mk

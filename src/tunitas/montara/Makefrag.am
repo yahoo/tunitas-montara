@@ -125,12 +125,14 @@ lib_libtunitas_montara_la_XCPP_SOURCES = \
   obj/src/tunitas/montara/type/Blob.cpp \
   obj/src/tunitas/montara/type/Entity.cpp \
   $(end)
+#
+$(scold_cxxdir)/tunitas/montara/dependencies.mk: $(lib_libtunitas_montara_la_XCPP_SOURCES)
 $(lib_libtunitas_montara_la_XCPP_SOURCES) : obj/src/%.cpp : src/%.xcpp
-	$(TF_V_DIS) $(call TF_DISAGGREGATE_COMPILE, $@)
-	$(TF_V_DUN) test -e $@
+	$(TF_V_DIS) $(call TF_XCPP2CPP, $^)
+	$(TF_V_DONE) test -e $@
 $(scold_cxxdir)/tunitas/montara/dependencies.mk:
-	$(TF_V_COM) $(call TF_COMPILE, $(lib_libtunitas_montara_la_XCPP_SOURCES))
-	$(TF_V_DUN) test -e $@
+	$(TF_V_DEP) $(call TF_DEPENDENCIES, $^)
+	$(TF_V_DONE) test -e $@
 include $(scold_cxxdir)/tunitas/montara/dependencies.mk
 clean-dependencies::
 	rm -f $(scold_cxxdir)/tunitas/montara/dependencies.mk

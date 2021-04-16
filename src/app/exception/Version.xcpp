@@ -19,7 +19,7 @@ namespace app::exception {
   //     throw Version{"program"};
   //     ...
   //   } catch (tunitas::app::exception::Generic const &g) {
-  //     g.stream() << g << '\n';
+  //     g.stream() << g.what() << '\n';
   //     return g.code();          ... equivalently ::exit(g.code());
   //   }
   //

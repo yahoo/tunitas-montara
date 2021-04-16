@@ -62,9 +62,9 @@ TF_WITH_MODULE([rigging]) dnl a.k.a. unit-rigging -> rigging-unit
 
 TF_MSG_VERBOSE([compiler-specific (alphabetical)])
 TF_WITH_NONSTD([cppunit])
-TF_WITH_NONSTD([gcc]) dnl but modern gcc-7.1.0 & beyond is fine
+TF_WITH_NONSTD([gcc]) dnl but modern gcc-9.3.0 & beyond is fine
 TF_WITH_NONSTD([jsoncpp]) dnl but modern jsoncpp-1.8.4 is fine
-TF_WITH_NONSTD([libhttpserver])
+TF_WITH_NONSTD([libhttpserver]) # WATCHOUT - you MUST have all those patches, else use microhttpd++
 
 AM_PROG_AR
 LT_PREREQ([2.4.2])
@@ -89,7 +89,7 @@ TF_CHECK_JSONCPP
 TF_CHECK_PACKAGES([httpserver.Service], [nonstd-libhttpserver-devel])
 TF_CHECK_PACKAGES([httpserver.Service.Create], [nonstd-libhttpserver-devel])
 
-m4_include([ac/with-pkgconfigdir.m4])
+m4_include([ac/with-pkgconfigdir.m4]) dnl [[FIXTHIS]] into temerarious-flagship (many packages have it)
 MONTARA_WITH_PKGCONFIGDIR
 pkgconfdir='${prefix}/tunitas/montara'
 AC_DEFINE_UNQUOTED([TUNITAS_MONTARA_PKGCONFDIR], ["$tunitas_montara_pkgconfdir"], [directory containing the configuration files, e.g. /etc/tunitas/montara])

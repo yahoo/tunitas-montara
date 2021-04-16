@@ -26,6 +26,7 @@ include @temerarious_flagship_datadir@/am/build.am
 DEVELOPMENT_AREAS = \
   $(module_httpserver_prefix) \
   $(module_json_prefix) \
+  $(module_nonstd_prefix) \
   $(module_options_prefix) \
   $(module_posix_prefix) \
   $(module_std_prefix) \
@@ -90,6 +91,11 @@ check_PROGRAMS = \
 include tests/api/Makefrag.am
 include tests/service/Makefrag.am
 include tests/unit/Makefrag.am
+XFAIL_TESTS = \
+  $(tests_unit_XFAIL_TESTS) \
+  $(tests_service_XFAIL_TESTS) \
+  $(tests_api_XFAIL_TESTS) \
+  $(end)
 TESTS = \
   $(tests_unit_TESTS) \
   $(tests_service_TESTS) \
@@ -104,9 +110,9 @@ TESTS = \
 # -ggdb      ... and recall that -ggdb and -O2 don't play well together
 
 Makefile_COMPILER_CPPFLAGS_SET =
-Makefile_COMPILER_CFLAGS_SET   = -Wall @CFLAGS_gcc@   @CFLAGS_gdb@   -pthread
+Makefile_COMPILER_CFLAGS_SET   = -Wall   @CFLAGS_gcc@   @CFLAGS_gdb@ -pthread
 Makefile_COMPILER_CXXFLAGS_SET = -Wall @CXXFLAGS_gcc@ @CXXFLAGS_gdb@ -pthread
-Makefile_COMPILER_LDFLAGS_SET  = -Wall @LDFLAGS_gcc@  @LDFLAGS_gdb@
+Makefile_COMPILER_LDFLAGS_SET  = -Wall  @LDFLAGS_gcc@  @LDFLAGS_gdb@
 
 Makefile_nonstd_PACKAGE_CPPFLAGS_SET = @nonstd_libhttpserver_CPPFLAGS@
 Makefile_nonstd_PACKAGE_CFLAGS_SET   = @nonstd_libhttpserver_CLAGS@

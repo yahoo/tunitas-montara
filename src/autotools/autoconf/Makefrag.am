@@ -1,8 +1,8 @@
 # This is a GNU -*- Makefile -*- fragment that is included by Automake
 # Copyright Verizon Media
 # Licensed under the terms of the Apache-2.0 license.
-# For terms, see the LICENSE file at https://github.com/yahoo/tunitas-tarwater/blob/master/LICENSE
-# For terms, see the LICENSE file at https://git.tunitas.technology/all/services/tarwater/tree/LICENSE
+# For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+# For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #
 lib_libautotools_autoconf_la = lib/libautotools-autoconf.la
 lib_libautotools_autoconf_la_MODULES = $(call TF_SOURCEStoMODULES, $(lib_libautotools_autoconf_la_SOURCES))
@@ -11,12 +11,13 @@ lib_libautotools_autoconf_la_SOURCES = \
   obj/src/autotools/autoconf/Config.cpp \
   obj/src/autotools/autoconf/Config.tunitas.montara.CONFIG.cpp \
   $(end)
+$(scold_cxxdir)/src/autotools/autoconf/dependencies.mk: $(lib_libautotools_autoconf_la_SOURCES)
 $(lib_libautotools_autoconf_la_SOURCES) : obj/src/%.cpp : src/%.xcpp
-	$(TF_V_DIS) $(call TF_DISAGGREGATE_COMPILE, $@)
-	$(TF_V_DUN) test -e $@
+	$(TF_V_DIS) $(call TF_XCPP2CPP, $^)
+	$(TF_V_DONE) test -e $@
 $(scold_cxxdir)/src/autotools/autoconf/dependencies.mk:
-	$(TF_V_COM) $(call TF_COMPILE, $(lib_libautotools_autoconf_la_SOURCES))
-	$(TF_V_DUN) test -e $@
+	$(TF_V_DEP) $(call TF_DEPENDENCIES, $^)
+	$(TF_V_DONE) test -e $@
 include $(scold_cxxdir)/src/autotools/autoconf/dependencies.mk
 clean-dependencies::
 	rm -f $(scold_cxxdir)/src/autotools/autoconf/dependencies.mk
