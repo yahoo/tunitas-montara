@@ -16,7 +16,7 @@ namespace tunitas::montara::storage::null {
 #divert <hpp>
 #import tunitas.montara.storage.Engine
 class tunitas::montara::storage::null::Engine : public storage::Engine {
-  using ancestor = storage::Engine;
+  using Ancestor = storage::Engine;
 public:
   // There is nothing (new) in the null engine
 };

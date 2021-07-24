@@ -23,7 +23,7 @@ namespace tunitas::montara::endpoint {
 #import tunitas.montara.endpoint.aspect.Storage
 #import tunitas.montara.storage.Subscription
 class tunitas::montara::endpoint::Subscription_FindByEntity : public httpserver::Resource<Subscription_FindByEntity>, aspect::Storage<storage::Subscription> {
-  struct ancestors {
+  struct Ancestors {
     using Resource = httpserver::Resource<Subscription_FindByEntity>;
     using Storage = aspect::Storage<storage::Subscription>;
   };
@@ -42,7 +42,7 @@ private:
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
-  Subscription_FindByEntity::Subscription_FindByEntity(storage::Subscription &store) : ancestors::Storage{store} {
+  Subscription_FindByEntity::Subscription_FindByEntity(storage::Subscription &store) : Ancestors::Storage{store} {
     resources::initialize_only_get(*this);
   }
   auto Subscription_FindByEntity::render_GET(Request const &request, Response **fill) -> void {

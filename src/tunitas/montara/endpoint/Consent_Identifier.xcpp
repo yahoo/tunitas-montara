@@ -29,7 +29,7 @@ class tunitas::montara::endpoint::Consent_Identifier
   : public httpserver::Resource<Consent_Identifier>
   , protected aspect::Storage<storage::Consent>
   , protected aspect::Operations<identifier::Consent, storage::Consent> {
-  struct ancestors {
+  struct Ancestors {
     using Resource = httpserver::Resource<Consent_Identifier>;
     using Storage = aspect::Storage<storage::Consent>;
     using Operations = aspect::Operations<identifier::Consent, storage::Consent>;
@@ -53,7 +53,7 @@ protected:
 #divert <ipp>
 #import tunitas.montara.resources
 namespace tunitas::montara::endpoint {
-  Consent_Identifier::Consent_Identifier(storage::Consent &store) : ancestors::Storage{store} {
+  Consent_Identifier::Consent_Identifier(storage::Consent &store) : Ancestors::Storage{store} {
     resources::initialize_getput(*this);
   }
   auto Consent_Identifier::render_GET(Request const &request, Response *&fill) -> void {

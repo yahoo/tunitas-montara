@@ -23,7 +23,7 @@ namespace tunitas::montara::endpoint {
 #import tunitas.montara.endpoint.aspect.Storage
 #import tunitas.montara.storage.Transfer
 class tunitas::montara::endpoint::Transfer_CreateWithList : public httpserver::Resource<Transfer_CreateWithList>, aspect::Storage<storage::Transfer> {
-  struct ancestors {
+  struct Ancestors {
     using Resource = httpserver::Resource<Transfer_CreateWithList>;
     using Storage = aspect::Storage<storage::Transfer>;
   };
@@ -40,7 +40,7 @@ public:
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
-  Transfer_CreateWithList::Transfer_CreateWithList(storage::Transfer &store) : ancestors::Storage{store} {
+  Transfer_CreateWithList::Transfer_CreateWithList(storage::Transfer &store) : Ancestors::Storage{store} {
     resources::initialize_only_post(*this);
   }
   auto Transfer_CreateWithList::render_POST(Request const &request, Response **fill) -> void {

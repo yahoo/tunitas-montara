@@ -17,13 +17,13 @@ namespace tunitas::montara::storage::null {
 #import tunitas.montara.storage.State
 #import std.ostream
 class tunitas::montara::storage::null::State : public storage::State {
-  using ancestor = storage::State;
+  using Ancestor = storage::State;
 public:
   inline explicit State(std::ostream &);
 };
 #endiv
 #divert <ipp>
 tunitas::montara::storage::null::State::State(std::ostream &log)
-  : ancestor{log} { }
+  : Ancestor{log} { }
 #endiv
 

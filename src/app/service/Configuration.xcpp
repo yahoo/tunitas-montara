@@ -28,9 +28,9 @@ namespace app::service {
 #import std.filesystem.path
 #import tunitas.app.Configuration
 class app::service::Configuration : public tunitas::app::Configuration {
-  using ancestor = tunitas::app::Configuration;
+  using Ancestor = tunitas::app::Configuration;
 public:
-  using ancestor::Configuration;
+  using Ancestor::Configuration;
   std::optional<bool> emit_pid;
   std::optional<std::filesystem::path> pid_filepath;
   std::optional<bool> foreground_mode;

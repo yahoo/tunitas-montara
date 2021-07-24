@@ -29,7 +29,7 @@ class tunitas::montara::endpoint::Consent
   : public httpserver::Resource<Consent>
   , protected aspect::Storage<storage::Consent>
   , protected aspect::Operations<identifier::Consent, storage::Consent> {
-  struct ancestors {
+  struct Ancestors {
     using Resource = httpserver::Resource<Consent>;
     using Storage = aspect::Storage<storage::Consent>;
     using Operations = aspect::Operations<identifier::Consent, storage::Consent>;
@@ -44,7 +44,7 @@ public: // but we wish it wasn't; we wish it wasn't even here [[REMOVEWHEN]] lib
 #divert <ipp>
 #import tunitas.montara.resources
 namespace tunitas::montara::endpoint {
-  Consent::Consent(storage::Consent &store) : ancestors::Storage{store} {
+  Consent::Consent(storage::Consent &store) : Ancestors::Storage{store} {
     resources::initialize_only_post(*this);
   }
   auto Consent::render_POST(Request const &request, Response *&fill) -> void {

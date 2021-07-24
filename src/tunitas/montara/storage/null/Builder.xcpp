@@ -16,7 +16,7 @@ namespace tunitas::montara::storage::null {
 #divert <hpp>
 #import tunitas.montara.storage.Builder
 class tunitas::montara::storage::null::Builder : public storage::Builder {
-  using ancestor = storage::Builder;
+  using Ancestor = storage::Builder;
 public:
   auto build(Configuration const &) -> Result final;
 };

@@ -19,7 +19,7 @@ namespace tunitas::montara::storage::null {
 #import tunitas.montara.storage.Transfer
 #import tunitas.montara.storage.null.State
 class tunitas::montara::storage::null::Transfer : public storage::Transfer {
-  using ancestor = storage::Transfer;
+  using Ancestor = storage::Transfer;
 public:
   inline explicit Transfer(State &);
   auto GET(id::Consent) -> Outcome<type::Blob> override;

@@ -24,7 +24,7 @@ namespace tunitas::montara::storage::memory {
 class tunitas::montara::storage::memory::Subscription
   : public storage::Subscription
   , private memory::aspect::Operations<decltype(State::subscriptions), id::Subscription, type::Blob, Outcome<type::Blob>> {
-  struct ancestors {
+  struct Ancestors {
     using Storage = storage::Subscription;
     using Operations = memory::aspect::Operations<decltype(State::subscriptions), id::Subscription, type::Blob, Outcome<type::Blob>>;
   };

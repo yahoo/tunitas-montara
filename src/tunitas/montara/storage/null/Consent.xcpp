@@ -19,7 +19,7 @@ namespace tunitas::montara::storage::null {
 #import tunitas.montara.storage.Consent
 #import tunitas.montara.storage.null.State
 class tunitas::montara::storage::null::Consent : public storage::Consent {
-  using ancestor = storage::Consent;
+  using Ancestor = storage::Consent;
 public:
   inline explicit Consent(State &);
   auto DELEET(id::Consent) -> outcome::Success override;

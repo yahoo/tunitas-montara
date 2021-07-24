@@ -28,7 +28,7 @@ class tunitas::montara::endpoint::Subscription
   : public httpserver::Resource<Subscription>
   , protected aspect::Storage<storage::Subscription>
   , protected aspect::Operations<identifier::Subscription, storage::Subscription> {
-  struct ancestors {
+  struct Ancestors {
     using Resource = httpserver::Resource<Subscription>;
     using Storage = aspect::Storage<storage::Subscription>;
     using Operations = aspect::Operations<identifier::Subscription, storage::Subscription>;
@@ -43,7 +43,7 @@ public: // but we wish it wasn't; we wish it wasn't even here [[REMOVEWHEN]] lib
 #divert <ipp>
 #import tunitas.montara.resources
 namespace tunitas::montara::endpoint {
-  Subscription::Subscription(storage::Subscription &store) : ancestors::Storage{store} {
+  Subscription::Subscription(storage::Subscription &store) : Ancestors::Storage{store} {
     resources::initialize_only_post(*this);
   }
   auto Subscription::render_POST(Request const &request, Response *&fill) -> void {

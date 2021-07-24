@@ -35,7 +35,7 @@ class tunitas::montara::endpoint::Consent_Revoke_Identifier
   : public httpserver::Resource<Consent_Revoke_Identifier>
   , protected aspect::Storage<storage::Consent>
   , protected aspect::Operations<identifier::Consent, storage::Consent> {
-  struct ancestors {
+  struct Ancestors {
     using Resource = httpserver::Resource<Consent_Revoke_Identifier>;
     using Storage = aspect::Storage<storage::Consent>;
     using Operations = aspect::Operations<identifier::Consent, storage::Consent>;
@@ -62,7 +62,7 @@ protected:
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
-  Consent_Revoke_Identifier::Consent_Revoke_Identifier(storage::Consent &store) : ancestors::Storage{store}  {
+  Consent_Revoke_Identifier::Consent_Revoke_Identifier(storage::Consent &store) : Ancestors::Storage{store}  {
     resources::initialize_only_post(*this);
   }
   auto Consent_Revoke_Identifier::render_POST(Request const &request, Response *&fill) -> void {

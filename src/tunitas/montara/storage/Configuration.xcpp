@@ -26,9 +26,9 @@ namespace tunitas::montara::storage {
 #import tunitas.montara.storage.required.Configurable
 #import tunitas.montara.storage.configuration.Variant
 class tunitas::montara::storage::Configuration : public std::map<std::string, configuration::Variant> {
-  using ancestor = std::map<std::string, configuration::Variant>;
+  using Ancestor = std::map<std::string, configuration::Variant>;
 public:
-  using ancestor::map;
+  using Ancestor::map;
   template<required::Configurable TYPE> inline auto get(std::string const &key) const -> Outcome<TYPE>;
   template<required::Configurable TYPE> inline auto get_otherwise(std::string const &key, TYPE otherwise) const -> TYPE;
 };
@@ -39,16 +39,16 @@ public:
 namespace tunitas::montara::storage {
   template<required::Configurable TYPE> auto Configuration::get(std::string const &key) const -> Outcome<TYPE> {
     using Result = Outcome<TYPE>;
-    auto found = ancestor::find(key);
-    if (ancestor::end() == found) {
+    auto found = Ancestor::find(key);
+    if (Ancestor::end() == found) {
       return Result{error::Code::NO_SUCH_KEY_IN_CONFIGURATION};
     } {
       return Result{configuration::as<TYPE>(found->second)};
     }
   }
   template<required::Configurable TYPE> auto Configuration::get_otherwise(std::string const &key, TYPE otherwise) const -> TYPE {
-    auto found = ancestor::find(key);
-    if (ancestor::end() == found) {
+    auto found = Ancestor::find(key);
+    if (Ancestor::end() == found) {
       return otherwise;
     } else {
       return configuration::as<TYPE>(found->second);
