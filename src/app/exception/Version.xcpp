@@ -52,9 +52,10 @@ class app::exception::Version : public tunitas::exception::Aspect,
   };
 public:
   inline explicit Version(std::string const &NAME);
-  auto what() const noexcept -> char const * final;
-  auto code() const noexcept -> sys::exits::Code final;
-  auto stream() const noexcept -> std::ostream & final;
+  auto what() const noexcept -> char const * override final;
+  auto stream() const noexcept -> std::ostream & override final;
+  auto code() const noexcept -> sys::exits::Code override final;
+  auto exit() const noexcept -> sys::exits::Code override final;
   using String = tunitas::montara::version::String;
   inline auto version() const -> String;
 private:
@@ -75,15 +76,16 @@ auto app::exception::Version::version() const -> String {
 }
 #endiv
 #divert <cpp>
+#import std.ostringstream
 namespace app::exception {
   auto Version::what() const noexcept -> char const * { return Ancestors::Features::Messaging::what(); }
-  auto Version::code() const noexcept -> sys::exits::Code { return Ancestors::Features::Version::code(); }
   auto Version::stream() const noexcept -> std::ostream & { return Ancestors::Features::Version::stream(); }
-}
-#import std.ostringstream
-auto app::exception::Version::format(std::string const &NAME) -> std::string {
-  std::ostringstream buf;
-  buf << "version: " << NAME << " " << String{};
-  return buf.str();
+  auto Version::code() const noexcept -> sys::exits::Code { return Ancestors::Features::Version::code(); }
+  auto Version::exit() const noexcept -> sys::exits::Code { return Ancestors::Features::Version::code(); }
+  auto Version::format(std::string const &NAME) -> std::string {
+    std::ostringstream buf;
+    buf << "version: " << NAME << " " << String{};
+    return buf.str();
+  }
 }
 #endiv
