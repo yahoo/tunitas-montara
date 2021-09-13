@@ -25,10 +25,10 @@ The Montara service is a member of the Tunitas family of components and services
   * [Tunitas Butano](https://github.com/yahoo/tunitas-butano) package of components for the IAB's Transparency & Consent Framework.
   * [Temerarious Flagship](https://github.com/yahoo/temerarious-flagship), the build system
 
-* [Design Changes](https://git.ouroath.com/tunitas/montara/blob/master/doc/Design-Changes.md)
-* [The Data Types](https://git.ouroath.com/tunitas/montara/blob/master/doc/Data-Types.md)
-* [The Response Codes](https://git.ouroath.com/tunitas/montara/blob/master/doc/Response-Codes.md)
-* [The REST API Endpoints](https://git.ouroath.com/tunitas/montara/blob/master/doc/REST-Endpoints.md)
+* [Design Changes](https://github.com/yahoo/tunitas-montara/blob/master/doc/Design-Changes.md)
+* [The Data Types](https://github.com/yahoo/tunitas-montara/blob/master/doc/Data-Types.md)
+* [The Response Codes](https://github.com/tunitas-montara/blob/master/doc/Response-Codes.md)
+* [The REST API Endpoints](https://github.com/tunitas-montara/blob/master/doc/REST-Endpoints.md)
 
 ## Dependencies
 
@@ -122,10 +122,10 @@ The Montara service is intended to facilitate access to a data base technology w
 Please refer to [the contributing.md file](Contributing.md) for information about how to get involved. We welcome issues, questions, and pull requests. Pull Requests are welcome.
 
 ## Maintainers
-- Wendell Baker <wbaker@verizonmedia.com>
-- The Tunitas Team at Verizon Media.
+- Wendell Baker <wbaker@yahooinc.com>
+- The Tunitas Team at Yahoo.
 
-You may contact us at least at <tunitas@verizonmedia.com>
+You may contact us at least at <tunitas@yahooinc.com>
 
 ## License
 

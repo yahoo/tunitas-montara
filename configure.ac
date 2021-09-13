@@ -1,5 +1,5 @@
 dnl This is a GNU -*- autoconf -*- specification that is processed by Autoconf.
-dnl Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+dnl Yahoo Inc. 2021
 dnl Licensed under the terms of the Apache-2.0 license.
 dnl For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 dnl For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -15,7 +15,7 @@ dnl make check &&
 dnl make install &&
 dnl echo OK DONE
 dnl
-AC_INIT([montara], [0.2.0], [tunitas@verizonmedia.com])
+AC_INIT([montara], [0.2.0], [tunitas@yahooinc.com])
 TF_INIT(AC_PACKAGE_NAME, AC_PACKAGE_VERSION, AC_PACKAGE_BUGREPORT)
 
 dnl These options are also in the Makefile.am in AUTOMAKE_OPTIONS
