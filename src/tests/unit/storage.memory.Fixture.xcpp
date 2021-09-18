@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -7,10 +7,7 @@
 namespace tests::unit::storage::memory { class Fixture; }
 #endiv
 #divert <hpp>
-#import cppunit.Test
-#import cppunit.test.Fixture
-class tests::unit::storage::memory::Fixture : public cppunit::test::Fixture {
-public:
+struct tests::unit::storage::memory::Fixture : public cppunit::test::Fixture {
   auto test_something() -> void;
   static auto suite() -> cppunit::Test *;
 };
@@ -21,14 +18,11 @@ using namespace std::string_literals;
 auto tests::unit::storage::memory::Fixture::test_something() -> void {
   CPPUNIT_ASSERT(true);
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
 auto tests::unit::storage::memory::Fixture::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace rigging::suite;
   Stream series("memory");
   series << call("something", &Fixture::test_something)
     ;
-  return series.release();
+  return finalize(series);
 }
 #endiv

@@ -1,8 +1,10 @@
 #!/bin/bash
-# Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+# Copyright Yahoo Inc, 2021.
 # Licensed under the terms of the Apache-2.0 license.
-# For terms, see the LICENSE file at https://github.com/yahoo/tunitas-butano/blob/master/LICENSE
-# For terms, see the LICENSE file at https://git.tunitas.technology/all/components/butano/tree/LICENSE
+# For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+# For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
+#
+# This is "simpler"? u.r. kidding, yes?
 #
 # the full end-to-end build using the "nearby" development trees
 #
@@ -41,7 +43,7 @@
 # Debugging the initial buildconf-configure-make
 #
 #   YOU SEE -----> config.status: executing depfiles commands
-#   YOU SEE -----> config.status: error: in `/build/tunitas/butano':
+#   YOU SEE -----> config.status: error: in `/build/tunitas/montara':
 #   YOU SEE -----> config.status: error: Something went wrong bootstrapping makefile fragments
 #   YOU SEE ----->     for automatic dependency tracking.  Try re-running configure with the
 #   YOU SEE ----->     '--disable-dependency-tracking' option to at least be able to build
@@ -125,9 +127,12 @@ fi
 #
 function set_all_defaults_no() {
     : ${with_hypogeal_twilight:=${with_std_scold?}} # not needed in after hypogeal-twilight >= 0.43 or 0.44 or so
+    : ${with_microhttpd__:=no}
+    : ${with_module_format:=no}
     : ${with_module_half:=no}
-    : ${with_module_httpserver:=no}
+    : ${with_module_ip:=no}
     : ${with_module_json:=no}
+    : ${with_module_langu:=no}
     : ${with_module_nonstd:=no}
     : ${with_module_options:=no}
     : ${with_module_posix:=no}
@@ -139,9 +144,12 @@ function set_all_defaults_no() {
 }
 function set_all_defaults_relatively() {
     : ${with_hypogeal_twilight:=$1/hypogeal-twilight}
+    : ${with_microhttpd__:=${2:-$1}/microhttpd++}
+    : ${with_module_format:=$1/module-format}
     : ${with_module_half:=$1/module-half}
-    : ${with_module_httpserver:=$1/module-httpserver}
+    : ${with_module_ip:=$1/module-ip}
     : ${with_module_json:=$1/module-json}
+    : ${with_module_langu:=$1/module-langu}
     : ${with_module_nonstd:=$1/module-nonstd}
     : ${with_module_options:=$1/module-options}
     : ${with_module_posix:=$1/module-posix}
@@ -151,6 +159,14 @@ function set_all_defaults_relatively() {
     : ${with_module_sys:=$1/module-sys}
     : ${with_module_uuid:=$1/module-uuid}
 }
+if [[ -n ${with_microhttpd} ]] ; then
+    __deprecated=with_microhttpd
+    __preferred=with_microhttpd__
+    __displayed=microhttpd++
+    echo "${0##*/}: warning, '${__deprecated?}' should be '${__preferred?} (${__displayed?})"
+    echo "${0##*/}: notice, assigning ${__deprecated?}=${with_microhttpd} into '${__preferred?} for ${__displayed})"
+    : ${with_microhttpd__:=${with_microhttpd}}
+fi 1>&2
 if [[ no == ${__submodules_nearby:-no} ]] && [[ no == ${with_scold_nearby} ]] ; then
     set_all_defaults_no
 elif [[ yes == ${__submodules_nearby:-no} ]] ; then
@@ -164,7 +180,7 @@ elif [[ no != ${with_scold_nearby} ]] ; then
 else
     set_all_defaults_no
 fi
-: ${with_nonstd_gcc:=/exp/gcc/9} # ... WATCHOUT you, the caller must ensure that PATH is set consistenly with this
+: ${with_nonstd_gcc:=/exp/gcc/${GCC:-11}} # ... WATCHOUT you, the caller must ensure that PATH is set consistenly with this
 # check whether this is different than what PATH finds in the natural course.
 if type -p gcc 2>/dev/null ; then
     exe=$(type -p gcc 2>/dev/null)
@@ -176,11 +192,13 @@ if type -p gcc 2>/dev/null ; then
         echo "${0}: notice, permanently fix this as -- PATH=${with_nonstd_gcc}/bin:\$PATH with_nonstd_gcc=${with_nonstd_gcc} $0"
     fi 1>&2
 fi
-: ${with_nonstd_libhttpserver:=/opt/nonstd/libhttpserver} # ... REQUIRED at least nonstd-libhttpserver-0.9.0-8.1.ipv6+poll+regex
 : ${with_nonstd_half:=/opt/nonstd/half} # ..................... REQUIRED because there is no "standard half"
 : ${with_nonstd_jsoncpp:=no} # else /opt/nonstd/jsoncpp # ..... OPTIONAL nowadays
 : ${with_temerarious_flagship:=${with_tunitas_nearby?}/temerarious-flagship}
-: ${with_tunitas_basics:=${with_tunitas_nearby?}/basics}
+: ${with_tunitas_basics:=$(if [[ -d ${with_siblings?}/basics ]] ; then echo ${with_siblings?}/basics; else echo ${with_tunitas_nearby?}/basics; fi)}
+: ${CPPFLAGS:=-Wno-cpp}
+: ${CXXFLAGS:=-ggdb -O0 -Wno-deprecated-declarations}
+: ${LDFLAGS:=-ggdb -O0 -no-install}
 eval \
     ${prefix:+prefix=$prefix} \
     ${with_hypogeal_twilight:+with_hypogeal_twilight=$with_hypogeal_twilight} \
@@ -197,13 +215,15 @@ eval \
     ${with_nonstd_gcc:+--with-nonstd-gcc=$with_nonstd_gcc} \
     ${with_hypogeal_twilight:+--with-hypogeal-twilight=$with_hypogeal_twilight} \
     ${with_temerarious_flagship:+--with-temerarious-flagship=$with_temerarious_flagship} \
+    ${with_microhttpd__:+--with-microhttpd++=$with_microhttpd__} \
     ${with_module_c:+--with-module-c=$with_module_c} \
     ${with_module_half:+--with-module-half=$with_module_half} \
     ${with_nonstd_half:+--with-nonstd-half=$with_nonstd_half} \
-    ${with_module_httpserver:+--with-module-httpserver=$with_module_httpserver} \
-    ${with_nonstd_libhttpserver:+--with-nonstd-libhttpserver=$with_nonstd_libhttpserver} \
+    ${with_module_format:+--with-module-format=$with_module_format} \
+    ${with_module_ip:+--with-module-ip=$with_module_ip} \
     ${with_module_json:+--with-module-json=$with_module_json} \
     ${with_nonstd_jsoncpp:+--with-nonstd-jsoncpp=$with_nonstd_jsoncpp} \
+    ${with_module_langu:+--with-module-langu=$with_module_langu} \
     ${with_module_nonstd:+--with-module-nonstd=$with_module_nonstd} \
     ${with_module_options:+--with-module-options=$with_module_options} \
     ${with_module_posix:+--with-module-posix=$with_module_posix} \
@@ -216,6 +236,6 @@ eval \
     ${with_std_tunitas:+--with-std-tunitas=$with_std_tunitas} \
     ${with_std_scold:+--with-std-scold=$with_std_scold} \
     ${end} &&
-make &&
-make check &&
+make ${MAKEFLAGS:+MAKEFLAGS="$MAKEFLAGS"} ${CPPFLAGS:+CPPFLAGS="$CPPFLAGS"} ${CXXFLAGS:+CXXFLAGS="$CXXFLAGS"} ${LDFLAGS:+LDFLAGS="$LDFLAGS"} &&
+make check ${MAKEFLAGS:+MAKEFLAGS="$MAKEFLAGS"} ${CPPFLAGS:+CPPFLAGS="$CPPFLAGS"} ${CXXFLAGS:+CXXFLAGS="$CXXFLAGS"} ${LDFLAGS:+LDFLAGS="$LDFLAGS"} &&
 echo OK DONE

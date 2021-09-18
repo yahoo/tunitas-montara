@@ -1,5 +1,5 @@
 # This is a GNU -*- Makefile -*- fragment that is included by Automake
-# Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+# Copyright Yahoo Inc, 2021.
 # Licensed under the terms of the Apache-2.0 license.
 # For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 # For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -22,16 +22,30 @@ default:
 # SUBDIRS = @subdirs@
 include @temerarious_flagship_datadir@/am/build.am
 
+#
+# There is addenda code for perl::split in microhttpd that MUST precede module-langu == 0.2
+#
+# Witness:
+#   src/microhttpd/path/actualities/prepare.xcpp: In lambda function:
+#   src/microhttpd/path/actualities/prepare.xcpp:54:78: error: ‘Elide’ was not declared in this scope
+#
+DEVELOPMENT_AREAS_microhttpd_addenda_before_mainline_langu_FIXTHIS = $(microhttpd___prefix) $(module_langu_prefix) 
+#
 # These match with TF_WITH_MODULE in configure.ac
 DEVELOPMENT_AREAS = \
-  $(module_httpserver_prefix) \
+  $(DEVELOPMENT_AREAS_microhttpd_addenda_before_mainline_langu_FIXTHIS) \
+  \
+  $(module_format_prefix) \
+  $(module_ip_prefix) \
   $(module_json_prefix) \
+  $(module_langu_prefix) \
   $(module_nonstd_prefix) \
   $(module_options_prefix) \
   $(module_posix_prefix) \
   $(module_std_prefix) \
   $(module_string_prefix) \
   $(module_sys_prefix) \
+  $(microhttpd___prefix) \
   $(tunitas_basics_prefix) \
   $(end)
 TESTING_AREAS = \
@@ -42,7 +56,6 @@ INSTALLATION_AREAS = \
   $(nonstd_cppunit_prefix) \
   $(nonstd_gcc_prefix) \
   $(nonstd_jsoncpp_prefix) \
-  $(nonstd_libhttpserver_prefix) \
   $(std_scold_prefix) \
   $(std_tunitas_prefix) \
   $(end)
@@ -62,6 +75,7 @@ clean-local:: clean-dependencies
 include src/app/Makefrag.am
 include src/app/service/Makefrag.am
 include src/autotools/autoconf/Makefrag.am
+include src/tests/pong/Makefrag.am
 include src/tests/unit/Makefrag.am
 include src/tunitas/montara/Makefrag.am
 include src/want/Makefrag.am
@@ -86,18 +100,23 @@ noinst_LTLIBRARIES = \
   $(end)
 check_PROGRAMS = \
   $(check_bin_unit) \
+  $(check_bin_pong) \
   $(end)
 
 include tests/api/Makefrag.am
 include tests/service/Makefrag.am
 include tests/unit/Makefrag.am
+tests_pong_XFAIL_TESTS = 
+tests_pong_TESTS = tests/pong/all.test
 XFAIL_TESTS = \
   $(tests_unit_XFAIL_TESTS) \
+  $(tests_pong_XFAIL_TESTS) \
   $(tests_service_XFAIL_TESTS) \
   $(tests_api_XFAIL_TESTS) \
   $(end)
 TESTS = \
   $(tests_unit_TESTS) \
+  $(tests_pong_TESTS) \
   $(tests_service_TESTS) \
   $(tests_api_TESTS) \
   $(end)
@@ -112,12 +131,13 @@ TESTS = \
 Makefile_COMPILER_CPPFLAGS_SET =
 Makefile_COMPILER_CFLAGS_SET   = -Wall   @CFLAGS_gcc@   @CFLAGS_gdb@ -pthread
 Makefile_COMPILER_CXXFLAGS_SET = -Wall @CXXFLAGS_gcc@ @CXXFLAGS_gdb@ -pthread
-Makefile_COMPILER_LDFLAGS_SET  = -Wall  @LDFLAGS_gcc@  @LDFLAGS_gdb@
+Makefile_COMPILER_LDFLAGS_SET  = -Wall  @LDFLAGS_gcc@  @LDFLAGS_gdb@ -pthread
 
-Makefile_nonstd_PACKAGE_CPPFLAGS_SET = @nonstd_libhttpserver_CPPFLAGS@
-Makefile_nonstd_PACKAGE_CFLAGS_SET   = @nonstd_libhttpserver_CLAGS@
-Makefile_nonstd_PACKAGE_CXXFLAGS_SET = @nonstd_libhttpserver_CXXFLAGS@
-Makefile_nonstd_PACKAGE_LDFLAGS_SET  = @nonstd_libhttpserver_LDFLAGS@
+# configure.ac: TF_WITH_NONSTD([something-something])
+Makefile_nonstd_PACKAGE_CPPFLAGS_SET = 
+Makefile_nonstd_PACKAGE_CFLAGS_SET   = 
+Makefile_nonstd_PACKAGE_CXXFLAGS_SET = 
+Makefile_nonstd_PACKAGE_LDFLAGS_SET  = 
 
 Makefile_PACKAGE_CPPFLAGS_SET = @CPPFLAGS_jsoncpp@
 Makefile_PACKAGE_CFLAGS_SET   =   @CFLAGS_jsoncpp@

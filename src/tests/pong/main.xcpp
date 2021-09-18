@@ -1,0 +1,130 @@
+// This is C++ 23 -*- c++ -*- -std=c++23 in the stylings of the S.C.O.L.D. design method which is so popular nowadays.
+// For terms and provenance see the LICENSE file at the top of the repository.
+#divert <fpp>
+#import sys.exits.Code
+namespace tests::pong {
+  namespace packaging::main::implementation {
+    using Exit = sys::exits::Code;
+  }
+}
+#endiv
+#divert <hpp>
+#import tests.pong.Arguments
+#import std.string
+#import microhttpd.ip.Port
+#import ip.endian.host_order
+namespace tests::pong {
+  namespace packaging::main::implementation {
+    inline auto const NAME = std::string{"pong"};
+    inline auto const PORT = microhttpd::ip::Port{::ip::endian::host_order<::ip::in::port_t>(47309u)}; // the number is magic and specific for this test
+    namespace interface {
+      auto main(Arguments) -> Exit;
+    }
+  }
+  using packaging::main::implementation::interface::main;
+}
+#endiv
+#divert <ipp>
+#import sys.exits.constants
+#import sys.time.durations.literals
+namespace tests::pong::packaging::main::implementation {
+  using namespace sys::exits::constants;
+  using namespace sys::time::durations::literals;
+}
+#endiv
+#divert <cpp>
+#import microhttpd.Success
+#import microhttpd.Service
+#import microhttpd.service.Specification
+#import microhttpd.Request
+#import microhttpd.literals
+#import nonstd.copy
+#import std.clog
+#import std.make_shared
+#import tests.pong.pause
+#import tests.pong.Pong
+namespace tests::pong::packaging::main::implementation {
+  auto interface::main(Arguments arguments) -> Exit {
+    auto exe = [&arguments]() {
+                 auto save = arguments.front();
+                 arguments.pop_front();
+                 return save;
+               }();
+    auto [do_pause, do_usage, bad_usage, not_empty] = [&arguments]() -> std::tuple<bool, bool, bool, bool> {
+      using namespace microhttpd::literals;
+      if (arguments.empty()) {
+        return {false, false, false, false}; // i.e. nothing wrong with this
+      } else {
+        auto first = [&arguments]() {
+                       auto first = arguments.front();
+                       arguments.pop_front();
+                       return first;
+                     }();
+        if (first.empty())          { return {false, false, true, false}; }
+        if ('-' != first.front())   { return {false, false, false, true}; }
+        if (!arguments.empty())     { return {false, false, false, true}; }
+        //
+        if ("--no-pause"s == first) { return {false, false, false, false}; }
+        if ("--pause"s == first)    { return {true, false, false, false}; }
+        if ("--usage"s == first)    { return {false, true, false, false}; }
+        if ("--help"s == first)     { return {false, true, false, false}; }
+        return {false, false, true, false};          
+      }
+    }();
+    if (bad_usage) {
+      std::clog << exe << ": error, that is not an option for the " << NAME << " service\n"
+                << exe << ": notice, try --usage to see the options\n";
+      return USAGE;
+    } else if (not_empty) {
+      std::clog << exe << ": error, the " << NAME << " service does not accept words beyond the options\n";
+      return USAGE;
+    } else if (do_usage) {
+      std::clog << "usage: pong [ --no-pause | --pause | --help | --usage ]\n";
+      return OK;
+    } else {
+      auto const pathfrag = "/ping"s;
+      {
+        auto const url = "http://localhost:"s + to_string(PORT) + pathfrag;
+        std::cout << "call-to-action: [[do this]] try contacting the service to prove that it is running\n"
+                  << "curl " << url << '\n';
+      }
+      auto service = []() {
+                       using namespace microhttpd::service;
+                       auto spec = Specification{PORT};
+                       return Service{move(spec)};
+                     }();
+      service.router.enregister(nonstd::copy(pathfrag), std::make_shared<Pong>());
+      {
+        // try a dry run before launching the service.
+        using Generator = microhttpd::event::Event<microhttpd::event::Stage::RECEIVE>;
+        auto q = Generator::request(service, pathfrag);
+        auto p = microhttpd::path::Path{pathfrag};
+        service.router.route(p).GET(q);
+      }
+      auto complain = [exe](microhttpd::Success result, microhttpd::string::Sequencez verb) {
+                        auto ec = error_code(result);
+                        std::clog << exe << ": error, could not " << verb << " the " << NAME << " service because " << ec.message() << '\n';
+                        return FAIL;
+                      };
+      if (auto launched = service.launch(); !good(launched)) {
+        return complain(launched, "launch");
+      } else {
+        auto exit = OK;
+        // the service is running, if we quit now then the service dies.
+        if (do_pause) {
+          std::clog << "...pausing while the service runs in the background...\n";
+          if (auto paused = pong::pause(120_sec); fail(paused)) {
+            std::clog << exe << ": error, could not pause because " << error_code(paused).message() << '\n';
+            exit &= FAIL; // but we must continue to try to shut down the service gracefully.
+          }
+        } else {
+          std::clog << "...not pausing, quitting...\n";
+        }
+        service.wait();
+        service.stop();
+        return exit;
+      }
+    }
+  }
+}
+#endiv

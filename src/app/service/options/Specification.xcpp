@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -64,6 +64,14 @@ app::service::options::Specification::Specification()
 	    {"foreground", oa::NO, oi::FOREGROUND_MODE},
 	    {"bg", oa::NO, oi::BACKGROUND_MODE},
 	    {"background", oa::NO, oi::BACKGROUND_MODE},
+	    {"user", oa::REQUIRED, oi::DAEMON_USER},
+	    {"daemon-user", oa::REQUIRED, oi::DAEMON_USER},
+	    {"group", oa::REQUIRED, oi::DAEMON_GROUP},
+	    {"daemon-group", oa::REQUIRED, oi::DAEMON_GROUP},
+	    {"drop", oa::NO, oi::DROP_PRIVILEGES},
+	    {"drop-privileges", oa::NO, oi::DROP_PRIVILEGES},
+	    {"no-drop", oa::NO, oi::NO_DROP_PRIVILEGES},
+	    {"no-drop-privileges", oa::NO, oi::NO_DROP_PRIVILEGES},
 	    {"pid", oa::NO, oi::EMIT_PID},
 	    {"emit-pid", oa::NO, oi::EMIT_PID},
 	    {"pidfile", oa::REQUIRED, oi::PID_FILEPATH},

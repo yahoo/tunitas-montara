@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -25,24 +25,19 @@ namespace tunitas::montara::endpoint {
 #import tunitas.montara.endpoint.aspect.Storage
 #import tunitas.montara.identifier.Subscription
 #import tunitas.montara.storage.Subscription
-class tunitas::montara::endpoint::Subscription_Identifier
-  : public httpserver::Resource<Subscription_Identifier>
-  , protected aspect::Storage<storage::Subscription>
-  , protected aspect::Operations<identifier::Subscription, storage::Subscription> {
-  struct ancestors {
-    using Resource = httpserver::Resource<Subscription_Identifier>;
+class tunitas::montara::endpoint::Subscription_Identifier : public microhttpd::Resource,
+                                                            protected aspect::Storage<storage::Subscription>,
+                                                            protected aspect::Operations<identifier::Subscription, storage::Subscription> {
+  struct Ancestors {
+    using Resource = microhttpd::Resource;
     using Storage = aspect::Storage<storage::Subscription>;
     using Operations = aspect::Operations<identifier::Subscription, storage::Subscription>;
   };
 public:
   inline explicit Subscription_Identifier(storage::Subscription &);
-  inline auto render_DELETE(Request const &, [[out]] Response *&fill) -> void;
-  inline auto render_GET(Request const &, [[out]] Response *&fill) -> void;
-  inline auto render_PUT(Request const &, [[out]] Response *&fill) -> void;
-public: // but we wish it wasn't; we wish it wasn't even here [[REMOVEWHEN]] libhttpserver has an appropriate function signature
-  inline auto render_DELETE(Request const &r, [[out]] Response **f) -> void { render_DELETE(r, *f); }
-  inline auto render_GET(Request const &r, [[out]] Response **f) -> void { render_GET(r, *f); }
-  inline auto render_PUT(Request const &r, [[out]] Response **f) -> void { render_PUT(r, *f); }
+  inline auto DELETE(Request const &) -> Transport;
+  inline auto GET(Request const &) -> Transport;
+  inline auto PUT(Request const &) -> Transport;
 protected:
   // [[FIXTHIS]] construct the URL in run.cpp so that these to guarantee to match
   // this must match the name used in run.cpp -----------\ (here)
@@ -53,19 +48,10 @@ protected:
 };
 #endiv
 #divert <ipp>
-#import tunitas.montara.resources
 namespace tunitas::montara::endpoint {
-  Subscription_Identifier::Subscription_Identifier(storage::Subscription &store) : ancestors::Storage{store} {
-    resources::initialize_getdelete(*this);
-  }
-  auto Subscription_Identifier::render_DELETE(Request const &request, Response *&fill) -> void {
-    dleet(request, fill, store, PARAMETER_NAME);
-  }
-  auto Subscription_Identifier::render_GET(Request const &request, Response *&fill) -> void {
-    getty(request, fill, store, PARAMETER_NAME);
-  }
-  auto Subscription_Identifier::render_PUT(Request const &request, Response *&fill) -> void {
-    putty(request, fill, store, PARAMETER_NAME);
-  }
+  Subscription_Identifier::Subscription_Identifier(storage::Subscription &store) : Ancestors::Storage{store} { resources::initialize_getdelete(*this); }
+  auto Subscription_Identifier::DELETE(Request const &request) -> Transport { return deetie(request, store, PARAMETER_NAME); }
+  auto Subscription_Identifier::GET(Request const &request) -> Transport    { return gettie(request, store, PARAMETER_NAME); }
+  auto Subscription_Identifier::PUT(Request const &request) -> Transport    { return puttie(request, store, PARAMETER_NAME); }
 }
 #endiv

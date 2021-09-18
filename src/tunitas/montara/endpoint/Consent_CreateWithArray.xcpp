@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -21,36 +21,34 @@ namespace tunitas::montara::endpoint {
 #import std.string
 #import tunitas.montara.endpoint.aspect.Storage
 #import tunitas.montara.storage.Consent
-class tunitas::montara::endpoint::Consent_CreateWithArray : public httpserver::Resource<Consent_CreateWithArray>, aspect::Storage<storage::Consent> {
-  struct ancestors {
-    using Resource = httpserver::Resource<Consent_CreateWithArray>;
+class tunitas::montara::endpoint::Consent_CreateWithArray : public microhttpd::Resource,
+                                                            protected aspect::Storage<storage::Consent> {
+  struct Ancestors {
+    using Resource = microhttpd::Resource;
     using Storage = aspect::Storage<storage::Consent>;
   };
 public:
-  explicit Consent_CreateWithArray(storage::Consent &);
-  auto render_POST(Request const &, [[out]] Response **fill) -> void;
+  inline explicit Consent_CreateWithArray(storage::Consent &);
+  auto POST(Request const &) -> Transport;
 };
 #endiv
-#divert <cpp>
-#import std.string_literals
-#import tunitas.montara.filters
-#import tunitas.montara.constants
-#import tunitas.montara.resources
+#divert <ipp>
 namespace tunitas::montara::endpoint {
-  using namespace constants;
-  using namespace std::literals;
-  Consent_CreateWithArray::Consent_CreateWithArray(storage::Consent &store) : ancestors::Storage{store} {
-    resources::initialize_only_post(*this);
-  }
-  auto Consent_CreateWithArray::render_POST(Request const &request, Response **fill) -> void {
-    filters::enforce_no_query_parameters(request, *fill);
-    if (nullptr == *fill) {
-      // [[FIXTHIS]] accept the body and put it in a database or a queue
-      auto const &content_body = R"text(accepted)text"s;
-      auto const code = http::R202_ACCEPTED;
-      auto const &content_type = mime::TEXT_PLAIN;
-      httpserver::response::Builder bob{content_body, code, content_type};
-      *fill = new Response{bob};
+  Consent_CreateWithArray::Consent_CreateWithArray(storage::Consent &store) : Ancestors::Storage{store} { resources::initialize_only_post(*this); }
+}
+#endiv
+#divert <cpp>
+namespace tunitas::montara::endpoint {
+  auto Consent_CreateWithArray::POST(Request const &request) -> Transport {
+    auto filled = Optional<Transport>{};
+    filters::enforce_no_query_parameters(request, filled);
+    if (!filled) {
+      return move(*filled);
+    } else {
+#warning [[WRITETHIS]] accept the body and put it in a database or a queue
+      auto body = R"text(accepted)text"s;
+      auto type = mime::TEXT_PLAIN;
+      return render::Builder{http::R202_ACCEPTED}.content_type(move(type)).body(move(body)).build();
     }
   }
 }

@@ -1,17 +1,15 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <hpp>
 #import tunitas.montara.identifier.required.Identifier
 #import tunitas.Outcome
+#import tunitas.string.View
 #import std.string
-#if 7 < __GNUC__
-#include <charconv> // #import std.from_chars
-#include <charconv> // #import std.from_chars_result
-#endif
-// #import std.from_chars_result some day ... but not in gcc-7
+#import std.from_chars
+#import std.from_chars_result
 namespace tunitas::montara::identifier {
   //
   // Convert from a stringy representation into an identifier
@@ -26,16 +24,9 @@ namespace tunitas::montara::identifier {
   //
   namespace package::from_chars::function {
     // The first form is for the convenience herein.
-    template<required::Identifier IDENTIFIER> auto from_chars(std::string const &) -> Outcome<IDENTIFIER>;
+    template<required::Identifier IDENTIFIER> auto from_chars(string::View) -> Outcome<IDENTIFIER>;
     // The second form is effectively a direct pass-thru to std::from_chars with the same argument signature.
-#if 7 < __GNUC__
     using From_Chars_Result = std::from_chars_result;
-#else
-    struct From_Chars_Result {
-    char const *ptr;
-      std::errc ec;
-    };
-#endif
     template<required::Identifier IDENTIFIER> auto from_chars(char const *first, char const *last, [[out]] IDENTIFIER &) -> From_Chars_Result;
   }
   using package::from_chars::function::from_chars;
@@ -45,27 +36,23 @@ namespace tunitas::montara::identifier {
 #import std.error_code
 #import std.underlying_type
 #import tunitas.montara.error.Code
-#if 7 < __GNUC__
 namespace tunitas::montara::identifier::package::from_chars {
-  template<identifier::required::Identifier IDENTIFIER> auto function::from_chars(std::string const &candidate) -> Outcome<IDENTIFIER> {
-    using Result = Outcome<IDENTIFIER>;
-    using Underlying = typename std::underlying_type<IDENTIFIER>::type;
-    Underlying potential;
+  template<identifier::required::Identifier IDENTIFIER> auto function::from_chars(string::View candidate) -> Outcome<IDENTIFIER> {
+    auto potential = std::underlying_type_t<IDENTIFIER>{};
     auto const first = candidate.data();
     auto const last = first + candidate.size();
     auto result = std::from_chars(first, last, potential);
     if (last == result.ptr) {
-      return Result{IDENTIFIER(potential)};
+      return {IDENTIFIER(potential)};
     } else {
       // Consulting https://en.cppreference.com/w/cpp/utility/from_chars
       // and in lieu of returning Result{std::error_code{result.ec}}
       // which gives higher fidelity on the problem but is not in "our" error category.
-      return Result{std::error_code{error::Code::NOT_AN_IDENTIFIER}};
+      return {std::error_code{error::Code::NOT_AN_IDENTIFIER}};
     }
   }
   template<identifier::required::Identifier IDENTIFIER> auto function::from_chars(char const *first, char const *last, IDENTIFIER &value) -> From_Chars_Result {
-    using Underlying = typename std::underlying_type<IDENTIFIER>::type;
-    Underlying potential;
+    auto potential = std::underlying_type_t<IDENTIFIER>{};
     auto result = std::from_chars(first, last, potential);
     if (last == result.ptr) {
       value = IDENTIFIER(potential);
@@ -73,41 +60,4 @@ namespace tunitas::montara::identifier::package::from_chars {
     return result;
   }
 }
-#else
-// whereas gcc-7.3.0 does not have <charconv> at all, so std::from_chars is "not a thing" (yet)
-#import std.stoll
-#import std.exception
-#include <cerrno>
-namespace tunitas::montara::identifier::package::from_chars {
-  template<identifier::required::Identifier IDENTIFIER> auto function::from_chars(std::string const &candidate) -> Outcome<IDENTIFIER> {
-    try {
-      std::size_t end{0};
-      // The peskiness of stoll is that it signals errors *both* by the return value *and* also by an exception
-      // https://en.cppreference.com/w/cpp/string/basic_string/stol
-      auto potential = std::stoll(candidate, &end);
-      if (end == candidate.size()) {
-        return Outcome<IDENTIFIER>{IDENTIFIER(potential)};
-      }
-      return Outcome<IDENTIFIER>{std::error_code{error::Code::NOT_AN_IDENTIFIER}};
-    } catch (std::exception const &) { }
-    // Consulting https://en.cppreference.com/w/cpp/utility/from_chars
-    // and in lieu of returning Outcome<IDENTIFIER>{std::error_code{result.ec}}
-    // which gives higher fidelity on the problem but is not in "our" error category.
-    // Here we return a crude signalling of the problem in *our* error category.
-    return Outcome<IDENTIFIER>{std::error_code{error::Code::NOT_AN_IDENTIFIER}};
-  }
-  template<identifier::required::Identifier IDENTIFIER> auto function::from_chars(char const *first, char const *last, IDENTIFIER &recovered) -> From_Chars_Result {
-    // Whereas strtoll requires a '\0'-terminated string, it cannot use a range.
-    // We have to construct such a thing for it.
-    auto found = from_chars<IDENTIFIER>(std::string{first, last});
-    if (ok(found)) {
-      recovered = value(found);
-      return From_Chars_Result{last, std::errc{}};
-    } else {
-      // blik.  there is no good answer here.  this mis-returns out-of-range when "invalid argument" or "not a number" was the sense
-      return From_Chars_Result{first, std::errc::result_out_of_range};
-    }
-  }
-}
-#endif
 #endiv

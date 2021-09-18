@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -17,7 +17,7 @@ namespace app::service::options {
 }
 #import std.tuple
 class app::service::options::Parser::Result : public std::tuple<bool, tunitas::app::words::Strings> {
-  using ancestor = std::tuple<bool, tunitas::app::words::Strings>;
+  using Ancestor = std::tuple<bool, tunitas::app::words::Strings>;
   using Strings = tunitas::app::words::Strings;
 public:
   inline explicit Result(bool);
@@ -43,17 +43,17 @@ auto app::service::options::value(Parser::Result &&r) -> tunitas::app::words::St
   return std::get<1>(std::forward<Parser::Result>(r));
 }
 app::service::options::Parser::Result::Result(bool success)
-  : ancestor{success, Strings{}}
+  : Ancestor{success, Strings{}}
 { }
 template<typename ITERATOR> app::service::options::Parser::Result::Result(bool success, ITERATOR start, ITERATOR finish)
-  : ancestor{success, Strings{start, finish}}
+  : Ancestor{success, Strings{start, finish}}
 { }
 #import std.forward
 app::service::options::Parser::Result::Result(bool success, Strings &&series)
-  : ancestor{success, std::forward<Strings>(series)}
+  : Ancestor{success, std::forward<Strings>(series)}
 { }
 app::service::options::Parser::Result::Result(bool success, Strings const &series)
-  : ancestor{success, series}
+  : Ancestor{success, series}
 { }
 #endiv
 

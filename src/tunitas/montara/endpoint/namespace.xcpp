@@ -1,11 +1,43 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
-#import tunitas.montara.service
+#import tunitas.montara.service // Request, Response, Transport, render::Builder
+#import tunitas.montara.constants
+#import tunitas.literals
+#import tunitas.Optional
 namespace tunitas::montara::endpoint {
+  //
+  // Avoid having to recite in every endpoint implementqation
+  //
+  //   using namespace constants;
+  //   using namespace std::literals;
+  //
   using namespace service;
+  using namespace montara::constants;
+  using namespace tunitas::literals; // e.g. string literals
+  using tunitas::Optional;
+}
+#endiv
+#divert <hpp>
+// Every implementation needs these; e.g. resources::initialize_blahblahblah(...)
+#import tunitas.montara.resources
+#import tunitas.montara.filters
+#endiv
+#divert <cpp>
+namespace {
+  namespace tests {
+    using namespace tunitas::montara::endpoint;
+    // Prove these exist with all the namespace machinery (above)
+    static_assert(sizeof (Request));
+    static_assert(sizeof (Response));
+    static_assert(sizeof (Transport));
+    static_assert(sizeof (Optional<Transport>));
+    static_assert(sizeof (render::Builder));
+    static_assert(sizeof (""s));
+    static_assert(sizeof (""sv));
+  }
 }
 #endiv

@@ -1,17 +1,31 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
-#divert <hpp>
-#import httpserver.http.utils
+#divert <fpp>
+#import microhttpd.feature.Switch
+#import microhttpd.dimension.Count
+#import microhttpd.dimension.Memory
 namespace app::service::constants {
   namespace server {
-    // Always BLOCKING, because the "background" is done with daemon(3)
-    inline auto const BLOCKING = true;
+    using microhttpd::dimension::Count;
+    using microhttpd::feature::Switch;
+  }
+}
+#endiv
+#divert <hpp>
+#import microhttpd.feature.Polling
+#import microhttpd.feature.Concurrency
+namespace app::service::constants {
+  namespace server {
+    [[deprecated("unused; Always BLOCKING, because the 'background' is done with daemon(3)")]] inline auto const BLOCKING = true;
     // WATCHOUT - you MUST use THREADS because INTERNAL_SELECT is where the IPv6 and memory allocation bugs remain.
-    inline auto const METHOD = httpserver::http::utils::THREADS;
-    inline auto const THREADS = 5u;
+    inline auto const METHOD = []{
+                                 using namespace microhttpd::feature;
+                                 return Polling::INTERNAL_THREAD_EPOLL | Concurrency::INTERNAL_UNLIMITED;
+                               }();
+    inline auto const THREADS = Count{5u};
   }
 }
 #endiv

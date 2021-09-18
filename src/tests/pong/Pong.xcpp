@@ -1,0 +1,40 @@
+// This is C++ 23 -*- c++ -*- -std=c++23 in the stylings of the S.C.O.L.D. design method.
+// For terms and provenance see the LICENSE file at the top of the repository.
+#divert <fpp>
+#import microhttpd.http.literals
+namespace tests::pong {
+  //
+  // The pong responder
+  //
+  namespace [[eponymous]] eponymity {
+    namespace [[eponymous]] pong {
+      struct Pong;
+      using namespace microhttpd::http::literals;
+    }
+  }
+  using eponymity::pong::Pong;
+}
+#endiv
+#divert <hpp>
+#import microhttpd.Resource
+#import microhttpd.Request
+#import microhttpd.render.Builder
+namespace tests::pong::eponymity {
+  class pong::Pong : public microhttpd::Resource {
+    using Ancestor = microhttpd::Resource;
+  public:
+    auto GET(microhttpd::Request const &) -> microhttpd::Transport override;
+  protected:
+    using Builder = microhttpd::render::Builder;
+  };
+}
+#endiv
+#divert <cpp>
+#import std.cerr
+namespace tests::pong::eponymity::pong {
+  auto Pong::GET(microhttpd::Request const &) -> microhttpd::Transport {
+    std::cerr << "responding to 'GET /ping'\n";
+    return Builder{201_HTTP}.body("pong!").build();
+  }
+}
+#endiv

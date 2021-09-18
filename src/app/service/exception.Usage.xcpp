@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -82,27 +82,35 @@ namespace app::service::exception {
 }
 #import std.ostringstream
 #import app.service.defaults
+#import microhttpd.ip.format
+#import format.q // [[TODO]] replace with langu::age::quote::q(...) when that is available
 auto app::service::exception::Usage::format(std::string const &NAME) -> std::string {
+  using ::format::q;
+  using microhttpd::ip::format;
   std::ostringstream buf;
   buf << "usage: " << NAME << " [...options...]\n"
       << "\n"
-      << "Service Options\n"
-      << "--foreground, --fg, -f             remain in the foreground, e.g. for systemd\n"
-      << "--background, --bg                 daemonize into the background\n"
-      << "--pid, -P                          emit the PID of the running daemon on the standard output\n"
-      << "  alternative: --emit-pid\n"
-      << "--port=NUMBER, -p NUMBER           use port NUMBER instead of the default " << defaults::SERVICE_PORT << '\n'
-      << "--engine=ENGINE, -e ENGINE         use storage engine ENGINE instead of the default " << defaults::STORAGE_ENGINE << '\n'
-      << "  alternatives: --storage=ENGINE, --storage-engine=ENGINE\n"
+      << "\nService Options"
+      << "\n--foreground, --fg, -f             remain in the foreground, e.g. for systemd"
+      << "\n--background, --bg                 daemonize into the background"
+      << "\n--drop-privileges, --drop          drop privileges to run as " << q(defaults::DAEMON_USER) << '.' << q(defaults::DAEMON_GROUP)
+      << "\n--no-drop-privileges, --no-drop    do not do that"
+      << "\n--daemon-user=NAME, --user=NAME    the daemon user, default " << q(defaults::DAEMON_USER)
+      << "\n--daemon-group=NAME, --group=NAME  the daemon group, default " << q(defaults::DAEMON_GROUP)
+      << "\n--pid, -P                          emit the PID of the running daemon on the standard output"
+      << "\n  alternative: --emit-pid"
+      << "\n--port=NUMBER, -p NUMBER           use port NUMBER instead of the default " << format(defaults::SERVICE_PORT)
+      << "\n--engine=ENGINE, -e ENGINE         use storage engine ENGINE instead of the default " << q(defaults::STORAGE_ENGINE)
+      << "\n  alternatives: --storage=ENGINE, --storage-engine=ENGINE"
       << '\n'
-      << "General Options:\n"
-      << "--usage, --help, -h                emit this message, and exit\n"
-      << "--version, -V                      emit the package version, and exit\n"
-      << "--dry-run, --dryrun, -y            dry run, do not start the server\n"
-      << "--warnings, --warning, -w          emit warnings\n"
-      << "--quiet, -q                        be quiet, emit no notices or warnings\n"
-      << "--verbose, -v                      be verbose (independent of --quiet)\n"
-      << "--debug, -d                        debug output (you should not need this)"; // no '\n'
+      << "\nGeneral Options:"
+      << "\n--usage, --help, -h                emit this message, and exit"
+      << "\n--version, -V                      emit the package version, and exit"
+      << "\n--dry-run, --dryrun, -y            dry run, do not start the server"
+      << "\n--warnings, --warning, -w          emit warnings"
+      << "\n--quiet, -q                        be quiet, emit no notices or warnings"
+      << "\n--verbose, -v                      be verbose (independent of --quiet)"
+      << "\n--debug, -d                        debug output (you should not need this)"; // no ''
   return buf.str();
 }
 #endiv

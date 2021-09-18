@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -31,20 +31,17 @@ namespace tunitas::montara::endpoint {
 #import tunitas.montara.endpoint.aspect.Storage
 #import tunitas.montara.identifier.Consent
 #import tunitas.montara.storage.Consent
-class tunitas::montara::endpoint::Consent_Revoke_Identifier
-  : public httpserver::Resource<Consent_Revoke_Identifier>
-  , protected aspect::Storage<storage::Consent>
-  , protected aspect::Operations<identifier::Consent, storage::Consent> {
-  struct ancestors {
-    using Resource = httpserver::Resource<Consent_Revoke_Identifier>;
+class tunitas::montara::endpoint::Consent_Revoke_Identifier : public microhttpd::Resource,
+                                                              protected aspect::Storage<storage::Consent>,
+                                                              protected aspect::Operations<identifier::Consent, storage::Consent> {
+  struct Ancestors {
+    using Resource = microhttpd::Resource;
     using Storage = aspect::Storage<storage::Consent>;
     using Operations = aspect::Operations<identifier::Consent, storage::Consent>;
   };
 public:
   inline explicit Consent_Revoke_Identifier(storage::Consent &);
-  inline auto render_POST(Request const &, [[out]] Response *&fill) -> void;
-public: // but we wish it wasn't; we wish it wasn't even here [[REMOVEWHEN]] libhttpserver has an appropriate function signature
-  inline auto render_POST(Request const &r, [[out]] Response **f) -> void { render_POST(r, *f); }
+  inline auto POST(Request const &) -> Transport;
 protected:
   // [[FIXTHIS]] construct the URL in run.cpp so that these to guarantee to match
   // this must match the name used in run.cpp -----------\ (here)
@@ -55,22 +52,14 @@ protected:
 };
 #endiv
 #divert <ipp>
-#import std.string_literals
-#import tunitas.montara.filters
-#import tunitas.montara.constants
-#import tunitas.montara.resources
 namespace tunitas::montara::endpoint {
-  using namespace constants;
-  using namespace std::literals;
-  Consent_Revoke_Identifier::Consent_Revoke_Identifier(storage::Consent &store) : ancestors::Storage{store}  {
-    resources::initialize_only_post(*this);
-  }
-  auto Consent_Revoke_Identifier::render_POST(Request const &request, Response *&fill) -> void {
+  Consent_Revoke_Identifier::Consent_Revoke_Identifier(storage::Consent &store) : Ancestors::Storage{store}  { resources::initialize_only_post(*this); }
+  auto Consent_Revoke_Identifier::POST(Request const &request) -> Transport {
     // Get the content and drop it.
     // The important thing is that content is pulled in and the socket is closed.
-    // Blik.  Because browsers cannot do DELETE, they have to do POST with empty bodies.
+    // Blik.  Because browsers cannot do DELETE [[and why is that WHATWG?]], they have to do POST with empty bodies.
     // NOT request.get_content();
-    dleet(request, fill, store, PARAMETER_NAME);
+    return deetie(request, store, PARAMETER_NAME);
   }
 }
 #endiv

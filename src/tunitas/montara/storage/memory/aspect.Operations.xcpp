@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -38,11 +38,11 @@ protected:
     using Payload = RESULT;
     using Success = outcome::Success;
   };
-  static auto dleet(Mutex &, Map &, Identifier key) -> typename results::Success;
-  static auto getty(Mutex &, Map const &, Entity const &) -> typename results::Payload;
-  static auto getty(Mutex &, Map const &, Identifier key) -> typename results::Payload;
-  static auto posty(Mutex &, Map &, Value keyvalue) -> typename results::Success;
-  static auto putty(Mutex &, Map &, Identifier key, Value) -> typename results::Success;
+  static auto deltie(Mutex &, Map &, Identifier key) -> typename results::Success;
+  static auto gettie(Mutex &, Map const &, Entity const &) -> typename results::Payload;
+  static auto gettie(Mutex &, Map const &, Identifier key) -> typename results::Payload;
+  static auto postie(Mutex &, Map &, Value keyvalue) -> typename results::Success;
+  static auto puttie(Mutex &, Map &, Identifier key, Value) -> typename results::Success;
 };
 #endiv
 #divert <tpp>
@@ -52,7 +52,7 @@ protected:
 #import std.move
 #import tunitas.montara.storage.State
 namespace tunitas::montara::storage::memory::aspect {
-  template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::dleet(Mutex &mut, Map &map, Identifier key) -> typename results::Success {
+  template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::deltie(Mutex &mut, Map &map, Identifier key) -> typename results::Success {
     using Result = typename results::Success;
     try {
       Guard guard{mut};
@@ -68,7 +68,7 @@ namespace tunitas::montara::storage::memory::aspect {
       return FAILED<Result>();
     }
   }
-  template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::getty(Mutex &mut, Map const &map, Identifier key) -> typename results::Payload {
+  template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::gettie(Mutex &mut, Map const &map, Identifier key) -> typename results::Payload {
     using Result = typename results::Payload;
     try {
       Guard guard{mut};
@@ -85,7 +85,7 @@ namespace tunitas::montara::storage::memory::aspect {
       return FAILED<Result>();
     }
   }
-  template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::getty(Mutex &mut, Map const &map, Entity const &match) -> typename results::Payload {
+  template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::gettie(Mutex &mut, Map const &map, Entity const &match) -> typename results::Payload {
     using Result = typename results::Payload;
     try {
       Guard guard{mut};
@@ -102,7 +102,7 @@ namespace tunitas::montara::storage::memory::aspect {
       return FAILED<Result>();
     }
   } 
-  template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::posty(Mutex &mut, Map &map, Value value) -> typename results::Success {
+  template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::postie(Mutex &mut, Map &map, Value value) -> typename results::Success {
     using Result = typename results::Success;
     try {
       auto const &obj{value["id"]};
@@ -125,7 +125,7 @@ namespace tunitas::montara::storage::memory::aspect {
       return FAILED<Result>();
     }
   }
-  template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::putty(Mutex &mut, Map &map, Identifier key, Value value) -> typename results::Success {
+  template<typename M, typename I, typename B, typename R> auto Operations<M,I,B,R>::puttie(Mutex &mut, Map &map, Identifier key, Value value) -> typename results::Success {
     using Result = typename results::Success;
     try {
       auto const &obj{value["id"]};

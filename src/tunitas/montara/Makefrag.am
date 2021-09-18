@@ -1,5 +1,5 @@
 # This is a GNU -*- Makefile -*- fragment that is included by Automake
-# Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+# Copyright Yahoo Inc, 2021.
 # Licensed under the terms of the Apache-2.0 license.
 # For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 # For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -16,8 +16,8 @@
 #       <= 0     if any interfaces were removed, changed
 #       <= AGE   if no interface change, but any other (source code) change
 #
-lib_libtunitas_montara_la_CURRENT = 2
-lib_libtunitas_montara_la_REVISION = 0
+lib_libtunitas_montara_la_CURRENT = 3
+lib_libtunitas_montara_la_REVISION = 1
 lib_libtunitas_montara_la_AGE = 0
 lib_libtunitas_montara_la_CRA = $(lib_libtunitas_montara_la_CURRENT):$(lib_libtunitas_montara_la_REVISION):$(lib_libtunitas_montara_la_AGE)
 
@@ -25,19 +25,12 @@ lib_libtunitas_montara_la = lib/libtunitas-montara.la
 lib_libtunitas_montara_la_LIBADD = \
   $(lib_libautotools_autoconf_la) \
   $(lib_libwant_la) \
-  $(end)
-lib_libtunitas_montara_la_LDFLAGS = \
-  -lhttpserver \
+  -lmicrohttpd++-cli \
   -ljson-module \
-  $(PACKAGE_LDFLAGS_SET) \
-  -version-info $(lib_libtunitas_montara_la_CRA) \
   $(end)
-lib_libtunitas_montara_la_MODULES = $(call TF_SOURCEStoMODULES, $(lib_libtunitas_montara_la_XCPP_SOURCES))
+lib_libtunitas_montara_la_LDFLAGS = $(PACKAGE_LDFLAGS_SET) -version-info $(lib_libtunitas_montara_la_CRA)
+lib_libtunitas_montara_la_MODULES = $(call TF_SOURCEStoMODULES, $(lib_libtunitas_montara_la_SOURCES))
 lib_libtunitas_montara_la_SOURCES = \
-  src/tunitas/montara/endpoint/DUMMY_DATA.cpp \
-  $(lib_libtunitas_montara_la_XCPP_SOURCES)
-  $(end)
-lib_libtunitas_montara_la_XCPP_SOURCES = \
   obj/src/tunitas/montara/namespace.cpp \
   obj/src/tunitas/montara/version.String.cpp \
   obj/src/tunitas/montara/constants.cpp \
@@ -48,6 +41,7 @@ lib_libtunitas_montara_la_XCPP_SOURCES = \
   obj/src/tunitas/montara/responses.Replacer.cpp \
   obj/src/tunitas/montara/service.cpp \
   \
+  obj/src/tunitas/montara/endpoint/DUMMY_DATA.cpp \
   obj/src/tunitas/montara/endpoint/namespace.cpp \
   obj/src/tunitas/montara/endpoint/implementation.cpp \
   obj/src/tunitas/montara/endpoint/aspect.Storage.cpp \
@@ -126,9 +120,9 @@ lib_libtunitas_montara_la_XCPP_SOURCES = \
   obj/src/tunitas/montara/type/Entity.cpp \
   $(end)
 #
-$(scold_cxxdir)/tunitas/montara/dependencies.mk: $(lib_libtunitas_montara_la_XCPP_SOURCES)
-$(lib_libtunitas_montara_la_XCPP_SOURCES) : obj/src/%.cpp : src/%.xcpp
-	$(TF_V_DIS) $(call TF_XCPP2CPP, $^)
+$(scold_cxxdir)/tunitas/montara/dependencies.mk: $(lib_libtunitas_montara_la_SOURCES)
+$(lib_libtunitas_montara_la_SOURCES) : obj/src/%.cpp : src/%.xcpp
+	$(TF_V_DIS) $(call TF_XCPP2CPP, $<)
 	$(TF_V_DONE) test -e $@
 $(scold_cxxdir)/tunitas/montara/dependencies.mk:
 	$(TF_V_DEP) $(call TF_DEPENDENCIES, $^)

@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -19,12 +19,12 @@ namespace tunitas::montara::storage::configuration::exception {
 #divert <hpp>
 #import std.invalid_argument
 class tunitas::montara::storage::configuration::exception::Wrong_Type : public std::invalid_argument {
-  using ancestor = std::invalid_argument;
+  using Ancestor = std::invalid_argument;
 public:
   inline Wrong_Type();
 };
 #endiv
 #divert <ipp>
 tunitas::montara::storage::configuration::exception::Wrong_Type::Wrong_Type()
-  : ancestor{"wrong type"} { }
+  : Ancestor{"wrong type"} { }
 #endiv

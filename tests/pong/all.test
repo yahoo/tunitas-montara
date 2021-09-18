@@ -1,0 +1,5 @@
+#!/bin/bash
+dotdot=${0%/*}/../..
+export PATH="$dotdot/check/bin:$dotdot/check/sbin:$dotdot/bin:$dotdot/sbin:$PATH"
+exe=pong
+${exe?}

@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -24,30 +24,23 @@ namespace tunitas::montara::endpoint {
 #import tunitas.montara.endpoint.aspect.Storage
 #import tunitas.montara.identifier.Subscription
 #import tunitas.montara.storage.Subscription
-class tunitas::montara::endpoint::Subscription
-  : public httpserver::Resource<Subscription>
-  , protected aspect::Storage<storage::Subscription>
-  , protected aspect::Operations<identifier::Subscription, storage::Subscription> {
-  struct ancestors {
-    using Resource = httpserver::Resource<Subscription>;
+class tunitas::montara::endpoint::Subscription : public microhttpd::Resource,
+                                                 protected aspect::Storage<storage::Subscription>,
+                                                 protected aspect::Operations<identifier::Subscription, storage::Subscription> {
+  struct Ancestors {
+    using Resource = microhttpd::Resource;
     using Storage = aspect::Storage<storage::Subscription>;
     using Operations = aspect::Operations<identifier::Subscription, storage::Subscription>;
   };
 public:
   inline explicit Subscription(storage::Subscription &);
-  inline auto render_POST(Request const &, [[out]] Response *&fill) -> void;
-public: // but we wish it wasn't; we wish it wasn't even here [[REMOVEWHEN]] libhttpserver has an appropriate function signature
-  inline auto render_POST(Request const &r, [[out]] Response **f) -> void { render_POST(r, *f); }
+  inline auto POST(Request const &) -> Transport;
 };
 #endiv
 #divert <ipp>
 #import tunitas.montara.resources
 namespace tunitas::montara::endpoint {
-  Subscription::Subscription(storage::Subscription &store) : ancestors::Storage{store} {
-    resources::initialize_only_post(*this);
-  }
-  auto Subscription::render_POST(Request const &request, Response *&fill) -> void {
-    posty(request, fill, store);
-  }
+  Subscription::Subscription(storage::Subscription &store) : Ancestors::Storage{store} { resources::initialize_only_post(*this); }
+  auto Subscription::POST(Request const &request) -> Transport { return postie(request, store); }
 }
 #endiv

@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -26,9 +26,9 @@ namespace tunitas::montara::storage {
 #import tunitas.montara.storage.required.Configurable
 #import tunitas.montara.storage.configuration.Variant
 class tunitas::montara::storage::Configuration : public std::map<std::string, configuration::Variant> {
-  using ancestor = std::map<std::string, configuration::Variant>;
+  using Ancestor = std::map<std::string, configuration::Variant>;
 public:
-  using ancestor::map;
+  using Ancestor::map;
   template<required::Configurable TYPE> inline auto get(std::string const &key) const -> Outcome<TYPE>;
   template<required::Configurable TYPE> inline auto get_otherwise(std::string const &key, TYPE otherwise) const -> TYPE;
 };
@@ -39,16 +39,16 @@ public:
 namespace tunitas::montara::storage {
   template<required::Configurable TYPE> auto Configuration::get(std::string const &key) const -> Outcome<TYPE> {
     using Result = Outcome<TYPE>;
-    auto found = ancestor::find(key);
-    if (ancestor::end() == found) {
+    auto found = Ancestor::find(key);
+    if (Ancestor::end() == found) {
       return Result{error::Code::NO_SUCH_KEY_IN_CONFIGURATION};
     } {
       return Result{configuration::as<TYPE>(found->second)};
     }
   }
   template<required::Configurable TYPE> auto Configuration::get_otherwise(std::string const &key, TYPE otherwise) const -> TYPE {
-    auto found = ancestor::find(key);
-    if (ancestor::end() == found) {
+    auto found = Ancestor::find(key);
+    if (Ancestor::end() == found) {
       return otherwise;
     } else {
       return configuration::as<TYPE>(found->second);

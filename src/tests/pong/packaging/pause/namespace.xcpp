@@ -1,0 +1,26 @@
+// This is C++ 23 -*- c++ -*- -std=c++23 in the stylings of the S.C.O.L.D. design method which is so popular nowadays.
+// For terms and provenance see the LICENSE file at the top of the repository.
+#divert <fpp>
+#import sys.time.Duration
+#import sys.call.Result
+#import sys.posix
+namespace tests::pong::packaging {
+  namespace [[implementation]] pause {
+    namespace [[interface]] interface { }
+    using Duration = sys::time::Duration;
+    using Status = sys::call::Result;
+    namespace posix = sys::posix; // otherwise it is always ambiguous with the global scope adn ALSO we have our own pause(...)
+    using namespace sys::posix; // also we want convenient access to SIG, ITIMER, E, and other unambiguous hooks
+  }
+}
+#endiv
+#divert <ipp>
+#import sys.time.as
+#import sys.time.cast
+#import sys.time.durations.literals
+namespace tests::pong::packaging::pause {
+  using sys::time::as; // ..... [[deprecating?]]
+  using sys::time::cast; // ... [[preferring?]]
+  using namespace sys::time::durations::literals;
+}
+#endiv

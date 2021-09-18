@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2018, 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -13,5 +13,9 @@ namespace app::service::options::indicator {
   inline auto const STORAGE_ENGINE = Code::CODE_251;
   inline auto const EMIT_PID = Code::CODE_250;
   inline auto const PID_FILEPATH = Code::CODE_249;
+  inline auto const DROP_PRIVILEGES = Code::CODE_248;
+  inline auto const NO_DROP_PRIVILEGES = Code::CODE_247;
+  inline auto const DAEMON_USER = Code::CODE_246;
+  inline auto const DAEMON_GROUP = Code::CODE_245;
 }
 #endiv

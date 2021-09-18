@@ -1,9 +1,11 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
+#import tunitas.montara.constants
+#import tunitas.string.literals
 namespace tunitas::montara::endpoint::aspect {
   //
   // Common (basic) operations of GET, POST, PUT against an identifier
@@ -13,7 +15,7 @@ namespace tunitas::montara::endpoint::aspect {
   // Usage:
   //
   //   class my::Endpoint : public httpserver::Resource<...>, protected aspect::Storage<...>, protected aspect::Operations<...> {
-  //     struct ancestors {
+  //     struct Ancestors {
   //       using Resource = httpserver::Resource<...>;
   //       using Storage = aspect::Storage<...>;
   //       using Operations = aspect::Operations<...>;
@@ -21,23 +23,29 @@ namespace tunitas::montara::endpoint::aspect {
   //     ...etc...
   //   };
   //
-  template<typename IDENTIFIER, typename STORAGE> class Operations;
+  namespace [[eponymous]] operations {
+    using namespace montara::constants;
+    using namespace tunitas::string::literals;
+    template<typename IDENTIFIER, typename STORAGE> class Operations;
+  }
+  using operations::Operations;
 }
 #endiv
 #divert <hpp>
-template<typename IDENTIFIER, typename STORAGE> class tunitas::montara::endpoint::aspect::Operations {
+#import tunitas.string.View
+template<typename IDENTIFIER, typename STORAGE> class tunitas::montara::endpoint::aspect::operations::Operations {
 protected:
   using Identifier = IDENTIFIER;
   using Storage = STORAGE;
   ~Operations() = default;
-  static auto dleet(Request const &request, Response *&fill, Storage &, std::string const &parameter_name) -> void;
-  static auto getty(Request const &request, Response *&fill, Storage &, std::string const &parameter_name) -> void;
-  static auto putty(Request const &request, Response *&fill, Storage &, std::string const &parameter_name) -> void;
-  static auto posty(Request const &request, Response *&fill, Storage &) -> void;
+  // though not marked 'noexcept' these will be used in noexcept situations ... so make sure catch(...) holds
+  static auto deetie(Request const &request, [[inout]] Storage &, string::View parameter_name) -> Transport;
+  static auto gettie(Request const &request, [[inout]] Storage &, string::View parameter_name) -> Transport;
+  static auto puttie(Request const &request, [[inout]] Storage &, string::View parameter_name) -> Transport;
+  static auto postie(Request const &request, [[inout]] Storage &) -> Transport;
 };
 #endiv
 #divert <tpp>
-#import std.cerr
 #import json.String
 #import json.parse
 #import json.as
@@ -50,55 +58,53 @@ protected:
 #import tunitas.montara.filters
 #import tunitas.montara.responses
 #import tunitas.montara.identifier.from_chars
-#import httpserver.response.Builder
+#import microhttpd.render.Builder
 #import std.exception
-namespace tunitas::montara::endpoint::aspect {
-  using namespace constants;
-  using namespace std::literals;
-  template<typename I, typename S> auto Operations<I,S>::dleet(Request const &request, Response *&fill, Storage &store, std::string const &parameter_name) -> void try {
-    filters::enforce_no_query_parameters(request, fill);
-    if (nullptr == fill) {
+namespace tunitas::montara::endpoint::aspect::operations {
+  template<typename I, typename S> auto Operations<I,S>::deetie(Request const &request, Storage &store, string::View parameter_name) -> Transport try {
+    auto filled = Optional<Transport>{};
+    filters::enforce_no_query_parameters(request, filled);
+    if (! filled) {
       auto const parameter = request.get_arg(parameter_name);
-      if (parameter.empty()) {
-	responses::bad_request(fill, "no identifier");
+      if (!parameter) {
+	filled = responses::bad_request("no identifier");
       } else {
-	auto identified = identifier::from_chars<Identifier>(parameter);
+	auto identified = identifier::from_chars<Identifier>(*parameter);
 	if (!ok(identified)) {
-	  responses::bad_request(fill, "bad identifier " + error_code(identified).message());
+	  filled = responses::bad_request("bad identifier " + error_code(identified).message());
 	} else {
-	  auto del = store.DELEET(value(identified));
+	  auto del = store.DELETE(value(identified));
 	  if (!ok(del)) {
-	    responses::bad_request(fill, error_code(del));
+	    filled = responses::bad_request(error_code(del).message());
 	  } else {
-	    auto const &content_body = R"text(OK)text"s;
-	    auto const code = http::R200_OK;
-	    auto const &content_type = mime::APPLICATION_JSON;
-	    httpserver::response::Builder bob{content_body, code, content_type};
-	    fill = new Response{bob};
+	    auto body = R"text(OK)text"s;
+	    auto type = mime::APPLICATION_JSON;
+            filled = render::Builder{http::R200_OK}.content_type(move(type)).body(move(body)).build();
 	  }
 	}
       }
     }
-
+    return move(*filled);
   } catch (std::exception const &e) {
-    responses::internal_server_error(fill, e.what());
+    return responses::internal_server_error(e.what());
   } catch (...) {
-    responses::internal_server_error(fill);
+    return responses::internal_server_error();
   }
-  template<typename I, typename S> auto Operations<I,S>::getty(Request const &request, Response *&fill, Storage &store, std::string const &parameter_name) -> void try {
-    filters::enforce_no_query_parameters(request, fill);
-    if (nullptr == fill) {
+  template<typename I, typename S> auto Operations<I,S>::gettie(Request const &request, Storage &store, string::View parameter_name) -> Transport try {
+    auto filled = Optional<Transport>{};
+    filters::enforce_no_query_parameters(request, filled);
+    if (! filled) {
       auto const parameter = request.get_arg(parameter_name);
-      if (parameter.empty()) {
-	responses::bad_request(fill, "no identifier");
+      if (!parameter) {
+	filled = responses::bad_request("no identifier");
       } else {
-	auto identified = identifier::from_chars<Identifier>(parameter);
+	auto identified = identifier::from_chars<Identifier>(*parameter);
 	if (!ok(identified)) {
-	  responses::bad_request(fill, "bad identifier " + error_code(identified).message());
+	  filled = responses::bad_request("bad identifier " + error_code(identified).message());
 	} else {
 	  auto got = store.GET(value(identified));
 	  if (!ok(got)) {
-	    responses::bad_request(fill, error_code(got));
+	    filled = responses::bad_request(error_code(got).message());
 	  } else {
 	    auto stringify = [](json::Value const &value) -> std::string {
 			       // [[FIXTHIS]] Wow ... there is no better way to linearize one of these than this!  Rly?
@@ -110,81 +116,88 @@ namespace tunitas::montara::endpoint::aspect {
 			       writer->write(value, &buf);
 			       return buf.str();
 			     };
-	    auto const &content_body = stringify(value(got));
-	    auto const code = http::R200_OK;
-	    auto const &content_type = mime::APPLICATION_JSON;
-	    httpserver::response::Builder bob{content_body, code, content_type};
-	    fill = new Response{bob};
+	    auto body = stringify(value(got));
+	    auto type = mime::APPLICATION_JSON;
+            filled = render::Builder{http::R200_OK}.content_type(move(type)).body(move(body)).build();
 	  }
 	}
       }
     }
+    return move(*filled);
   } catch (std::exception const &e) {
-    responses::internal_server_error(fill, e.what());
+    return responses::internal_server_error(e.what());
   } catch (...) {
-    responses::internal_server_error(fill);
+    return responses::internal_server_error();
   }
-  template<typename I, typename S> auto Operations<I,S>::posty(Request const &request, Response *&fill, Storage &store) -> void try {
-    filters::enforce_no_query_parameters(request, fill);
-    filters::enforce_application_json(request, fill);
-    if (nullptr == fill) {
-      json::String document = json::to(json::STRING(), request.get_content());
-      auto parsed = json::parse(json::failure::RETURNING, document);
+  template<typename I, typename S> auto Operations<I,S>::postie(Request const &request, Storage &store) -> Transport try {
+    auto filled = Optional<Transport>{};
+    filters::enforce_no_query_parameters(request, filled);
+    filters::enforce_application_json(request, filled);
+    if (! filled) {
+      auto make_document = [&request]() -> json::String {
+                             auto const &bytes_view = request.get_content();
+                             auto char_view = string::View{reinterpret_cast<char const *>(bytes_view.data()), bytes_view.size()};
+                             return json::to(json::STRING(), char_view);
+                           };
+      auto parsed = json::parse(json::failure::RETURNING, make_document());
       if (!ok(parsed)) {
-	responses::bad_request(fill, "json syntax");
+	filled = responses::bad_request("json syntax");
       } else {
 	auto stored = store.POST(value(std::move(parsed)));
 	if (!ok(stored)) {
-	  responses::bad_request(fill, error_code(stored));
+	  filled = responses::bad_request(error_code(stored).message());
 	} else {
-          auto const &content_body = R"text(Accepted)text"s;
-	  auto const code = http::R202_ACCEPTED;
-	  auto const &content_type = mime::TEXT_PLAIN;
-	  httpserver::response::Builder bob{content_body, code, content_type};
-	  fill = new Response{bob};
+          auto body = R"text(Accepted)text"s;
+	  auto type = mime::TEXT_PLAIN;
+          filled = render::Builder{http::R202_ACCEPTED}.content_type(move(type)).body(move(body)).build();
 	}
       }
     }
+    return move(*filled);
   } catch (std::exception const &e) {
-    responses::internal_server_error(fill, e.what());
+    return responses::internal_server_error(e.what());
   } catch (...) {
-    responses::internal_server_error(fill);
+    return responses::internal_server_error();
   }
-  template<typename I, typename S> auto Operations<I,S>::putty(Request const &request, Response *&fill, Storage &store, std::string const &parameter_name) -> void try {
-    filters::enforce_no_query_parameters(request, fill);
-    filters::enforce_application_json(request, fill);
-    if (nullptr == fill) {
-      json::String document = json::to(json::STRING(), request.get_content());
-      auto parsed = json::parse(json::failure::RETURNING, document);
+  template<typename I, typename S> auto Operations<I,S>::puttie(Request const &request, Storage &store, string::View parameter_name) -> Transport try {
+    auto filled = Optional<Transport>{};
+    filters::enforce_no_query_parameters(request, filled);
+    filters::enforce_application_json(request, filled);
+    if (! filled) {
+      auto make_document = [&request]() -> json::String {
+                             auto const &bytes_view = request.get_content();
+                             auto char_view = string::View{reinterpret_cast<char const *>(bytes_view.data()), bytes_view.size()};
+                             return json::to(json::STRING(), char_view);
+                           };
+      auto parsed = json::parse(json::failure::RETURNING, make_document());
       if (!ok(parsed)) {
-        responses::bad_request(fill, "json syntax");
+        filled = responses::bad_request("json syntax");
       } else {
 	auto const parameter = request.get_arg(parameter_name);
-	if (parameter.empty()) {
-          responses::bad_request(fill, "no identifier");
+	if (!parameter) {
+          filled = responses::bad_request("no identifier");
 	} else {
-	  auto identified = identifier::from_chars<Identifier>(parameter);
+	  auto identified = identifier::from_chars<Identifier>(*parameter);
 	  if (!ok(identified)) {
-	    responses::bad_request(fill, "bad identifier " + error_code(identified).message());
+	    filled = responses::bad_request("bad identifier " + error_code(identified).message());
 	  } else {
 	    auto put = store.PUT(value(identified), value(std::move(parsed)));
 	    if (!ok(put)) {
-	      responses::bad_request(fill, error_code(put));
+	      filled = responses::bad_request(error_code(put).message());
 	    } else {
-	      auto const &content_body = R"text(Accepted)text"s;
-	      auto const code = http::R202_ACCEPTED;
-	      auto const &content_type = mime::TEXT_PLAIN;
-	      httpserver::response::Builder bob{content_body, code, content_type};
-	      fill = new Response{bob};
+	      auto body = R"text(Accepted)text"s;
+	      auto type = mime::TEXT_PLAIN;
+              filled = render::Builder{http::R202_ACCEPTED}.content_type(move(type)).body(move(body)).build();
 	    }
 	  }
         }
       }
     }
+    return move(*filled);
   } catch (std::exception const &e) {
-    responses::internal_server_error(fill, e.what());
+    return responses::internal_server_error(e.what());
   } catch (...) {
-    responses::internal_server_error(fill);
+    return responses::internal_server_error();
   }
 }
 #endiv

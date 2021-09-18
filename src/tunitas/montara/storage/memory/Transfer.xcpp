@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -44,16 +44,16 @@ namespace tunitas::montara::storage::memory {
   Transfer::Transfer(State &state)
     : state{state} { }
   auto Transfer::GET(id::Transfer key) -> Outcome<type::Blob> {
-    return Operations::getty(state.exclusion, state.transfers, key);
+    return Operations::gettie(state.exclusion, state.transfers, key);
   }
   auto Transfer::GET(type::Entity const &match) -> Outcome<type::Blob> {
-    return Operations::getty(state.exclusion, state.transfers, match);
+    return Operations::gettie(state.exclusion, state.transfers, match);
   } 
   auto Transfer::PUT(id::Transfer key, type::Blob value) -> outcome::Success {
-    return Operations::putty(state.exclusion, state.transfers, key, std::move(value));
+    return Operations::puttie(state.exclusion, state.transfers, key, std::move(value));
   }
   auto Transfer::POST(type::Blob value) -> outcome::Success {
-    return Operations::posty(state.exclusion, state.transfers, std::move(value));
+    return Operations::postie(state.exclusion, state.transfers, std::move(value));
   } 
 }
 #endiv
@@ -64,7 +64,7 @@ namespace tunitas::montara::storage::memory {
 #import tunitas.montara.storage.State
 namespace tunitas::montara::storage::memory {
   auto Transfer::GET(id::Consent match) -> Outcome<type::Blob> {
-    // This is not an application of Operations::getty(...) because it must do a sequential scan
+    // This is not an application of Operations::gettie(...) because it must do a sequential scan
     // of the data structure searching for any where consentId equals match.
     // There is no secondary indexing capability in this reference implementation.
     using Result = Outcome<type::Blob>;

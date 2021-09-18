@@ -1,5 +1,5 @@
-// This is -*- c++ -*- nearly C++2a with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright 2019, Oath Inc.; Copyright 2020, Verizon Media
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -22,39 +22,36 @@ namespace tunitas::montara::endpoint {
 #divert <hpp>
 #import tunitas.montara.endpoint.aspect.Storage
 #import tunitas.montara.storage.Subscription
-class tunitas::montara::endpoint::Subscription_FindByEntity : public httpserver::Resource<Subscription_FindByEntity>, aspect::Storage<storage::Subscription> {
-  struct ancestors {
-    using Resource = httpserver::Resource<Subscription_FindByEntity>;
+class tunitas::montara::endpoint::Subscription_FindByEntity : public microhttpd::Resource,
+                                                              protected aspect::Storage<storage::Subscription> {
+  struct Ancestors {
+    using Resource = microhttpd::Resource;
     using Storage = aspect::Storage<storage::Subscription>;
   };
 public:
-  explicit Subscription_FindByEntity(storage::Subscription &);
-  auto render_GET(Request const &, [[out]] Response **fill) -> void;
-private:
-  static std::string const DUMMY_DATA;
+  inline explicit Subscription_FindByEntity(storage::Subscription &);
+  auto GET(Request const &) -> Transport;
+protected:
+  static string::Storage const DUMMY_DATA;
 };
 #endiv
-#divert <cpp>
-#import std.string_literals
-#import tunitas.montara.filters
-#import tunitas.montara.constants
-#import tunitas.montara.resources
+#divert <ipp>
 namespace tunitas::montara::endpoint {
-  using namespace constants;
-  using namespace std::literals;
-  Subscription_FindByEntity::Subscription_FindByEntity(storage::Subscription &store) : ancestors::Storage{store} {
-    resources::initialize_only_get(*this);
-  }
-  auto Subscription_FindByEntity::render_GET(Request const &request, Response **fill) -> void {
-    filters::enforce_no_query_parameters(request, *fill);
-    if (nullptr == *fill) {
-      // [[FIXTHIS]] recover the segments from a database
-      auto const &content_body = DUMMY_DATA;
-      auto const code = http::R200_OK;
-      auto const &content_type = mime::APPLICATION_JSON;
-      httpserver::response::Builder bob{content_body, code, content_type};
-      *fill = new Response{bob};
+  Subscription_FindByEntity::Subscription_FindByEntity(storage::Subscription &store) : Ancestors::Storage{store} { resources::initialize_only_get(*this); }
+}
+#endiv
+#divert <cpp>
+namespace tunitas::montara::endpoint {
+  auto Subscription_FindByEntity::GET(Request const &request) -> Transport {
+    auto filled = Optional<Transport>{};
+    filters::enforce_no_query_parameters(request, filled);
+    if (!filled) {
+#warning [[WRITETHIS]] recover the segments from a database [[WHAT?]] what segments?
+      auto body = DUMMY_DATA;
+      auto type = mime::APPLICATION_JSON;
+      filled = render::Builder{http::R200_OK}.content_type(move(type)).body(move(body)).build();
     }
+    return move(*filled);
   }
 }
 #endiv
