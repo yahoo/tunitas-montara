@@ -29,7 +29,7 @@ class tunitas::montara::endpoint::Subscription_Identifier
   : public httpserver::Resource<Subscription_Identifier>
   , protected aspect::Storage<storage::Subscription>
   , protected aspect::Operations<identifier::Subscription, storage::Subscription> {
-  struct ancestors {
+  struct Ancestors {
     using Resource = httpserver::Resource<Subscription_Identifier>;
     using Storage = aspect::Storage<storage::Subscription>;
     using Operations = aspect::Operations<identifier::Subscription, storage::Subscription>;
@@ -55,7 +55,7 @@ protected:
 #divert <ipp>
 #import tunitas.montara.resources
 namespace tunitas::montara::endpoint {
-  Subscription_Identifier::Subscription_Identifier(storage::Subscription &store) : ancestors::Storage{store} {
+  Subscription_Identifier::Subscription_Identifier(storage::Subscription &store) : Ancestors::Storage{store} {
     resources::initialize_getdelete(*this);
   }
   auto Subscription_Identifier::render_DELETE(Request const &request, Response *&fill) -> void {

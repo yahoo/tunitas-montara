@@ -26,7 +26,7 @@ namespace tunitas::montara::error {
 #import std.error_category
 #forward tunitas.montara.error.category
 class tunitas::montara::error::Category : public std::error_category {
-  using ancestor = std::error_category;
+  using Ancestor = std::error_category;
 protected:
   Category() = default;
   friend auto category() -> Category const &;

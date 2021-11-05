@@ -24,7 +24,7 @@ namespace tunitas::montara::storage::memory {
 class tunitas::montara::storage::memory::Consent
   : public storage::Consent
   , private memory::aspect::Operations<decltype(State::consents), id::Consent, type::Blob, Outcome<type::Blob>> {
-  struct ancestors {
+  struct Ancestors {
     using Storage = storage::Consent;
     using Operations = memory::aspect::Operations<decltype(State::consents), id::Consent, type::Blob, Outcome<type::Blob>>;
   };

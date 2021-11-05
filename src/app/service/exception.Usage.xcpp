@@ -54,9 +54,10 @@ class app::service::exception::Usage : public tunitas::exception::Aspect,
 public:
   inline explicit Usage(std::string const &NAME);
   inline Usage(std::string const &NAME, sys::exits::Code);
-  auto what() const noexcept -> char const * final;
-  auto code() const noexcept -> sys::exits::Code final;
-  auto stream() const noexcept -> std::ostream & final;
+  auto what() const noexcept -> char const * override final;
+  auto stream() const noexcept -> std::ostream & override final;
+  auto code() const noexcept -> sys::exits::Code override final;
+  auto exit() const noexcept -> sys::exits::Code override final;
 private:
   static auto format(std::string const &NAME) -> std::string;
 };
@@ -77,8 +78,9 @@ app::service::exception::Usage::Usage(std::string const &NAME, sys::exits::Code 
 #divert <cpp>
 namespace app::service::exception {
   auto Usage::what() const noexcept -> char const * { return Ancestors::Features::Messaging::what(); }
-  auto Usage::code() const noexcept -> sys::exits::Code { return Ancestors::Features::Usage::code(); }
   auto Usage::stream() const noexcept -> std::ostream & { return Ancestors::Features::Usage::stream(); }
+  auto Usage::code() const noexcept -> sys::exits::Code { return Ancestors::Features::Usage::code(); }
+  auto Usage::exit() const noexcept -> sys::exits::Code { return Ancestors::Features::Usage::code(); }
 }
 #import std.ostringstream
 #import app.service.defaults

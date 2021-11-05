@@ -24,7 +24,7 @@ namespace tunitas::montara::endpoint {
 #import tunitas.montara.storage.Consent
 #import std.string
 class tunitas::montara::endpoint::Consent_FindIdentifiersByEntity : public httpserver::Resource<Consent_FindIdentifiersByEntity>, aspect::Storage<storage::Consent> {
-  struct ancestors {
+  struct Ancestors {
     using Resource = httpserver::Resource<Consent_FindIdentifiersByEntity>;
     using Storage = aspect::Storage<storage::Consent>;
   };
@@ -43,7 +43,7 @@ private:
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
-  Consent_FindIdentifiersByEntity::Consent_FindIdentifiersByEntity(storage::Consent &store) : ancestors::Storage{store}  {
+  Consent_FindIdentifiersByEntity::Consent_FindIdentifiersByEntity(storage::Consent &store) : Ancestors::Storage{store}  {
     resources::initialize_only_get(*this);
   }
   auto Consent_FindIdentifiersByEntity::render_GET(Request const &request, Response **fill) -> void {

@@ -28,9 +28,10 @@ class app::exception::Quitting : public tunitas::exception::Aspect,
 public:
   inline explicit Quitting(std::string const &NAME);
   inline explicit Quitting(std::string const &NAME, sys::exits::Code);
-  auto what() const noexcept -> char const * final;
-  auto code() const noexcept -> sys::exits::Code final;
-  auto stream() const noexcept -> std::ostream & final;
+  auto what() const noexcept -> char const * override final;
+  auto stream() const noexcept -> std::ostream & override final;
+  auto code() const noexcept -> sys::exits::Code override final;
+  auto exit() const noexcept -> sys::exits::Code override final;
 };
 // Of course this is test code
 #import tunitas.app.required.exception.Quitting
@@ -55,7 +56,8 @@ app::exception::Quitting::Quitting(std::string const &NAME, sys::exits::Code cod
 #divert <cpp>
 namespace app::exception {
   auto Quitting::what() const noexcept -> char const * { return Ancestors::Exception::what(); }
-  auto Quitting::code() const noexcept -> sys::exits::Code { return Ancestors::Feature::code(); }
   auto Quitting::stream() const noexcept -> std::ostream & { return Ancestors::Feature::stream(); }
+  auto Quitting::code() const noexcept -> sys::exits::Code { return Ancestors::Feature::code(); }
+  auto Quitting::exit() const noexcept -> sys::exits::Code { return Ancestors::Feature::code(); }
 }
 #endiv

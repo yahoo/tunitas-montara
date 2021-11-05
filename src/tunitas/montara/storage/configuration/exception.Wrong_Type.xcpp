@@ -19,12 +19,12 @@ namespace tunitas::montara::storage::configuration::exception {
 #divert <hpp>
 #import std.invalid_argument
 class tunitas::montara::storage::configuration::exception::Wrong_Type : public std::invalid_argument {
-  using ancestor = std::invalid_argument;
+  using Ancestor = std::invalid_argument;
 public:
   inline Wrong_Type();
 };
 #endiv
 #divert <ipp>
 tunitas::montara::storage::configuration::exception::Wrong_Type::Wrong_Type()
-  : ancestor{"wrong type"} { }
+  : Ancestor{"wrong type"} { }
 #endiv

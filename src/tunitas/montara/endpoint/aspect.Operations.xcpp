@@ -13,7 +13,7 @@ namespace tunitas::montara::endpoint::aspect {
   // Usage:
   //
   //   class my::Endpoint : public httpserver::Resource<...>, protected aspect::Storage<...>, protected aspect::Operations<...> {
-  //     struct ancestors {
+  //     struct Ancestors {
   //       using Resource = httpserver::Resource<...>;
   //       using Storage = aspect::Storage<...>;
   //       using Operations = aspect::Operations<...>;

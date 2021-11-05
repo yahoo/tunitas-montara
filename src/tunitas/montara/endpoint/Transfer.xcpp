@@ -27,7 +27,7 @@ class tunitas::montara::endpoint::Transfer
   : public httpserver::Resource<Transfer>
   , protected aspect::Storage<storage::Transfer>
   , protected aspect::Operations<identifier::Transfer, storage::Transfer> {
-  struct ancestors {
+  struct Ancestors {
     using Resource = httpserver::Resource<Transfer>;
     using Storage = aspect::Storage<storage::Transfer>;
     using Operations = aspect::Operations<identifier::Transfer, storage::Transfer>;
@@ -42,7 +42,7 @@ public: // but we wish it wasn't; we wish it wasn't even here [[REMOVEWHEN]] lib
 #divert <ipp>
 #import tunitas.montara.resources
 namespace tunitas::montara::endpoint {
-  Transfer::Transfer(storage::Transfer &store) : ancestors::Storage{store} {
+  Transfer::Transfer(storage::Transfer &store) : Ancestors::Storage{store} {
     resources::initialize_only_post(*this);
   }
   auto Transfer::render_POST(Request const &request, Response *&fill) -> void {

@@ -19,7 +19,7 @@ namespace tunitas::montara::storage::null {
 #import tunitas.montara.storage.Subscription
 #import tunitas.montara.storage.null.State
 class tunitas::montara::storage::null::Subscription : public storage::Subscription {
-  using ancestor = storage::Subscription;
+  using Ancestor = storage::Subscription;
 public:
   inline explicit Subscription(State &);
   auto DELEET(id::Subscription) -> outcome::Success override;

@@ -24,7 +24,7 @@ namespace tunitas::montara::storage::memory {
 #import std.ostream
 #import std.map
 class tunitas::montara::storage::memory::State : public storage::State {
-  using ancestor = storage::State;
+  using Ancestor = storage::State;
 public:
   inline explicit State(std::ostream &);
   using ConsentMap = std::map<id::Consent, type::Blob>;
@@ -37,6 +37,6 @@ public:
 #endiv
 #divert <ipp>
 tunitas::montara::storage::memory::State::State(std::ostream &log)
-  : ancestor{log} { }
+  : Ancestor{log} { }
 #endiv
 

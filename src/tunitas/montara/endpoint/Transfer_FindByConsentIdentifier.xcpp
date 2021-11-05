@@ -23,7 +23,7 @@ namespace tunitas::montara::endpoint {
 #import tunitas.montara.endpoint.aspect.Storage
 #import tunitas.montara.storage.Transfer
 class tunitas::montara::endpoint::Transfer_FindByConsentIdentifier : public httpserver::Resource<Transfer_FindByConsentIdentifier>, aspect::Storage<storage::Transfer> {
-  struct ancestors {
+  struct Ancestors {
     using Resource = httpserver::Resource<Transfer_FindByConsentIdentifier>;
     using Storage = aspect::Storage<storage::Transfer>;
   };
@@ -42,7 +42,7 @@ private:
 namespace tunitas::montara::endpoint {
   using namespace constants;
   using namespace std::literals;
-  Transfer_FindByConsentIdentifier::Transfer_FindByConsentIdentifier(storage::Transfer &store) : ancestors::Storage{store} {
+  Transfer_FindByConsentIdentifier::Transfer_FindByConsentIdentifier(storage::Transfer &store) : Ancestors::Storage{store} {
     resources::initialize_only_get(*this);
   }
   auto Transfer_FindByConsentIdentifier::render_GET(Request const &request, Response **fill) -> void {
