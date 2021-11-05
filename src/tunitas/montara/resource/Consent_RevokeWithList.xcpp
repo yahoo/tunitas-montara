@@ -4,15 +4,15 @@
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
-namespace tunitas::montara::endpoint {
+namespace tunitas::montara::resource {
   //
-  // The code behind the /consent/revokeWithList endpoint
+  // The code behind the /consent/revokeWithList resource
   //
   // Example: TBD
   //
   // Usage:
   //
-  //   endpoint::Consent_RevokeWithList resource;
+  //   resource::Consent_RevokeWithList resource;
   //   ws.register_resource("/consent/revokeWithList", &resource, true);
   //   ws.start(cfg.foreground);
   //   
@@ -20,9 +20,9 @@ namespace tunitas::montara::endpoint {
 }
 #endiv
 #divert <hpp>
-#import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.resource.aspect.Storage
 #import tunitas.montara.storage.Consent
-class tunitas::montara::endpoint::Consent_RevokeWithList : public microhttpd::Resource, aspect::Storage<storage::Consent> {
+class tunitas::montara::resource::Consent_RevokeWithList : public microhttpd::Resource, aspect::Storage<storage::Consent> {
   struct Ancestors {
     using Resource = microhttpd::Resource;
     using Storage = aspect::Storage<storage::Consent>;
@@ -30,18 +30,20 @@ class tunitas::montara::endpoint::Consent_RevokeWithList : public microhttpd::Re
 public:
   inline explicit Consent_RevokeWithList(storage::Consent &);
   auto POST(Request const &) -> Transport;
+  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
 };
 #endiv
 #divert <ipp>
-namespace tunitas::montara::endpoint {
+namespace tunitas::montara::resource {
   Consent_RevokeWithList::Consent_RevokeWithList(storage::Consent &store) : Ancestors::Storage{store} { resources::initialize_only_post(*this); }
+  template<required::Storage STORAGE> auto Consent_RevokeWithList::registration(STORAGE &storage) -> endpoint::Registration { return endpoint::make_registration<Consent_RevokeWithList>("/consent/revokeWithList"s, storage); }
 }
 #endiv
 #divert <cpp>
-namespace tunitas::montara::endpoint {
+namespace tunitas::montara::resource {
   auto Consent_RevokeWithList::POST(Request const &request) -> Transport {
     auto filled = Optional<Transport>{};
-    filters::enforce_no_query_parameters(request, filled);
+    filters::enforce_no_query_arguments(request, filled);
     if (!filled) {
       auto body = R"text(accepted)text"s;
       auto type = mime::TEXT_PLAIN;

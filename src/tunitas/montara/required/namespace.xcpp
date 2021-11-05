@@ -4,10 +4,7 @@
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
-namespace tunitas::montara {
-  enum class CONFIG { }; // for Config<CONFIG>
-}
-#endiv
-#divert <ipp>
-#import std.cerr // for DEBUG only ... otherwise remove
+#import tunitas.montara
+#import tunitas.required
+namespace tunitas::montara::required { using namespace tunitas::required; }
 #endiv

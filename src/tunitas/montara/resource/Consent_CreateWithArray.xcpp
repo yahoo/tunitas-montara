@@ -4,13 +4,13 @@
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
-namespace tunitas::montara::endpoint {
+namespace tunitas::montara::resource {
   //
-  // The code behind the /consent/createWithArray endpoint
+  // The code behind the /consent/createWithArray resource
   //
   // Usage:
   //
-  //   endpoint::Consent_CreateWithArray resource;
+  //   resource::Consent_CreateWithArray resource;
   //   ws.register_resource("/consent/createWithArray", &resource, true);
   //   ws.start(cfg.foreground);
   //   
@@ -19,9 +19,9 @@ namespace tunitas::montara::endpoint {
 #endiv
 #divert <hpp>
 #import std.string
-#import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.resource.aspect.Storage
 #import tunitas.montara.storage.Consent
-class tunitas::montara::endpoint::Consent_CreateWithArray : public microhttpd::Resource,
+class tunitas::montara::resource::Consent_CreateWithArray : public microhttpd::Resource,
                                                             protected aspect::Storage<storage::Consent> {
   struct Ancestors {
     using Resource = microhttpd::Resource;
@@ -30,18 +30,20 @@ class tunitas::montara::endpoint::Consent_CreateWithArray : public microhttpd::R
 public:
   inline explicit Consent_CreateWithArray(storage::Consent &);
   auto POST(Request const &) -> Transport;
+  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
 };
 #endiv
 #divert <ipp>
-namespace tunitas::montara::endpoint {
+namespace tunitas::montara::resource {
   Consent_CreateWithArray::Consent_CreateWithArray(storage::Consent &store) : Ancestors::Storage{store} { resources::initialize_only_post(*this); }
+  template<required::Storage STORAGE> auto Consent_CreateWithArray::registration(STORAGE &storage) -> endpoint::Registration { return endpoint::make_registration<Consent_CreateWithArray>("/consentWithArray"s, storage); }
 }
 #endiv
 #divert <cpp>
-namespace tunitas::montara::endpoint {
+namespace tunitas::montara::resource {
   auto Consent_CreateWithArray::POST(Request const &request) -> Transport {
     auto filled = Optional<Transport>{};
-    filters::enforce_no_query_parameters(request, filled);
+    filters::enforce_no_query_arguments(request, filled);
     if (!filled) {
       return move(*filled);
     } else {

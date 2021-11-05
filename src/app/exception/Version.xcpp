@@ -34,10 +34,10 @@ namespace app::exception {
 #import tunitas.exception.Aspect
 #import tunitas.exception.feature.Messaging
 #import tunitas.montara.version.String
-class app::exception::Version : public tunitas::exception::Aspect,
-                                public tunitas::app::exception::Aspect,
-                                public tunitas::app::exception::feature::Version,
-                                public tunitas::exception::feature::Messaging,
+class app::exception::Version : public virtual tunitas::exception::Aspect,
+                                public virtual tunitas::app::exception::Aspect,
+                                public virtual tunitas::app::exception::feature::Version,
+                                public virtual tunitas::exception::feature::Messaging,
                                 public std::exception {
   struct Ancestors {
     struct Aspects {
@@ -52,9 +52,10 @@ class app::exception::Version : public tunitas::exception::Aspect,
   };
 public:
   inline explicit Version(std::string const &NAME);
-  auto what() const noexcept -> char const * final;
-  auto code() const noexcept -> sys::exits::Code final;
-  auto stream() const noexcept -> std::ostream & final;
+  auto what() const noexcept -> char const * override;
+  auto stream() const noexcept -> std::ostream & override;
+  auto code() const noexcept -> sys::exits::Code override;
+  auto exit() const noexcept -> sys::exits::Code override;
   using String = tunitas::montara::version::String;
   inline auto version() const -> String;
 private:
@@ -77,8 +78,9 @@ auto app::exception::Version::version() const -> String {
 #divert <cpp>
 namespace app::exception {
   auto Version::what() const noexcept -> char const * { return Ancestors::Features::Messaging::what(); }
-  auto Version::code() const noexcept -> sys::exits::Code { return Ancestors::Features::Version::code(); }
   auto Version::stream() const noexcept -> std::ostream & { return Ancestors::Features::Version::stream(); }
+  auto Version::code() const noexcept -> sys::exits::Code { return Ancestors::Features::Version::code(); }
+  auto Version::exit() const noexcept -> sys::exits::Code { return Ancestors::Features::Version::exit(); }
 }
 #import std.ostringstream
 auto app::exception::Version::format(std::string const &NAME) -> std::string {

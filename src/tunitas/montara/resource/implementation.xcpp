@@ -4,8 +4,8 @@
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
-// Every endpoint implementation is going to need these
-// But these don't need to be in the interface of 'namespace endpoint'
+// Every resource implementation is going to need these
+// But these don't need to be in the interface of 'namespace resource'
 #import json.parse
 #import json.to
 #import std.exception

@@ -1,0 +1,12 @@
+# This is a GNU -*- Makefile -*- fragment that is included by Automake
+# Copyright Yahoo Inc, 2021.
+# Licensed under the terms of the Apache-2.0 license.
+# For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+# For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
+#
+tunitas_montara_endpoint_SUBSOURCES = \
+  obj/src/tunitas/montara/endpoint/namespace.cpp \
+  obj/src/tunitas/montara/endpoint/Locator.cpp \
+  obj/src/tunitas/montara/endpoint/Registration.cpp \
+  obj/src/tunitas/montara/endpoint/make.cpp \
+  $(end)

@@ -4,15 +4,21 @@
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
-namespace tunitas::montara::endpoint {
+namespace tunitas::montara::resource {
   //
-  // The code behind the /datatransfer/createWithList endpoint
+  // The code behind the /datatransfer/createWithList resource
+  //
+  // Editorial:
+  //
+  //   Whereas REST requires computed names (many nouns) and a few constrained verbs (POST, GET, PUT, DELETE)
+  //   No one is fooled, this is not REST, this is RPC on bulk data.
+  //   This is not Representational State Transfer (REST); this is Remote Procedure Call (RPC).
   //
   // Example: TBD
   //
   // Usage:
   //
-  //   endpoint::Transfer_CreateWithList resource;
+  //   resource::Transfer_CreateWithList resource;
   //   ws.register_resource("/datatransfer/createWithList", &resource, true);
   //   ws.start(cfg.foreground);
   //   
@@ -20,9 +26,9 @@ namespace tunitas::montara::endpoint {
 }
 #endiv
 #divert <hpp>
-#import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.resource.aspect.Storage
 #import tunitas.montara.storage.Transfer
-class tunitas::montara::endpoint::Transfer_CreateWithList : public microhttpd::Resource,
+class tunitas::montara::resource::Transfer_CreateWithList : public microhttpd::Resource,
                                                             protected aspect::Storage<storage::Transfer> {
   struct Ancestors {
     using Resource = microhttpd::Resource;
@@ -31,18 +37,24 @@ class tunitas::montara::endpoint::Transfer_CreateWithList : public microhttpd::R
 public:
   inline explicit Transfer_CreateWithList(storage::Transfer &);
   auto POST(Request const &) -> Transport;
+  inline static auto locator_primary() -> endpoint::Locator;
+  inline static auto locator_alternate() -> endpoint::Locator;
+  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
 };
 #endiv
 #divert <ipp>
-namespace tunitas::montara::endpoint {
+namespace tunitas::montara::resource {
   Transfer_CreateWithList::Transfer_CreateWithList(storage::Transfer &store) : Ancestors::Storage{store} { resources::initialize_only_post(*this); }
+  auto Transfer_CreateWithList::locator_primary() -> endpoint::Locator   { return endpoint::make_locator("/transfer/createWithList"s); }
+  auto Transfer_CreateWithList::locator_alternate() -> endpoint::Locator { return endpoint::make_locator("/datatransfer/createWithList"s); }
+  template<required::Storage STORAGE> auto Transfer_CreateWithList::registration(STORAGE &storage) -> endpoint::Registration { return endpoint::make_registration<Transfer_CreateWithList>(locator_primary(), storage); }
 }
 #endiv
 #divert <cpp>
-namespace tunitas::montara::endpoint {
+namespace tunitas::montara::resource {
   auto Transfer_CreateWithList::POST(Request const &request) -> Transport {
     auto filled = Optional<Transport>{};
-    filters::enforce_no_query_parameters(request, filled);
+    filters::enforce_no_query_arguments(request, filled);
     if (filled) {
 #warning [[WRITETHIS]] accept the body and put it in a database or a queue, but only if the ID segments already exists.
       auto body = R"text(accepted)text"s;

@@ -4,15 +4,15 @@
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
-namespace tunitas::montara::endpoint {
+namespace tunitas::montara::resource {
   //
-  // The code behind the /consent/findIdsByEntity endpoint
+  // The code behind the /consent/findIdsByEntity resource
   //
   // Example: TBD
   //
   // Usage:
   //
-  //   endpoint::Consent_FindIdentifiersByEntity resource;
+  //   resource::Consent_FindIdentifiersByEntity resource;
   //   ws.register_resource("/consent/findIdsByEntity", &resource, true);
   //   ws.start(cfg.foreground);
   //   
@@ -20,10 +20,10 @@ namespace tunitas::montara::endpoint {
 }
 #endiv
 #divert <hpp>
-#import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.resource.aspect.Storage
 #import tunitas.montara.storage.Consent
 #import std.string
-class tunitas::montara::endpoint::Consent_FindIdentifiersByEntity : public microhttpd::Resource, aspect::Storage<storage::Consent> {
+class tunitas::montara::resource::Consent_FindIdentifiersByEntity : public microhttpd::Resource, aspect::Storage<storage::Consent> {
   struct Ancestors {
     using Resource = microhttpd::Resource;
     using Storage = aspect::Storage<storage::Consent>;
@@ -31,21 +31,25 @@ class tunitas::montara::endpoint::Consent_FindIdentifiersByEntity : public micro
 public:
   inline explicit Consent_FindIdentifiersByEntity(storage::Consent &);
   auto GET(Request const &) -> Transport;
+  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
+  inline static auto locator_primary() -> endpoint::Locator;
+  inline static auto locator_alternate() -> endpoint::Locator;
 private:
   static std::string const DUMMY_DATA;
 };
 #endiv
 #divert <ipp>
-namespace tunitas::montara::endpoint {
-  Consent_FindIdentifiersByEntity::Consent_FindIdentifiersByEntity(storage::Consent &store) : Ancestors::Storage{store}  {
-    resources::initialize_only_get(*this);
-  }
+namespace tunitas::montara::resource {
+  Consent_FindIdentifiersByEntity::Consent_FindIdentifiersByEntity(storage::Consent &store) : Ancestors::Storage{store}  { resources::initialize_only_get(*this); }
+  auto Consent_FindIdentifiersByEntity::locator_primary() -> endpoint::Locator   { return endpoint::make_locator("/consent/findIdentifiersByEntity"s); }
+  auto Consent_FindIdentifiersByEntity::locator_alternate() -> endpoint::Locator { return endpoint::make_locator("/consent/findIdsByEntity"s); }
+  template<required::Storage STORAGE> auto Consent_FindIdentifiersByEntity::registration(STORAGE &storage) -> endpoint::Registration { return endpoint::make_registration<Consent_FindIdentifiersByEntity>(Consent_FindIdentifiersByEntity::locator_primary(), storage); }
 }
 #divert <cpp>
-namespace tunitas::montara::endpoint {
+namespace tunitas::montara::resource {
   auto Consent_FindIdentifiersByEntity::GET(Request const &request) -> Transport {
     auto filled = Optional<Transport>{};
-    filters::enforce_no_query_parameters(request, filled);
+    filters::enforce_no_query_arguments(request, filled);
     if (!filled) {
 #warning [[WRITETHIS]] recover the optout from a database
       auto body = DUMMY_DATA;

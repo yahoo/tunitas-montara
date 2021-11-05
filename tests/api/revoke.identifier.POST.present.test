@@ -12,11 +12,11 @@ curlpure \
     -X GET \
     $URLHOSTPORT/consent/${consentId} \
     ${end} &&
-code=$(curlish --verbose \
+code=$(curlcode --verbose \
     -H 'Content-Type: application/json' \
     -X POST \
     -d @${0%.test}.json \
     $URLHOSTPORT/consent/revoke/${consentId} \
     ${end})
 # This will succeed because the consent record exists and the appropriate verb was used
-assert 0 == $? and 200 == ${code?}
+assert 0 == $? and 200 == ${code:-CURLCODE-HAS-FAILED}

@@ -1,23 +1,28 @@
 #!/bin/bash
 source ${0%/*}/rigging.sh || exit 70
 consentId=102609164977689
-code=$(curlish \
-    -H 'Content-Type: application/json' \
-    -X POST \
-    -d @${0%.test}.json \
-    ${URLHOSTPORT?}/consent \
-    ${end}) &&
-assert 0 == $? and 202 == ${code?} &&
-code=$(curlish \
+curlpure \
     -H 'Content-Type: application/json' \
     -X GET \
     ${URLHOSTPORT?}/consent/${consentId?} \
+    ${end} &&
+code=$(curlcode \
+    -H 'Content-Type: application/json' \
+    -X POST \
+    -d @${0%.test}.json \
+    $URLHOSTPORT/consent \
     ${end}) &&
-code=$(curlish \
+assert 0 == $? and 202 == ${code:-CURLCODE-HAS-FAILED} &&
+curlpure \
+    -H 'Content-Type: application/json' \
+    -X GET \
+    ${URLHOSTPORT?}/consent/${consentId?} \
+    ${end} &&
+code=$(curlcode \
     -H 'Content-Type: application/json' \
     -X DELETE \
     ${URLHOSTPORT?}/consent/${consentId?} \
     ${end})
 # This fails because there is no 'DELETE /consent/{consentId}' at all.
 # Instead you can revoke your consent with 'POST /consent/revoke/{consentId} (which appends new records)
-assert 0 == $? and 405 == ${code?}
+assert 0 == $? and 405 == ${code:-CURLCODE-HAS-FAILED}

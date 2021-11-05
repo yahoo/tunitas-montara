@@ -21,8 +21,6 @@ struct tests::unit::identifier::Fixture : public cppunit::test::Fixture {
 };
 #endiv
 #divert <cpp>
-#import std.literals
-using namespace std::literals;
 #import tunitas.montara.identifier.to_string
 #import tunitas.montara.identifier.Consent
 #import tunitas.montara.identifier.Subscription

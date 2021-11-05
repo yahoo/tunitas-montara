@@ -1,0 +1,79 @@
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
+// Licensed under the terms of the Apache-2.0 license.
+// For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+// For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
+#divert <fpp>
+namespace tunitas::montara::resource {
+  //
+  // The code behind the /datatransfer/findByConsentId resource
+  //
+  // Editorial:
+  //
+  //   Whereas REST requires computed names (many nouns) and a few constrained verbs (POST, GET, PUT, DELETE)
+  //   No one is fooled, this is not REST, this is RPC on bulk data.
+  //   This is not Representational State Transfer (REST); this is Remote Procedure Call (RPC).
+  //
+  // Example: TBD
+  //
+  // Usage:
+  //
+  //   resource::Transfer_FindByConsentIdentifier resource;
+  //   ws.register_resource("/datatransfer/findByConsentId/{ID}", &resource, true);
+  //   ws.start(cfg.foreground);
+  //   
+  class Transfer_FindByConsentIdentifier;
+}
+#endiv
+#divert <hpp>
+#import tunitas.montara.resource.aspect.Storage
+#import tunitas.montara.storage.Transfer
+#import tunitas.string.Storage
+namespace tunitas::montara {
+  class resource::Transfer_FindByConsentIdentifier : public microhttpd::Resource,
+                                                     protected aspect::Storage<storage::Transfer> {
+    struct Ancestors {
+      using Resource = microhttpd::Resource;
+      using Storage = aspect::Storage<storage::Transfer>;
+    };
+  public:
+    inline explicit Transfer_FindByConsentIdentifier(storage::Transfer &);
+    auto GET(Request const &) -> Transport;
+    inline static auto locator_primary() -> endpoint::Locator;
+    inline static auto locator_alternate() -> endpoint::Locator;
+    template<unsigned INDEX> inline static auto locator_abbreviation() -> endpoint::Locator;
+    template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
+  private:
+    static string::Storage const DUMMY_DATA;
+  };
+  namespace resource {
+    template<> inline auto Transfer_FindByConsentIdentifier::locator_abbreviation<0>() -> endpoint::Locator;
+    template<> inline auto Transfer_FindByConsentIdentifier::locator_abbreviation<1>() -> endpoint::Locator;
+  }
+}
+#endiv
+#divert <ipp>
+namespace tunitas::montara::resource {
+  Transfer_FindByConsentIdentifier::Transfer_FindByConsentIdentifier(storage::Transfer &store) : Ancestors::Storage{store} { resources::initialize_only_get(*this); }
+  auto Transfer_FindByConsentIdentifier::locator_primary() -> endpoint::Locator   { return endpoint::make_locator("/transfer/findByConsentIdentifier"s); }
+  auto Transfer_FindByConsentIdentifier::locator_alternate() -> endpoint::Locator { return endpoint::make_locator("/datatransfer/findByConsentIdentifier"s); }
+  template<> auto Transfer_FindByConsentIdentifier::locator_abbreviation<0>() -> endpoint::Locator { return endpoint::make_locator("/datatransfer/findByConsentId"s); }
+  template<> auto Transfer_FindByConsentIdentifier::locator_abbreviation<1>() -> endpoint::Locator { return endpoint::make_locator("/datatransfer/findByConsentID"s); }
+  template<required::Storage STORAGE> auto Transfer_FindByConsentIdentifier::registration(STORAGE &storage) -> endpoint::Registration { return endpoint::make_registration<Transfer_FindByConsentIdentifier>(locator_primary(), storage); }
+}
+#endiv
+#divert <cpp>
+namespace tunitas::montara::resource {
+  auto Transfer_FindByConsentIdentifier::GET(Request const &request) -> Transport {
+    auto filled = Optional<Transport>{};
+    filters::enforce_no_query_arguments(request, filled);
+    if (!filled) {
+#warning [[WRITETHIS]] recover the segments from a database
+      auto body = DUMMY_DATA;
+      auto type = mime::APPLICATION_JSON;
+      filled = render::Builder{http::R200_OK}.content_type(move(type)).body(move(body)).build();
+    }
+    return move(*filled);
+  }
+}
+#endiv

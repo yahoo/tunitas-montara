@@ -10,6 +10,8 @@ tests_api_LAST_LOGS = $(patsubst %.test, %.log,$(tests_api_LAST_TESTS))
 tests_api_LAST_TESTS = tests/api/zzz.end.test
 tests_api_MID_LOGS = $(patsubst %.test, %.log,$(tests_api_MID_TESTS))
 tests_api_MID_TESTS = \
+  $(tests_api_PASS_TESTS) \
+  $(tests_api_XPASS_TESTS) \
   $(tests_api_XFAIL_TESTS) \
   $(end)
 # WATCHOUT - these are executed concurrently unless otherwise ordered via the dependencies
@@ -18,24 +20,28 @@ tests_api_MID_TESTS = \
 # These all say 200 now and they should say some variant of 400 or 405.
 # [[TODO]] implement the resource that does such testing.
 #
-tests_api_XFAIL_TESTS = \
+tests_api_PASS_TESTS = \
   tests/api/consent.DELETE.test \
   tests/api/consent.GET.test \
   tests/api/consent.POST.missing.test \
   tests/api/consent.POST.present.test \
   tests/api/consent.PUT.test \
-  tests/api/consent.identifier.DELETE.missing.test \
-  tests/api/consent.identifier.DELETE.present.test \
   tests/api/consent.identifier.GET.missing.test \
   tests/api/consent.identifier.GET.present.test \
-  tests/api/consent.identifier.POST.test \
-  tests/api/consent.identifier.PUT.missing.test \
   tests/api/consent.identifier.PUT.present.test \
+  tests/api/consent.identifier.PUT.missing.test \
+  tests/api/consent.identifier.DELETE.missing.test \
+  tests/api/consent.identifier.DELETE.present.test \
+  tests/api/consent.identifier.POST.test \
   tests/api/revoke.identifier.DELETE.test \
+  tests/api/revoke.identifier.POST.present.test \
   tests/api/revoke.identifier.GET.test \
   tests/api/revoke.identifier.POST.missing.test \
-  tests/api/revoke.identifier.POST.present.test \
   tests/api/revoke.identifier.PUT.test \
+  $(end)
+tests_api_XPASS_TESTS = \
+  $(end)
+tests_api_XFAIL_TESTS = \
   $(end)
 tests_api_TESTS = \
   $(tests_api_FIRST_TESTS) \

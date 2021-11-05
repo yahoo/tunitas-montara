@@ -4,36 +4,33 @@
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
-#import tunitas.montara.endpoint
-namespace tests::unit::endpoint {
+#import tunitas.montara.resource
+namespace tests::unit::resource {
   namespace [[eponymous]] fixture {
     class Fixture;
-    namespace library = ::tunitas::montara::endpoint;
+    namespace library = ::tunitas::montara::resource;
   }
   using fixture::Fixture;
 }
 #endiv
 #divert <hpp>
-struct tests::unit::endpoint::fixture::Fixture : public cppunit::test::Fixture {
+struct tests::unit::resource::fixture::Fixture : public cppunit::test::Fixture {
   static auto suite() -> cppunit::Test *;
   //
-  auto test_Locator() -> void;
+  auto test_Consent() -> void;
 };
 #endiv
 #divert <cpp>
-auto tests::unit::endpoint::fixture::Fixture::suite() -> cppunit::Test * {
+auto tests::unit::resource::fixture::Fixture::suite() -> cppunit::Test * {
   using namespace rigging::suite;
-  Stream series("endpoint");
-  series << call("Locator", &Fixture::test_Locator)
+  Stream series("resource");
+  series << call("Consent", &Fixture::test_Consent)
          << END;
   return finalize(series);
 }
-#import tunitas.montara.endpoint.Locator
-namespace tests::unit::endpoint::fixture {
-  auto Fixture::test_Locator() -> void {
-    using Subject = library::Locator;
-    auto subject = Subject{};
-    CPPUNIT_ASSERT(sizeof (subject));
+namespace tests::unit::resource::fixture {
+  auto Fixture::test_Consent() -> void {
+    CPPUNIT_ASSERT(true);
   }
 }
 #endiv

@@ -4,13 +4,13 @@
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
-namespace tunitas::montara::endpoint {
+namespace tunitas::montara::resource {
   //
-  // The code behind the /consent/createWithList endpoint
+  // The code behind the /consent/createWithList resource
   //
   // Usage:
   //
-  //   endpoint::Consent_CreateWithList resource;
+  //   resource::Consent_CreateWithList resource;
   //   ws.register_resource("/consent/createWithList", &resource, true);
   //   ws.start(cfg.foreground);
   //   
@@ -19,9 +19,9 @@ namespace tunitas::montara::endpoint {
 #endiv
 #divert <hpp>
 #import std.string 
-#import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.resource.aspect.Storage
 #import tunitas.montara.storage.Consent
-class tunitas::montara::endpoint::Consent_CreateWithList : public microhttpd::Resource,
+class tunitas::montara::resource::Consent_CreateWithList : public microhttpd::Resource,
                                                            protected aspect::Storage<storage::Consent> {
   struct Ancestors {
     using Resource = microhttpd::Resource;
@@ -30,18 +30,20 @@ class tunitas::montara::endpoint::Consent_CreateWithList : public microhttpd::Re
 public:
   inline explicit Consent_CreateWithList(storage::Consent &);
   auto POST(Request const &) -> Transport;
+  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
 };
 #endiv
 #divert <ipp>
-namespace tunitas::montara::endpoint {
+namespace tunitas::montara::resource {
   Consent_CreateWithList::Consent_CreateWithList(storage::Consent &store) : Ancestors::Storage{store} { resources::initialize_only_post(*this); }
+  template<required::Storage STORAGE> auto Consent_CreateWithList::registration(STORAGE &storage) -> endpoint::Registration { return endpoint::make_registration<Consent_CreateWithList>("/consentWithList"s, storage); }
 }
 #endiv
 #divert <cpp>
-namespace tunitas::montara::endpoint {
+namespace tunitas::montara::resource {
   auto Consent_CreateWithList::POST(Request const &request) -> Transport {
     auto filled = Optional<Transport>{};
-    filters::enforce_no_query_parameters(request, filled);
+    filters::enforce_no_query_arguments(request, filled);
     if (!filled) {
 #warning [[WRITETHIS]] accept the body and put the work into a queue
       auto body = R"text(accepted)text"s;

@@ -12,7 +12,7 @@ namespace tunitas::montara::service { using namespace tunitas::server::service; 
 #divert <cpp>
 // Of course, this is test code
 namespace {
-  namespace tests {
+  namespace testate {
     using namespace tunitas::montara::service;
     struct Resourceful : public Resource {
       auto otherwise(Request const &) -> Transport;

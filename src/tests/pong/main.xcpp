@@ -93,20 +93,24 @@ namespace tests::pong::packaging::main::implementation {
                        auto spec = Specification{PORT};
                        return Service{move(spec)};
                      }();
-      service.router.enregister(nonstd::copy(pathfrag), std::make_shared<Pong>());
+      service.enregister(nonstd::copy(pathfrag), std::make_shared<Pong>());
+#if 0
+      // [[FIXTHIS]] how was this testable?  Surely we should be able to test the routability of the service before running it(!?)
       {
         // try a dry run before launching the service.
         using Generator = microhttpd::event::Event<microhttpd::event::Stage::RECEIVE>;
         auto q = Generator::request(service, pathfrag);
         auto p = microhttpd::path::Path{pathfrag};
-        service.router.route(p).GET(q);
+        auto r = service.route(p);
+        destination(r).GET(q);
       }
+#endif
       auto complain = [exe](microhttpd::Success result, microhttpd::string::Sequencez verb) {
                         auto ec = error_code(result);
                         std::clog << exe << ": error, could not " << verb << " the " << NAME << " service because " << ec.message() << '\n';
                         return FAIL;
                       };
-      if (auto launched = service.launch(); !good(launched)) {
+      if (auto launched = service.launch(service.prepare()); !good(launched)) {
         return complain(launched, "launch");
       } else {
         auto exit = OK;

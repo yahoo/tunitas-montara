@@ -14,9 +14,6 @@ struct tests::unit::want::Fixture : public cppunit::test::Fixture {
 };
 #endiv
 #divert <cpp>
-#import std.string_literals
-using namespace std::string_literals;
-#import std.string
 #import std.ostringstream
 #import std.unique_ptr
 #import want.nonstd.Nullbuf

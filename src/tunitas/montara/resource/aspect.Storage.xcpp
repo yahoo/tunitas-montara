@@ -5,10 +5,10 @@
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
 #import tunitas.montara.storage.required.Interface
-namespace tunitas::montara::endpoint::aspect {
+namespace tunitas::montara::resource::aspect {
   //
-  // The storage aspect which is common to all endpoints.
-  // This is a common implementation detail across all the endpoints.
+  // The storage aspect which is common to all resources.
+  // This is a common implementation detail across all the resources.
   // It avoids cut & paste.
   // Descendants only
   //
@@ -23,7 +23,7 @@ namespace tunitas::montara::endpoint::aspect {
 }
 #endiv
 #divert <hpp>
-template<tunitas::montara::storage::required::Interface API> class tunitas::montara::endpoint::aspect::Storage {
+template<tunitas::montara::storage::required::Interface API> class tunitas::montara::resource::aspect::Storage {
 protected:
   ~Storage() = default;
   inline Storage(API &store) : store{store} { }

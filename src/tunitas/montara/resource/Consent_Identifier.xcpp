@@ -4,15 +4,15 @@
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
-namespace tunitas::montara::endpoint {
+namespace tunitas::montara::resource {
   //
-  // The code behind the /consent/{ID} endpoint
+  // The code behind the /consent/{ID} resource
   //
   // Example: TBD
   //
   // Usage:
   //
-  //   endpoint::Consent_Identifier resource;
+  //   resource::Consent_Identifier resource;
   //   ws.register_resource("/consent/{ID}", &resource, true);
   //   ws.start(cfg.foreground);
   //   
@@ -21,11 +21,11 @@ namespace tunitas::montara::endpoint {
 #endiv
 #divert <hpp>
 #import std.string
-#import tunitas.montara.endpoint.aspect.Operations
-#import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.resource.aspect.Operations
+#import tunitas.montara.resource.aspect.Storage
 #import tunitas.montara.identifier.Consent
 #import tunitas.montara.storage.Consent
-class tunitas::montara::endpoint::Consent_Identifier : public microhttpd::Resource,
+class tunitas::montara::resource::Consent_Identifier : public microhttpd::Resource,
                                                        protected aspect::Storage<storage::Consent>,
                                                        protected aspect::Operations<identifier::Consent, storage::Consent> {
   struct Ancestors {
@@ -37,21 +37,16 @@ public:
   inline explicit Consent_Identifier(storage::Consent &);
   inline auto GET(Request const &) -> Transport;
   inline auto PUT(Request const &) -> Transport;
+  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
 protected:
-  // [[FIXTHIS]] construct the URL in run.cpp so that these to guarantee to match
-  // this must match the name used in run.cpp -----------\ (here)
-  //                                                     |
-  //                                                     |
-  //                                                     v
   inline static auto const PARAMETER_NAME = std::string{"consentId"};
 };
 #endiv
 #divert <ipp>
-namespace tunitas::montara::endpoint {
-  Consent_Identifier::Consent_Identifier(storage::Consent &store) : Ancestors::Storage{store} {
-    resources::initialize_getput(*this);
-  }
+namespace tunitas::montara::resource {
+  Consent_Identifier::Consent_Identifier(storage::Consent &store) : Ancestors::Storage{store} { resources::initialize_getput(*this); }
   auto Consent_Identifier::GET(Request const &request) -> Transport { return gettie(request, store, PARAMETER_NAME); }
   auto Consent_Identifier::PUT(Request const &request) -> Transport { return puttie(request, store, PARAMETER_NAME); }
+  template<required::Storage STORAGE> auto Consent_Identifier::registration(STORAGE &storage) -> endpoint::Registration { return endpoint::make_registration<Consent_Identifier>("/consent"s, PARAMETER_NAME, storage); }
 }
 #endiv

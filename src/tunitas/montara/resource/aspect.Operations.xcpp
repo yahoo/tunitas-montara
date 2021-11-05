@@ -6,7 +6,7 @@
 #divert <fpp>
 #import tunitas.montara.constants
 #import tunitas.string.literals
-namespace tunitas::montara::endpoint::aspect {
+namespace tunitas::montara::resource::aspect {
   //
   // Common (basic) operations of GET, POST, PUT against an identifier
   // This is an implementation detail.
@@ -33,16 +33,18 @@ namespace tunitas::montara::endpoint::aspect {
 #endiv
 #divert <hpp>
 #import tunitas.string.View
-template<typename IDENTIFIER, typename STORAGE> class tunitas::montara::endpoint::aspect::operations::Operations {
+#import tunitas.montara.error.Code
+template<typename IDENTIFIER, typename STORAGE> class tunitas::montara::resource::aspect::operations::Operations {
 protected:
   using Identifier = IDENTIFIER;
   using Storage = STORAGE;
   ~Operations() = default;
   // though not marked 'noexcept' these will be used in noexcept situations ... so make sure catch(...) holds
-  static auto deetie(Request const &request, [[inout]] Storage &, string::View parameter_name) -> Transport;
-  static auto gettie(Request const &request, [[inout]] Storage &, string::View parameter_name) -> Transport;
-  static auto puttie(Request const &request, [[inout]] Storage &, string::View parameter_name) -> Transport;
+  static auto deetie(Request const &request, [[inout]] Storage &, string::View variable_name) -> Transport;
+  static auto gettie(Request const &request, [[inout]] Storage &, string::View variable_name) -> Transport;
+  static auto puttie(Request const &request, [[inout]] Storage &, string::View variable_name) -> Transport;
   static auto postie(Request const &request, [[inout]] Storage &) -> Transport;
+  using E = error::Code;
 };
 #endiv
 #divert <tpp>
@@ -55,31 +57,43 @@ protected:
 #import std.unique_ptr
 #import std.ostringstream
 #import std.string
+#import tunitas.Optional
+#import tunitas.string.Storage
+#import tunitas.montara.filters
 #import tunitas.montara.filters
 #import tunitas.montara.responses
 #import tunitas.montara.identifier.from_chars
 #import microhttpd.render.Builder
 #import std.exception
-namespace tunitas::montara::endpoint::aspect::operations {
-  template<typename I, typename S> auto Operations<I,S>::deetie(Request const &request, Storage &store, string::View parameter_name) -> Transport try {
+namespace tunitas::montara::resource::aspect::operations {
+  template<typename I, typename S> auto Operations<I,S>::deetie(Request const &request, Storage &store, string::View variable_name) -> Transport try {
     auto filled = Optional<Transport>{};
-    filters::enforce_no_query_parameters(request, filled);
+    filters::enforce_no_query_arguments(request, filled);
     if (! filled) {
-      auto const parameter = request.get_arg(parameter_name);
-      if (!parameter) {
+      auto const variable = request.look_variable(variable_name);
+      if (!variable) {
 	filled = responses::bad_request("no identifier");
       } else {
-	auto identified = identifier::from_chars<Identifier>(*parameter);
+	auto identified = identifier::from_chars<Identifier>(*variable);
 	if (!ok(identified)) {
 	  filled = responses::bad_request("bad identifier " + error_code(identified).message());
 	} else {
 	  auto del = store.DELETE(value(identified));
 	  if (!ok(del)) {
-	    filled = responses::bad_request(error_code(del).message());
+            auto ec = error_code(del);
+            if (E::NOT_FOUND == ec) {
+              filled = responses::gone(error_code(del).message());
+            } else {
+              // if (E::FOUND == ec)
+              // Huh?  This should not happen, but it means that the PUT had some conflict with its update activity.
+              // [[FIXTHIS]] can we have more precision than this?
+              filled = responses::internal_server_error(ec.message());
+            }
 	  } else {
+            auto code = http::R200_OK;
 	    auto body = R"text(OK)text"s;
 	    auto type = mime::APPLICATION_JSON;
-            filled = render::Builder{http::R200_OK}.content_type(move(type)).body(move(body)).build();
+            filled = render::Builder{code}.content_type(move(type)).body(move(body)).build();
 	  }
 	}
       }
@@ -90,21 +104,29 @@ namespace tunitas::montara::endpoint::aspect::operations {
   } catch (...) {
     return responses::internal_server_error();
   }
-  template<typename I, typename S> auto Operations<I,S>::gettie(Request const &request, Storage &store, string::View parameter_name) -> Transport try {
+  template<typename I, typename S> auto Operations<I,S>::gettie(Request const &request, Storage &store, string::View variable_name) -> Transport try {
     auto filled = Optional<Transport>{};
-    filters::enforce_no_query_parameters(request, filled);
+    filters::enforce_no_query_arguments(request, filled);
     if (! filled) {
-      auto const parameter = request.get_arg(parameter_name);
-      if (!parameter) {
+      auto const variable = request.look_variable(variable_name);
+      if (!variable) {
 	filled = responses::bad_request("no identifier");
       } else {
-	auto identified = identifier::from_chars<Identifier>(*parameter);
+	auto identified = identifier::from_chars<Identifier>(*variable);
 	if (!ok(identified)) {
 	  filled = responses::bad_request("bad identifier " + error_code(identified).message());
 	} else {
 	  auto got = store.GET(value(identified));
 	  if (!ok(got)) {
-	    filled = responses::bad_request(error_code(got).message());
+            auto ec = error_code(got);
+            if (E::NOT_FOUND == ec) {
+              filled = responses::not_found(ec.message());
+            } else {
+              // if (E::FOUND == ec)
+              // Huh?  This should not happen, but it means that the gET had some conflict with its update activity.
+              // [[FIXTHIS]] can we have more precision than this?
+              filled = responses::internal_server_error(ec.message());
+            }
 	  } else {
 	    auto stringify = [](json::Value const &value) -> std::string {
 			       // [[FIXTHIS]] Wow ... there is no better way to linearize one of these than this!  Rly?
@@ -116,9 +138,10 @@ namespace tunitas::montara::endpoint::aspect::operations {
 			       writer->write(value, &buf);
 			       return buf.str();
 			     };
+            auto code = http::R200_OK;
 	    auto body = stringify(value(got));
 	    auto type = mime::APPLICATION_JSON;
-            filled = render::Builder{http::R200_OK}.content_type(move(type)).body(move(body)).build();
+            filled = render::Builder{code}.content_type(move(type)).body(move(body)).build();
 	  }
 	}
       }
@@ -131,7 +154,7 @@ namespace tunitas::montara::endpoint::aspect::operations {
   }
   template<typename I, typename S> auto Operations<I,S>::postie(Request const &request, Storage &store) -> Transport try {
     auto filled = Optional<Transport>{};
-    filters::enforce_no_query_parameters(request, filled);
+    filters::enforce_no_query_arguments(request, filled);
     filters::enforce_application_json(request, filled);
     if (! filled) {
       auto make_document = [&request]() -> json::String {
@@ -145,11 +168,18 @@ namespace tunitas::montara::endpoint::aspect::operations {
       } else {
 	auto stored = store.POST(value(std::move(parsed)));
 	if (!ok(stored)) {
-	  filled = responses::bad_request(error_code(stored).message());
+          auto ec = error_code(stored);
+          if (E::FOUND == ec) {
+            filled = responses::conflict(ec.message());
+          } else {
+            // [[FIXTHIS]] can we have more precision than this?
+            filled = responses::internal_server_error(ec.message());
+          }
 	} else {
+          auto code = http::R202_ACCEPTED;
           auto body = R"text(Accepted)text"s;
 	  auto type = mime::TEXT_PLAIN;
-          filled = render::Builder{http::R202_ACCEPTED}.content_type(move(type)).body(move(body)).build();
+          filled = render::Builder{code}.content_type(move(type)).body(move(body)).build();
 	}
       }
     }
@@ -159,9 +189,9 @@ namespace tunitas::montara::endpoint::aspect::operations {
   } catch (...) {
     return responses::internal_server_error();
   }
-  template<typename I, typename S> auto Operations<I,S>::puttie(Request const &request, Storage &store, string::View parameter_name) -> Transport try {
+  template<typename I, typename S> auto Operations<I,S>::puttie(Request const &request, Storage &store, string::View variable_name) -> Transport try {
     auto filled = Optional<Transport>{};
-    filters::enforce_no_query_parameters(request, filled);
+    filters::enforce_no_query_arguments(request, filled);
     filters::enforce_application_json(request, filled);
     if (! filled) {
       auto make_document = [&request]() -> json::String {
@@ -173,21 +203,31 @@ namespace tunitas::montara::endpoint::aspect::operations {
       if (!ok(parsed)) {
         filled = responses::bad_request("json syntax");
       } else {
-	auto const parameter = request.get_arg(parameter_name);
-	if (!parameter) {
+	auto const variable = request.look_variable(variable_name);
+	if (!variable) {
           filled = responses::bad_request("no identifier");
 	} else {
-	  auto identified = identifier::from_chars<Identifier>(*parameter);
+	  auto identified = identifier::from_chars<Identifier>(*variable);
 	  if (!ok(identified)) {
 	    filled = responses::bad_request("bad identifier " + error_code(identified).message());
 	  } else {
 	    auto put = store.PUT(value(identified), value(std::move(parsed)));
 	    if (!ok(put)) {
-	      filled = responses::bad_request(error_code(put).message());
+              auto ec = error_code(put);
+              if (E::NOT_FOUND == ec) {
+                filled = responses::gone(ec.message());
+              } else if (E::FOUND == ec) {
+                // Huh?  This should not happen, but it means that the PUT had some conflict with its update activity.
+                filled = responses::conflict(ec.message());
+              } else {
+                // [[FIXTHIS]] can we have more precision than this?
+                filled = responses::internal_server_error(ec.message());
+              }
 	    } else {
+              auto code = http::R202_ACCEPTED;
 	      auto body = R"text(Accepted)text"s;
 	      auto type = mime::TEXT_PLAIN;
-              filled = render::Builder{http::R202_ACCEPTED}.content_type(move(type)).body(move(body)).build();
+              filled = render::Builder{code}.content_type(move(type)).body(move(body)).build();
 	    }
 	  }
         }

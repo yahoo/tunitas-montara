@@ -3,11 +3,10 @@
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
-#divert <fpp>
-namespace tunitas::montara {
-  enum class CONFIG { }; // for Config<CONFIG>
+#divert <cpp>
+#import tests.unit.Fixture
+#import rigging.bench.Main
+auto main(int argc, char *argv[]) -> int {
+  return rigging::bench::Main{tests::unit::Fixture::suite()}(argc, argv);
 }
-#endiv
-#divert <ipp>
-#import std.cerr // for DEBUG only ... otherwise remove
 #endiv

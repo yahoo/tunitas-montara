@@ -5,7 +5,7 @@
 # For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 : ${with_build:=/build}
 : ${with_worktrees:=${with_build?}/worktrees}
-: ${TAG:=CURRENT}
+: ${TAG:=STABLE}
 
 : ${with_module_rigging_core=${with_module_rigging_core:-${with_worktrees?}/rigging-core/v2.${TAG?}}}
 : ${with_module_rigging=${with_module_rigging_core?}}

@@ -21,6 +21,23 @@ pidfile=${0%/*}/run.pid
 __topdir=$(realpath ${0%/*}/../..)
 export PATH="${__topdir?}/bin:${__topdir?}/sbin:$PATH"
 #
+# The expected page response from montara is the string of the HTTP code and that is all
+# Enable this to turn off the checking (grepping) for the page content from teh server.
+#
+# checkby_grep_the_returned_page_content=0 .... do not grep
+# checkby_grep_the_returned_page_content=1 .... do grep the outfile for the specific strings
+#
+declare -i checkby_grep_the_returned_page_content=0
+function checkby_grep() {
+    if ((0 == checkby_grep_the_returned_page_content)) ; then
+        echo "DEBUG skip grep $@" 1>&2
+        return 0;
+    else
+        echo "DEBUG check grep $@" 1>&2
+        grep -qie $1 ${outfile?}
+    fi
+}
+#
 # But is it correct?
 #
 # assert 0 == $? and 405 == ${code?}
@@ -48,21 +65,23 @@ function assert() {
 	    case ${expected_hcode:-UNSET-EXPECTED} in
 	    ( 200 | 201 | 202 )
 		test ${expected_hcode} == ${actual_hcode:-UNSET-ACTUAL} &&
-		{ grep -qie '^OK$' ${outfile?} ||
-		  grep -qie '^Accepted$' ${outfile?} ; } &&
+                { checkby_grep '^OK$' ||
+                  checkby_grep '^Accepted$' ; } &&
 		true
 		;;
-	    ( 400 | 401 | 402 | 403 | 404 | 405 )
+	    ( 400 | 401 | 402 | 403 | 404 | 405 | 409 | 410 )
 		test ${expected_hcode} == ${actual_hcode:-UNSET-ACTUAL} &&
-		{ grep -qie '^Found$' ${outfile?} ||
-		  grep -qie '^Not found$' ${outfile?} ||
-		  grep -qie '^Method not Allowed$' ${outfile?} ; } &&
+		{ checkby_grep '^Found$' ||
+		  checkby_grep '^Not found$' ||
+		  checkby_grep '^Method not Allowed$' ||
+		  checkby_grep '^Conflict$' ||
+		  checkby_grep '^Gone$' ; } &&
 		true
 		;;
 	    ( 500 )
 		test ${expected_hcode} == ${actual_hcode:-UNSET-ACTUAL} &&
-		{ grep -qie '^Method not Allowed$' ${outfile?} ||
-		  grep -qie '^Internal Error$' ${outfile?} ; } &&
+		{ checkby_grep '^Method not Allowed$' ||
+		  checkby_grep '^Internal Error$' ; } &&
 		true
 		;;
 	    ( * )
@@ -103,10 +122,30 @@ function assert() {
 # curl: (7) Failed to connect to localhost port 23118: Connection refused
 #
 function curlpure() {
-    curl -6 "$@"
+    # WATCHOUT - curl exits with success even when the response code is NOT a success code (e.g. 500)
+    curl ${CURL_VERBOSE:+--verbose} -6 "$@"
+}
+function curlcode() {
+    # WATCHOUT - curl exits with success even when the response code is NOT a success code (e.g. 500)
+    curl ${CURL_VERBOSE:+--verbose} -6 --write-out %{http_code} -o /dev/null "$@"
 }
 function curlish() {
-    curl -6 --silent --write-out %{http_code} -o ${outfile?} "$@"
+    { echo $0" notice, calling curlish $@" ;
+      echo $0" notice, curlish is deprecated, instead use curlok" ; } 1>&2
+    curlok "$@"
+}
+function curlok() {
+    local response
+    response=$(curl ${CURL_VERBOSE:+--verbose} -6 --silent --write-out %{http_code} -o ${outfile?} "$@")
+    local -i e=$?
+    if ((0 != e)) ; then
+        return $e;
+    else
+        case $response in
+            ( 2?? ) return 0 ;; # the run succeeds
+            ( * )   return 1 ;; # the run fails from code >= 400, 500 etc.
+        esac
+    fi
 }
 #
 # used in aaa.start.test

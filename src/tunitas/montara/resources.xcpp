@@ -4,8 +4,49 @@
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
+namespace tunitas::montara::resources {
+  namespace package_resources::body::interface { }
+  using namespace package_resources::body::interface;
+}
 #import tunitas.server.resources
 // This is convenient yet vestigial.
 // Nowadays, all this is inherited from the core of the service
-namespace tunitas::montara::resources { using namespace tunitas::server::resources; }
+namespace tunitas::montara::resources::package_resources {
+  // any interface-context namespaces?
+  namespace body {
+    // any body namespaces?
+    namespace interface {
+      // any interface namespaces?
+      using namespace tunitas::server::resources;
+    }
+  }
+}
+#import microhttpd.method.Permissions // and Access
+#import microhttpd.method.Registered
+#import microhttpd.method.Unregistered
+namespace tunitas::montara::resources::package_resources {
+  // any interface-context types
+  namespace body {
+    namespace interface {
+      //
+      // See the documentariat in tunitas.server.resources
+      //
+      // Usage:
+      //
+      //   something::something_else::Dark_Side() {
+      //     resources::initialize(*this, Access::Allow, Registered::GET, Registered::PUT, Registered::POST);
+      //     resources::initialize(*this, Access::Deny, Registered::OPTIONS, Registered::DELETE, Registered::CONNECT, Registered::TRACE);
+      //   }
+      //
+      using microhttpd::method::Access;
+      using microhttpd::method::Unregistered;
+      using microhttpd::method::Registered;
+    }
+  }
+}
+namespace tunitas::montara::resources {
+  static_assert(sizeof (Access), "visible");
+  static_assert(sizeof (Unregistered), "visible");
+  static_assert(sizeof (Registered), "visible");
+}
 #endiv

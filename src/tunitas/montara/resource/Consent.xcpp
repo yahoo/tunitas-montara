@@ -4,16 +4,16 @@
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
-namespace tunitas::montara::endpoint {
+namespace tunitas::montara::resource {
   //
-  // The code behind the /consent endpoint
+  // The code behind the /consent resource
   // Reminder: /consent/{consentId} is nearby in class Consent_Identifier
   //
   // Example: TBD
   // 
   // Usage:
   //
-  //   endpoint::Consent resource;
+  //   resource::Consent resource;
   //   ws.register_resource("/consent", &resource, true);
   //   ws.start(cfg.foreground);
   //   
@@ -21,11 +21,11 @@ namespace tunitas::montara::endpoint {
 }
 #endiv
 #divert <hpp>
-#import tunitas.montara.endpoint.aspect.Operations
-#import tunitas.montara.endpoint.aspect.Storage
+#import tunitas.montara.resource.aspect.Operations
+#import tunitas.montara.resource.aspect.Storage
 #import tunitas.montara.identifier.Consent
 #import tunitas.montara.storage.Consent
-class tunitas::montara::endpoint::Consent : public microhttpd::Resource,
+class tunitas::montara::resource::Consent : public microhttpd::Resource,
                                             protected aspect::Storage<storage::Consent>,
                                             protected aspect::Operations<identifier::Consent, storage::Consent> {
   struct Ancestors {
@@ -35,12 +35,16 @@ class tunitas::montara::endpoint::Consent : public microhttpd::Resource,
   };
 public:
   inline explicit Consent(storage::Consent &);
-  inline auto POST(Request const &) -> Transport;
+  inline auto POST(Request const &) -> Transport override;
+  inline auto otherwise(Request const &) -> Transport override;
+  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
 };
 #endiv
 #divert <ipp>
-namespace tunitas::montara::endpoint {
+namespace tunitas::montara::resource {
   Consent::Consent(storage::Consent &store) : Ancestors::Storage{store} { resources::initialize_only_post(*this); }
   auto Consent::POST(Request const &request) -> Transport { return postie(request, store); }
+  auto Consent::otherwise(Request const &request) -> Transport { return Renderers::Disallowed{}.render(request, *this); }
+  template<required::Storage STORAGE> auto Consent::registration(STORAGE &storage) -> endpoint::Registration { return endpoint::make_registration<Consent>("/consent"s, storage); }
 }
 #endiv
