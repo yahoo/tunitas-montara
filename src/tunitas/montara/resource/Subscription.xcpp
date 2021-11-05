@@ -1,0 +1,48 @@
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
+// Licensed under the terms of the Apache-2.0 license.
+// For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+// For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
+#divert <fpp>
+namespace tunitas::montara::resource {
+  //
+  // The code behind the /subscription resource
+  //
+  // Example: TBD
+  //
+  // Usage:
+  //
+  //   resource::Subscription resource;
+  //   ws.register_resource("/subscription", &resource, true);
+  //   ws.start(cfg.foreground);
+  //   
+  class Subscription;
+}
+#endiv
+#divert <hpp>
+#import tunitas.montara.resource.aspect.Operations
+#import tunitas.montara.resource.aspect.Storage
+#import tunitas.montara.identifier.Subscription
+#import tunitas.montara.storage.Subscription
+class tunitas::montara::resource::Subscription : public microhttpd::Resource,
+                                                 protected aspect::Storage<storage::Subscription>,
+                                                 protected aspect::Operations<identifier::Subscription, storage::Subscription> {
+  struct Ancestors {
+    using Resource = microhttpd::Resource;
+    using Storage = aspect::Storage<storage::Subscription>;
+    using Operations = aspect::Operations<identifier::Subscription, storage::Subscription>;
+  };
+public:
+  inline explicit Subscription(storage::Subscription &);
+  inline auto POST(Request const &) -> Transport;
+  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
+};
+#endiv
+#divert <ipp>
+#import tunitas.montara.resources
+namespace tunitas::montara::resource {
+  Subscription::Subscription(storage::Subscription &store) : Ancestors::Storage{store} { resources::initialize_only_post(*this); }
+  auto Subscription::POST(Request const &request) -> Transport { return postie(request, store); }
+  template<required::Storage STORAGE> auto Subscription::registration(STORAGE &storage) -> endpoint::Registration { return endpoint::make_registration<Subscription>("/subscription"s, storage); }
+}
+#endiv

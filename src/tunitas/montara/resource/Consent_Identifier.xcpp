@@ -1,0 +1,52 @@
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
+// Licensed under the terms of the Apache-2.0 license.
+// For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+// For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
+#divert <fpp>
+namespace tunitas::montara::resource {
+  //
+  // The code behind the /consent/{ID} resource
+  //
+  // Example: TBD
+  //
+  // Usage:
+  //
+  //   resource::Consent_Identifier resource;
+  //   ws.register_resource("/consent/{ID}", &resource, true);
+  //   ws.start(cfg.foreground);
+  //   
+  class Consent_Identifier;
+}
+#endiv
+#divert <hpp>
+#import std.string
+#import tunitas.montara.resource.aspect.Operations
+#import tunitas.montara.resource.aspect.Storage
+#import tunitas.montara.identifier.Consent
+#import tunitas.montara.storage.Consent
+class tunitas::montara::resource::Consent_Identifier : public microhttpd::Resource,
+                                                       protected aspect::Storage<storage::Consent>,
+                                                       protected aspect::Operations<identifier::Consent, storage::Consent> {
+  struct Ancestors {
+    using Resource = microhttpd::Resource;
+    using Storage = aspect::Storage<storage::Consent>;
+    using Operations = aspect::Operations<identifier::Consent, storage::Consent>;
+  };
+public:
+  inline explicit Consent_Identifier(storage::Consent &);
+  inline auto GET(Request const &) -> Transport;
+  inline auto PUT(Request const &) -> Transport;
+  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
+protected:
+  inline static auto const PARAMETER_NAME = std::string{"consentId"};
+};
+#endiv
+#divert <ipp>
+namespace tunitas::montara::resource {
+  Consent_Identifier::Consent_Identifier(storage::Consent &store) : Ancestors::Storage{store} { resources::initialize_getput(*this); }
+  auto Consent_Identifier::GET(Request const &request) -> Transport { return gettie(request, store, PARAMETER_NAME); }
+  auto Consent_Identifier::PUT(Request const &request) -> Transport { return puttie(request, store, PARAMETER_NAME); }
+  template<required::Storage STORAGE> auto Consent_Identifier::registration(STORAGE &storage) -> endpoint::Registration { return endpoint::make_registration<Consent_Identifier>("/consent"s, PARAMETER_NAME, storage); }
+}
+#endiv

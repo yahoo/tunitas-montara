@@ -1,0 +1,54 @@
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
+// Licensed under the terms of the Apache-2.0 license.
+// For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+// For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
+#divert <fpp>
+namespace tunitas::montara::resource {
+  //
+  // The code behind the /subscription/{subscriptionId} resource
+  //
+  // Example: TBD
+  //
+  // Usage:
+  //
+  //   resource::Transfer_Identifier resource;
+  //   ws.register_resource("/taxonomy/{subscriptionId}", &resource, true);
+  //   ws.start(cfg.foreground);
+  //   
+  class Subscription_Identifier;
+}
+#endiv
+#divert <hpp>
+#import std.string
+#import tunitas.montara.resource.aspect.Operations
+#import tunitas.montara.resource.aspect.Storage
+#import tunitas.montara.identifier.Subscription
+#import tunitas.montara.storage.Subscription
+class tunitas::montara::resource::Subscription_Identifier : public microhttpd::Resource,
+                                                            protected aspect::Storage<storage::Subscription>,
+                                                            protected aspect::Operations<identifier::Subscription, storage::Subscription> {
+  struct Ancestors {
+    using Resource = microhttpd::Resource;
+    using Storage = aspect::Storage<storage::Subscription>;
+    using Operations = aspect::Operations<identifier::Subscription, storage::Subscription>;
+  };
+public:
+  inline explicit Subscription_Identifier(storage::Subscription &);
+  inline auto DELETE(Request const &) -> Transport;
+  inline auto GET(Request const &) -> Transport;
+  inline auto PUT(Request const &) -> Transport;
+  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
+protected:
+  inline static auto const PARAMETER_NAME = std::string{"subscriptionId"};
+};
+#endiv
+#divert <ipp>
+namespace tunitas::montara::resource {
+  Subscription_Identifier::Subscription_Identifier(storage::Subscription &store) : Ancestors::Storage{store} { resources::initialize_getdelete(*this); }
+  auto Subscription_Identifier::DELETE(Request const &request) -> Transport { return deetie(request, store, PARAMETER_NAME); }
+  auto Subscription_Identifier::GET(Request const &request) -> Transport    { return gettie(request, store, PARAMETER_NAME); }
+  auto Subscription_Identifier::PUT(Request const &request) -> Transport    { return puttie(request, store, PARAMETER_NAME); }
+  template<required::Storage STORAGE> auto Subscription_Identifier::registration(STORAGE &storage) -> endpoint::Registration { return endpoint::make_registration<Subscription_Identifier>("/subscription"s, PARAMETER_NAME, storage); }
+}
+#endiv

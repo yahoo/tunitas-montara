@@ -1,7 +1,7 @@
 #!/bin/bash
 source ${0%/*}/rigging.sh || exit 70
 consentId=60988210603254480
-code=$(curlish \
+code=$(curlcode \
     -H 'Content-Type: application/json' \
     -X POST \
     -d @${0%.test}.json \
@@ -9,4 +9,4 @@ code=$(curlish \
     ${end})
 # This will fail because you cannot POST on /consent/revoke/{consentId} when no such identifier exists.
 # Instead you must first 'POST /consent' to create the record, then you can revoke it with POST.
-assert 0 == $? and 404 == ${code?}
+assert 0 == $? and 410 == ${code:-CURLCODE-HAS-FAILED}

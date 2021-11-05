@@ -1,0 +1,50 @@
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
+// Licensed under the terms of the Apache-2.0 license.
+// For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+// For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
+#divert <fpp>
+namespace tunitas::montara::resource {
+  //
+  // The code behind the /datatransfer resource
+  //
+  // Example: TBD
+  //
+  // Usage:
+  //
+  //   resource::Transfer resource;
+  //   ws.register_resource("/datatransfer", &resource, true);
+  //   ws.start(cfg.foreground);
+  //   
+  class Transfer;
+}
+#endiv
+#divert <hpp>
+#import tunitas.montara.resource.aspect.Operations
+#import tunitas.montara.resource.aspect.Storage
+#import tunitas.montara.storage.Transfer
+class tunitas::montara::resource::Transfer : public microhttpd::Resource,
+                                             protected aspect::Storage<storage::Transfer>,
+                                             protected aspect::Operations<identifier::Transfer, storage::Transfer> {
+  struct Ancestors {
+    using Resource = microhttpd::Resource;
+    using Storage = aspect::Storage<storage::Transfer>;
+    using Operations = aspect::Operations<identifier::Transfer, storage::Transfer>;
+  };
+public:
+  inline explicit Transfer(storage::Transfer &);
+  inline auto POST(Request const &) -> Transport;
+  inline static auto locator_primary() -> endpoint::Locator;
+  inline static auto locator_alternate() -> endpoint::Locator;
+  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
+};
+#endiv
+#divert <ipp>
+namespace tunitas::montara::resource {
+  Transfer::Transfer(storage::Transfer &store) : Ancestors::Storage{store} { resources::initialize_only_post(*this); }
+  auto Transfer::POST(Request const &request) -> Transport { return postie(request, store); }
+  auto Transfer::locator_primary() -> endpoint::Locator   { return endpoint::make_locator("/transfer"s); }
+  auto Transfer::locator_alternate() -> endpoint::Locator { return endpoint::make_locator("/datatransfer"s); }
+  template<required::Storage STORAGE> auto Transfer::registration(STORAGE &storage) -> endpoint::Registration { return endpoint::make_registration<Transfer>(Transfer::locator_primary(), storage); }
+}
+#endiv

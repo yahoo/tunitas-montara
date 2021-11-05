@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -7,10 +7,7 @@
 namespace tests::unit::identifier { class Fixture; }
 #endiv
 #divert <hpp>
-#import cppunit.Test
-#import cppunit.test.Fixture
-class tests::unit::identifier::Fixture : public cppunit::test::Fixture {
-public:
+struct tests::unit::identifier::Fixture : public cppunit::test::Fixture {
   auto test_to_string() -> void;
   auto test_from_chars_Outcome_Consent() -> void;
   auto test_from_chars_Outcome_Subscription() -> void;
@@ -24,8 +21,6 @@ public:
 };
 #endiv
 #divert <cpp>
-#import std.literals
-using namespace std::literals;
 #import tunitas.montara.identifier.to_string
 #import tunitas.montara.identifier.Consent
 #import tunitas.montara.identifier.Subscription
@@ -105,11 +100,8 @@ auto tests::unit::identifier::Fixture::test_from_chars_result_bad() -> void {
   CPPUNIT_ASSERT('\0' != *bad.ptr);
   std::cerr << "bad because " << (int)bad.ec << '\n';
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
 auto tests::unit::identifier::Fixture::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace rigging::suite;
   Stream series("identifier");
   series << call("to_string", &Fixture::test_to_string)
     ;
@@ -123,11 +115,11 @@ auto tests::unit::identifier::Fixture::suite() -> cppunit::Test * {
 	     << call("Subscription", &Fixture::test_from_chars_Outcome_Subscription)
 	     << call("Transfer", &Fixture::test_from_chars_Outcome_Transfer)
 	  ;
-	out << add(good.release());
+	out << move(good);
       }
       out << call("bad", &Fixture::test_from_chars_Outcome_bad)
 	;
-      fch << add(out.release());
+      fch << move(out);
     }
 #if 7 < __GNUC__
     {
@@ -138,15 +130,15 @@ auto tests::unit::identifier::Fixture::suite() -> cppunit::Test * {
 	     << call("Subscription", &Fixture::test_from_chars_result_Subscription)
 	     << call("Transfer", &Fixture::test_from_chars_result_Transfer)
 	  ;
-	res << add(good.release());
+	res << move(good);
       }
       res << call("bad", &Fixture::test_from_chars_result_bad)
 	;
-      fch << add(res.release());
+      fch << move(res);
     }
 #endif
-    series << add(fch.release());
+    series << move(fch);
   }
-  return series.release();
+  return finalize(series);
 }
 #endiv

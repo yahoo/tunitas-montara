@@ -1,26 +1,27 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
-#import httpserver.Request
-#import httpserver.Resource
-#import httpserver.Response
-#import httpserver.response.Builder
-namespace tunitas::montara::service {
-  //
-  // A namespace package.
-  //
-  // Usage:
-  //
-  //   namespace something::this::that {
-  //     using namespace tunitas::montara::service;
-  //   }
-  //
-  using httpserver::Resource;
-  using httpserver::Request;
-  using httpserver::Response;
-  namespace response = httpserver::response;
+#import tunitas.server.service
+// This is convenient yet vestigial.
+// Nowadays, all this is inherited from the core of the service
+namespace tunitas::montara::service { using namespace tunitas::server::service; }
+#endiv
+#divert <cpp>
+// Of course, this is test code
+namespace {
+  namespace testate {
+    using namespace tunitas::montara::service;
+    struct Resourceful : public Resource {
+      auto otherwise(Request const &) -> Transport;
+    };
+    static_assert(sizeof (Resource));
+    static_assert(sizeof (Request));
+    static_assert(sizeof (Response));
+    static_assert(sizeof (Transport));
+    static_assert(sizeof (render::Builder));
+  }
 }
 #endiv

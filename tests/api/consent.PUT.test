@@ -1,6 +1,6 @@
 #!/bin/bash
 source ${0%/*}/rigging.sh || exit 70
-code=$(curlish \
+code=$(curlcode \
     -H 'Content-Type: application/json' \
     -X PUT \
     -d @${0%.test}.json \
@@ -8,4 +8,4 @@ code=$(curlish \
     ${end})
 # This is supposed to fail because there is no 'PUT /consent'
 # Instead there is only 'PUT /consent/{consentId}'
-assert 0 == $? and 405 == ${code?}
+assert 0 == $? and 405 == ${code:-CURLCODE-HAS-FAILED}

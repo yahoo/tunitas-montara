@@ -1,0 +1,22 @@
+// This is C++ 23 -*- c++ -*- -std=c++23 in the stylings of the S.C.O.L.D. design method which is so popular nowadays.
+// For terms and provenance see the LICENSE file at the top of the repository.
+#divert <fpp>
+#import std.string
+namespace tests::pong {
+  using Argument = std::string;
+  struct Arguments;
+}
+#endiv
+#divert <hpp>
+#import std.deque
+class tests::pong::Arguments : public std::deque<Argument> {
+  using Ancestor = std::deque<Argument>;
+public:
+  inline Arguments(int, char *[]); // just like global entrypoint main(int, char *[]) -> int
+};
+#endiv
+#divert <ipp>
+namespace tests::pong {
+  Arguments::Arguments(int c, char *v[]) : Ancestor{&v[0], &v[c]} { }
+}
+#endiv

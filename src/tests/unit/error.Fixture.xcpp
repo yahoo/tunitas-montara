@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -7,10 +7,7 @@
 namespace tests::unit::error { class Fixture; }
 #endiv
 #divert <hpp>
-#import cppunit.Test
-#import cppunit.test.Fixture
-class tests::unit::error::Fixture : public cppunit::test::Fixture {
-public:
+struct tests::unit::error::Fixture : public cppunit::test::Fixture {
   auto test_make_error_code() -> void;
   auto test_make_error_condition() -> void;
   auto test_category_name() -> void;
@@ -22,8 +19,6 @@ public:
 };
 #endiv
 #divert <cpp>
-#import std.string_literals
-using namespace std::string_literals;
 #import tunitas.montara.error.Code
 auto tests::unit::error::Fixture::test_make_error_code() -> void {
   using namespace ::tunitas::montara::error;
@@ -73,11 +68,8 @@ auto tests::unit::error::Fixture::test_category_message() -> void {
     CPPUNIT_ASSERT(!message.empty());
   }
 }
-#import unit.rigging.suite.Stream
-#import unit.rigging.suite.call
-#import unit.rigging.suite.add
 auto tests::unit::error::Fixture::suite() -> cppunit::Test * {
-  using namespace ::unit::rigging::suite;
+  using namespace rigging::suite;
   Stream series("error");
   series << call("make_error_code", &Fixture::test_make_error_code)
          << call("make_error_condition", &Fixture::test_make_error_condition)
@@ -90,8 +82,8 @@ auto tests::unit::error::Fixture::suite() -> cppunit::Test * {
         << call("equivalent-condition", &Fixture::test_category_equivalent_condition)
         << call("message", &Fixture::test_category_message)
       ;
-    series << add(cat.release());
+    series << move(cat);
   }
-  return series.release();
+  return finalize(series);
 }
 #endiv

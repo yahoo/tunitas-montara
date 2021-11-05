@@ -1,0 +1,25 @@
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
+// Licensed under the terms of the Apache-2.0 license.
+// For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+// For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
+#divert <fpp>
+#import tunitas.montara.storage.Consent
+#include <hpp/tunitas.montara.storage.Consent>
+#import tunitas.montara.storage.Subscription
+#include <hpp/tunitas.montara.storage.Subscription>
+#import tunitas.montara.storage.Transfer
+#include <hpp/tunitas.montara.storage.Transfer>
+namespace tunitas::montara::required {
+  //
+  // Each of the genres has a subengine.
+  // Whereas there is no existential quantification in the conscepts system...
+  // East to enumerate the allowed subengines.
+  //
+  // The complete type of STORAGE must be available.
+  //
+  template<typename STORAGE> concept Storage = (derived_from<STORAGE, storage::Consent> ||
+                                                derived_from<STORAGE, storage::Subscription> ||
+                                                derived_from<STORAGE, storage::Transfer>);
+}
+#endiv

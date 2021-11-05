@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -13,9 +13,9 @@ namespace app::exception { class Quitting; }
 #import std.runtime_error
 #import std.string
 #import sys.exits.Code
-class app::exception::Quitting : public tunitas::exception::Aspect,
-                                 public tunitas::app::exception::Aspect,
-                                 public tunitas::app::exception::feature::Quitting,
+class app::exception::Quitting : public virtual tunitas::exception::Aspect,
+                                 public virtual tunitas::app::exception::Aspect,
+                                 public virtual tunitas::app::exception::feature::Quitting,
                                  public std::runtime_error {
   struct Ancestors {
     struct Aspects {
@@ -28,16 +28,16 @@ class app::exception::Quitting : public tunitas::exception::Aspect,
 public:
   inline explicit Quitting(std::string const &NAME);
   inline explicit Quitting(std::string const &NAME, sys::exits::Code);
-  auto what() const noexcept -> char const * override final;
-  auto stream() const noexcept -> std::ostream & override final;
-  auto code() const noexcept -> sys::exits::Code override final;
-  auto exit() const noexcept -> sys::exits::Code override final;
+  auto what() const noexcept -> char const * override;
+  auto stream() const noexcept -> std::ostream & override;
+  auto code() const noexcept -> sys::exits::Code override;
+  auto exit() const noexcept -> sys::exits::Code override;
 };
 // Of course this is test code
 #import tunitas.app.required.exception.Quitting
 #import std.is_abstract
 namespace {
-  namespace tests {
+  namespace testate {
     static_assert(!std::is_abstract_v<app::exception::Quitting>);
     static_assert(tunitas::app::required::exception::Quitting<app::exception::Quitting>);
   }
@@ -58,6 +58,6 @@ namespace app::exception {
   auto Quitting::what() const noexcept -> char const * { return Ancestors::Exception::what(); }
   auto Quitting::stream() const noexcept -> std::ostream & { return Ancestors::Feature::stream(); }
   auto Quitting::code() const noexcept -> sys::exits::Code { return Ancestors::Feature::code(); }
-  auto Quitting::exit() const noexcept -> sys::exits::Code { return Ancestors::Feature::code(); }
+  auto Quitting::exit() const noexcept -> sys::exits::Code { return Ancestors::Feature::exit(); }
 }
 #endiv

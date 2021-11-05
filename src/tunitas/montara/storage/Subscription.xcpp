@@ -1,5 +1,5 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -28,7 +28,7 @@ protected:
   Subscription() = default;
 public:
   virtual ~Subscription() = default;
-  virtual auto DELEET(id::Subscription) -> outcome::Success = 0;
+  virtual auto DELETE(id::Subscription) -> outcome::Success = 0;
   virtual auto GET(id::Subscription) -> Outcome<type::Blob> = 0;
   virtual auto GET(type::Entity const &what_is_an_entity) -> Outcome<type::Blob> = 0;
   virtual auto PUT(id::Subscription, type::Blob) -> outcome::Success = 0;

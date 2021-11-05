@@ -1,5 +1,5 @@
 # This is a GNU -*- Makefile -*- fragment that is included by Automake
-# Copyright Yahoo Inc. 2021
+# Copyright Yahoo Inc, 2021.
 # Licensed under the terms of the Apache-2.0 license.
 # For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 # For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
@@ -16,14 +16,15 @@ $(check_bin_unit_OBJECTS): AM_CXXFLAGS+=$(AND_CHECK_CXXFLAGS_SET) -Wno-deprecate
 check_bin_unit_LDFLAGS = $(CHECK_LDFLAGS_SET)
 check_bin_unit_MODULES = $(call TF_SOURCEStoMODULES, $(check_bin_unit_SOURCES))
 check_bin_unit_SOURCES = \
-  obj/src/tests/unit/main.cpp \
+  obj/src/tests/unit/c.main.cpp \
   obj/src/tests/unit/namespace.cpp \
   \
+  obj/src/tests/unit/Fixture.cpp \
   obj/src/tests/unit/endpoint.Fixture.cpp \
   obj/src/tests/unit/error.Fixture.cpp \
-  obj/src/tests/unit/httpserver.Fixture.cpp \
   obj/src/tests/unit/identifier.Fixture.cpp \
   obj/src/tests/unit/montara.Fixture.cpp \
+  obj/src/tests/unit/resource.Fixture.cpp \
   obj/src/tests/unit/storage.Fixture.cpp \
   obj/src/tests/unit/storage.null.Fixture.cpp \
   obj/src/tests/unit/storage.memory.Fixture.cpp \
@@ -32,7 +33,7 @@ check_bin_unit_SOURCES = \
 #
 $(scold_cxxdir)/tests/unit/dependencies.mk: $(check_bin_unit_SOURCES)
 $(check_bin_unit_SOURCES) : obj/src/%.cpp : src/%.xcpp
-	$(TF_V_DIS) $(call TF_XCPP2CPP, $^)
+	$(TF_V_DIS) $(call TF_XCPP2CPP, $<)
 	$(TF_V_DONE) test -e $@
 $(scold_cxxdir)/tests/unit/dependencies.mk:
 	$(TF_V_DEP) $(call TF_DEPENDENCIES, $^)

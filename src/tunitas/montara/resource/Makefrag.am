@@ -1,0 +1,29 @@
+# This is a GNU -*- Makefile -*- fragment that is included by Automake
+# Copyright Yahoo Inc, 2021.
+# Licensed under the terms of the Apache-2.0 license.
+# For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+# For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
+#
+tunitas_montara_resource_SUBSOURCES = \
+  obj/src/tunitas/montara/resource/DUMMY_DATA.cpp \
+  obj/src/tunitas/montara/resource/namespace.cpp \
+  obj/src/tunitas/montara/resource/implementation.cpp \
+  obj/src/tunitas/montara/resource/aspect.Storage.cpp \
+  obj/src/tunitas/montara/resource/aspect.Operations.cpp \
+  obj/src/tunitas/montara/resource/Consent.cpp \
+  obj/src/tunitas/montara/resource/Consent_CreateWithArray.cpp \
+  obj/src/tunitas/montara/resource/Consent_CreateWithList.cpp \
+  obj/src/tunitas/montara/resource/Consent_FindIdentifiersByEntity.cpp \
+  obj/src/tunitas/montara/resource/Consent_Identifier.cpp \
+  obj/src/tunitas/montara/resource/Consent_Revoke_Identifier.cpp \
+  obj/src/tunitas/montara/resource/Consent_RevokeWithArray.cpp \
+  obj/src/tunitas/montara/resource/Consent_RevokeWithList.cpp \
+  obj/src/tunitas/montara/resource/Transfer.cpp \
+  obj/src/tunitas/montara/resource/Transfer_CreateWithArray.cpp \
+  obj/src/tunitas/montara/resource/Transfer_CreateWithList.cpp \
+  obj/src/tunitas/montara/resource/Transfer_FindByConsentIdentifier.cpp \
+  obj/src/tunitas/montara/resource/Transfer_Identifier.cpp \
+  obj/src/tunitas/montara/resource/Subscription.cpp \
+  obj/src/tunitas/montara/resource/Subscription_FindByEntity.cpp \
+  obj/src/tunitas/montara/resource/Subscription_Identifier.cpp \
+  $(end)

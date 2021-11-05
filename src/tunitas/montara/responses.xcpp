@@ -1,79 +1,43 @@
 // This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
-// Copyright Yahoo Inc. 2021.
+// Copyright Yahoo Inc, 2021.
 // Licensed under the terms of the Apache-2.0 license.
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
-#divert <hpp>
-#import tunitas.montara.service
-#import std.string
-#import std.error_code
+#divert <fpp>
 namespace tunitas::montara::responses {
-  //
-  // Standardized (server) responses
-  //
-  // If there was another response already set up then it is destroyed.
-  // This standardized (emergency) response replaces it.
-  //
-  // Usage:
-  //
-  //   try {
-  //     ...try to establiesh the response...
-  //   } catch (std::exception const &) {
-  //     internal_server_error(*fill);
-  //   }
-  //
-  namespace packaging {
-    using namespace service;
-    inline auto internal_server_error(Response *&fill) -> void;
-    inline auto internal_server_error(Response *&fill, std::string const &reason) -> void;
-    //
-    // There was some problem with the input data
-    //
-    inline auto bad_request(Response *&fill) -> void; // always 400
-    inline auto bad_request(Response *&fill, std::string const &reason) -> void; // always 400
-    inline auto bad_request(Response *&fill, std::error_code reason) -> void; // via error_code
+  namespace package_responses::body::interface { }
+  using namespace package_responses::body::interface;
+}
+#import tunitas.server.responses
+namespace tunitas::montara::responses::package_responses {
+  // namespaces: any context namespaces?
+  namespace body {
+    // any body namespaces?
+    namespace interface {
+      //
+      // Standardized (server) responses
+      //
+      // Usage:
+      //
+      //   try {
+      //     ...try to establiesh the response...
+      //   } catch (std::exception const &) {
+      //     return internal_server_error();
+      //   }
+      //
+      // Nowadays, these are drawn from the generalized server core in tunitas-basics
+      //
+      using namespace tunitas::server::responses;
+    }
   }
-  using packaging::internal_server_error;
-  using packaging::bad_request;
 }
-#endiv
-#divert <ipp>
-#import tunitas.montara.responses.Replacer
-#import httpserver.response.Builder
-#import std.unique_ptr
-#import tunitas.montara.constants
-auto tunitas::montara::responses::packaging::internal_server_error(Response *&fill) -> void {
-  internal_server_error(fill, "internal server error");
-}
-auto tunitas::montara::responses::packaging::internal_server_error(Response *&fill, std::string const &reason) -> void {
-  Replacer rob{fill};
-  using namespace constants;
-  auto const &content_body = reason;
-  auto const code = http::R500_INTERNAL_SERVER_ERROR;
-  auto const &content_type = mime::TEXT_PLAIN;
-  httpserver::response::Builder bob{content_body, code, content_type};
-  rob = new Response{bob};
-}
-auto tunitas::montara::responses::packaging::bad_request(Response *&fill) -> void {
-  bad_request(fill, "bad request");
-}
-auto tunitas::montara::responses::packaging::bad_request(Response *&fill, std::string const &reason) -> void {
-  Replacer rob{fill};
-  using namespace constants;
-  auto const &content_body = reason;
-  auto const code = http::R400_BAD_REQUEST;
-  auto const &content_type = mime::TEXT_PLAIN;
-  httpserver::response::Builder bob{content_body, code, content_type};
-  rob = new Response{bob};
-}
-#import tunitas.montara.error.Code
-auto tunitas::montara::responses::packaging::bad_request(Response *&fill, std::error_code reason) -> void {
-  Replacer rob{fill};
-  using namespace constants;
-  auto const &content_body = reason.message();
-  auto const code = error::Code::NOT_FOUND == reason ? http::R404_NOT_FOUND : http::R400_BAD_REQUEST;
-  auto const &content_type = mime::TEXT_PLAIN;
-  httpserver::response::Builder bob{content_body, code, content_type};
-  rob = new Response{bob};
+namespace tunitas::montara::responses::package_responses {
+  // types: any context types?
+  namespace body {
+    // types: any body types?
+    namespace interface {
+      // types: any (exported) interface types?
+    }
+  }
 }
 #endiv

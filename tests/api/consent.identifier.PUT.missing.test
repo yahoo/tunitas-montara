@@ -1,10 +1,12 @@
 #!/bin/bash
 source ${0%/*}/rigging.sh || exit 70
-code=$(curlish \
+code=$(curlcode \
+    --write-out %{http_code} \
+    --silent -o /dev/null \
     -H 'Content-Type: application/json' \
     -X PUT \
     -d @${0%.test}.json \
     ${URLHOSTPORT?}/consent/39326615453893824 \
-    ${end})
+    ${end} )
 # This fails because you cannot PUT on a resource that does not exist
-assert 0 == $? and 404 == ${code?}
+assert 0 == $? and 410 == ${code:-CURLCODE-HAS-FAILED}

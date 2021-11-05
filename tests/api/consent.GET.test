@@ -1,10 +1,10 @@
 #!/bin/bash
 source ${0%/*}/rigging.sh || exit 70
-code=$(curlish \
+code=$(curlcode \
     -H 'Content-Type: application/json' \
     -X GET \
     $URLHOSTPORT/consent \
     ${end})
 # This will fail because you cannot say 'GET /consent'
 # Instead you must say 'GET /consent/{consentId}
-assert 0 == $? and 405 == ${code?}
+assert 0 == $? and 405 == ${code-CURLCODE-HAS-FAILED}

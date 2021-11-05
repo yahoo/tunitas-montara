@@ -1,8 +1,32 @@
 #!/bin/bash
 source ${0%/*}/rigging.sh || exit 70
-curlpure \
+code=$(curlcode \
+    -H 'Content-Type: application/json' \
+    -X POST \
+    -d @${0%.test}.1.json \
+    $URLHOSTPORT/consent \
+    ${end})
+echo code=$code
+# This works because you can POST against a resoure that does not yet exist
+assert 0 == $? and 202 == ${code:-CURLCODE-HAS-FAILED}
+curl -6 \
+    --verbose \
     -H 'Content-Type: application/json' \
     -X PUT \
-    -d @${0%.test}.json \
-    ${URLHOSTPORT?}/consent/4904844222432 \
+    -d @${0%.test}.2.json \
+    $URLHOSTPORT/consent/949360594320 \
+    ${end}
+code=$(curlcode \
+    -H 'Content-Type: application/json' \
+    -X PUT \
+    -d @${0%.test}.2.json \
+    $URLHOSTPORT/consent/949360594320 \
+    ${end})
+echo code=$code
+# This works because you can POST against a resoure that does not yet exist
+assert 0 == $? and 202 == ${code:-CURLCODE-HAS-FAILED}
+curlpure -v \
+    -H 'Content-Type: application/json' \
+    -X GET \
+    $URLHOSTPORT/consent/949360594320 \
     ${end}

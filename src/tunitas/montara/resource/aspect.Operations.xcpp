@@ -1,0 +1,243 @@
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
+// Licensed under the terms of the Apache-2.0 license.
+// For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+// For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
+#divert <fpp>
+#import tunitas.montara.constants
+#import tunitas.string.literals
+namespace tunitas::montara::resource::aspect {
+  //
+  // Common (basic) operations of GET, POST, PUT against an identifier
+  // This is an implementation detail.
+  // Descendants only.
+  //
+  // Usage:
+  //
+  //   class my::Endpoint : public httpserver::Resource<...>, protected aspect::Storage<...>, protected aspect::Operations<...> {
+  //     struct Ancestors {
+  //       using Resource = httpserver::Resource<...>;
+  //       using Storage = aspect::Storage<...>;
+  //       using Operations = aspect::Operations<...>;
+  //     };
+  //     ...etc...
+  //   };
+  //
+  namespace [[eponymous]] operations {
+    using namespace montara::constants;
+    using namespace tunitas::string::literals;
+    template<typename IDENTIFIER, typename STORAGE> class Operations;
+  }
+  using operations::Operations;
+}
+#endiv
+#divert <hpp>
+#import tunitas.string.View
+#import tunitas.montara.error.Code
+template<typename IDENTIFIER, typename STORAGE> class tunitas::montara::resource::aspect::operations::Operations {
+protected:
+  using Identifier = IDENTIFIER;
+  using Storage = STORAGE;
+  ~Operations() = default;
+  // though not marked 'noexcept' these will be used in noexcept situations ... so make sure catch(...) holds
+  static auto deetie(Request const &request, [[inout]] Storage &, string::View variable_name) -> Transport;
+  static auto gettie(Request const &request, [[inout]] Storage &, string::View variable_name) -> Transport;
+  static auto puttie(Request const &request, [[inout]] Storage &, string::View variable_name) -> Transport;
+  static auto postie(Request const &request, [[inout]] Storage &) -> Transport;
+  using E = error::Code;
+};
+#endiv
+#divert <tpp>
+#import json.String
+#import json.parse
+#import json.as
+#import json.to
+#import json.writer.stream.Builder
+#import json.writer.Stream
+#import std.unique_ptr
+#import std.ostringstream
+#import std.string
+#import tunitas.Optional
+#import tunitas.string.Storage
+#import tunitas.montara.filters
+#import tunitas.montara.filters
+#import tunitas.montara.responses
+#import tunitas.montara.identifier.from_chars
+#import microhttpd.render.Builder
+#import std.exception
+namespace tunitas::montara::resource::aspect::operations {
+  template<typename I, typename S> auto Operations<I,S>::deetie(Request const &request, Storage &store, string::View variable_name) -> Transport try {
+    auto filled = Optional<Transport>{};
+    filters::enforce_no_query_arguments(request, filled);
+    if (! filled) {
+      auto const variable = request.look_variable(variable_name);
+      if (!variable) {
+	filled = responses::bad_request("no identifier");
+      } else {
+	auto identified = identifier::from_chars<Identifier>(*variable);
+	if (!ok(identified)) {
+	  filled = responses::bad_request("bad identifier " + error_code(identified).message());
+	} else {
+	  auto del = store.DELETE(value(identified));
+	  if (!ok(del)) {
+            auto ec = error_code(del);
+            if (E::NOT_FOUND == ec) {
+              filled = responses::gone(error_code(del).message());
+            } else {
+              // if (E::FOUND == ec)
+              // Huh?  This should not happen, but it means that the PUT had some conflict with its update activity.
+              // [[FIXTHIS]] can we have more precision than this?
+              filled = responses::internal_server_error(ec.message());
+            }
+	  } else {
+            auto code = http::R200_OK;
+	    auto body = R"text(OK)text"s;
+	    auto type = mime::APPLICATION_JSON;
+            filled = render::Builder{code}.content_type(move(type)).body(move(body)).build();
+	  }
+	}
+      }
+    }
+    return move(*filled);
+  } catch (std::exception const &e) {
+    return responses::internal_server_error(e.what());
+  } catch (...) {
+    return responses::internal_server_error();
+  }
+  template<typename I, typename S> auto Operations<I,S>::gettie(Request const &request, Storage &store, string::View variable_name) -> Transport try {
+    auto filled = Optional<Transport>{};
+    filters::enforce_no_query_arguments(request, filled);
+    if (! filled) {
+      auto const variable = request.look_variable(variable_name);
+      if (!variable) {
+	filled = responses::bad_request("no identifier");
+      } else {
+	auto identified = identifier::from_chars<Identifier>(*variable);
+	if (!ok(identified)) {
+	  filled = responses::bad_request("bad identifier " + error_code(identified).message());
+	} else {
+	  auto got = store.GET(value(identified));
+	  if (!ok(got)) {
+            auto ec = error_code(got);
+            if (E::NOT_FOUND == ec) {
+              filled = responses::not_found(ec.message());
+            } else {
+              // if (E::FOUND == ec)
+              // Huh?  This should not happen, but it means that the gET had some conflict with its update activity.
+              // [[FIXTHIS]] can we have more precision than this?
+              filled = responses::internal_server_error(ec.message());
+            }
+	  } else {
+	    auto stringify = [](json::Value const &value) -> std::string {
+			       // [[FIXTHIS]] Wow ... there is no better way to linearize one of these than this!  Rly?
+			       std::ostringstream buf;
+			       json::writer::stream::Builder builder;
+			       builder["commentStyle"] = "None";
+			       builder["indentation"] = "   ";  // or whatever you like
+			       std::unique_ptr<json::writer::Stream> writer(builder.newStreamWriter());
+			       writer->write(value, &buf);
+			       return buf.str();
+			     };
+            auto code = http::R200_OK;
+	    auto body = stringify(value(got));
+	    auto type = mime::APPLICATION_JSON;
+            filled = render::Builder{code}.content_type(move(type)).body(move(body)).build();
+	  }
+	}
+      }
+    }
+    return move(*filled);
+  } catch (std::exception const &e) {
+    return responses::internal_server_error(e.what());
+  } catch (...) {
+    return responses::internal_server_error();
+  }
+  template<typename I, typename S> auto Operations<I,S>::postie(Request const &request, Storage &store) -> Transport try {
+    auto filled = Optional<Transport>{};
+    filters::enforce_no_query_arguments(request, filled);
+    filters::enforce_application_json(request, filled);
+    if (! filled) {
+      auto make_document = [&request]() -> json::String {
+                             auto const &bytes_view = request.get_content();
+                             auto char_view = string::View{reinterpret_cast<char const *>(bytes_view.data()), bytes_view.size()};
+                             return json::to(json::STRING(), char_view);
+                           };
+      auto parsed = json::parse(json::failure::RETURNING, make_document());
+      if (!ok(parsed)) {
+	filled = responses::bad_request("json syntax");
+      } else {
+	auto stored = store.POST(value(std::move(parsed)));
+	if (!ok(stored)) {
+          auto ec = error_code(stored);
+          if (E::FOUND == ec) {
+            filled = responses::conflict(ec.message());
+          } else {
+            // [[FIXTHIS]] can we have more precision than this?
+            filled = responses::internal_server_error(ec.message());
+          }
+	} else {
+          auto code = http::R202_ACCEPTED;
+          auto body = R"text(Accepted)text"s;
+	  auto type = mime::TEXT_PLAIN;
+          filled = render::Builder{code}.content_type(move(type)).body(move(body)).build();
+	}
+      }
+    }
+    return move(*filled);
+  } catch (std::exception const &e) {
+    return responses::internal_server_error(e.what());
+  } catch (...) {
+    return responses::internal_server_error();
+  }
+  template<typename I, typename S> auto Operations<I,S>::puttie(Request const &request, Storage &store, string::View variable_name) -> Transport try {
+    auto filled = Optional<Transport>{};
+    filters::enforce_no_query_arguments(request, filled);
+    filters::enforce_application_json(request, filled);
+    if (! filled) {
+      auto make_document = [&request]() -> json::String {
+                             auto const &bytes_view = request.get_content();
+                             auto char_view = string::View{reinterpret_cast<char const *>(bytes_view.data()), bytes_view.size()};
+                             return json::to(json::STRING(), char_view);
+                           };
+      auto parsed = json::parse(json::failure::RETURNING, make_document());
+      if (!ok(parsed)) {
+        filled = responses::bad_request("json syntax");
+      } else {
+	auto const variable = request.look_variable(variable_name);
+	if (!variable) {
+          filled = responses::bad_request("no identifier");
+	} else {
+	  auto identified = identifier::from_chars<Identifier>(*variable);
+	  if (!ok(identified)) {
+	    filled = responses::bad_request("bad identifier " + error_code(identified).message());
+	  } else {
+	    auto put = store.PUT(value(identified), value(std::move(parsed)));
+	    if (!ok(put)) {
+              auto ec = error_code(put);
+              if (E::NOT_FOUND == ec) {
+                filled = responses::gone(ec.message());
+              } else if (E::FOUND == ec) {
+                // Huh?  This should not happen, but it means that the PUT had some conflict with its update activity.
+                filled = responses::conflict(ec.message());
+              } else {
+                // [[FIXTHIS]] can we have more precision than this?
+                filled = responses::internal_server_error(ec.message());
+              }
+	    } else {
+              auto code = http::R202_ACCEPTED;
+	      auto body = R"text(Accepted)text"s;
+	      auto type = mime::TEXT_PLAIN;
+              filled = render::Builder{code}.content_type(move(type)).body(move(body)).build();
+	    }
+	  }
+        }
+      }
+    }
+    return move(*filled);
+  } catch (std::exception const &e) {
+    return responses::internal_server_error(e.what());
+  } catch (...) {
+    return responses::internal_server_error();
+  }
+}
+#endiv

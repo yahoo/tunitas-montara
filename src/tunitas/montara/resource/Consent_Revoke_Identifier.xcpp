@@ -1,0 +1,62 @@
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
+// Licensed under the terms of the Apache-2.0 license.
+// For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+// For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
+#divert <fpp>
+namespace tunitas::montara::resource {
+  //
+  // The code behind the /consent/revoke/{consentId} resource
+  //
+  // POSTing to this resource does a DELETE on the storage for the referenced consent record.
+  // The consent is gone.
+  // In an alternative implementation, a consent revocation would be *recorded* and cached
+  // record of revocation would be written into immutability; revocation of consent being a permanent mark.
+  //
+  // Protocol question for API v2, why not just surface DELETE as a verb against /consent/{consentId}.
+  //
+  // Example: TBD
+  //
+  // Usage:
+  //
+  //   resource::Consent_Revoke_Identifier resource;
+  //   ws.register_resource("/consent/revoke/{consentId}", &resource, true);
+  //   ws.start(cfg.foreground);
+  //   
+  class Consent_Revoke_Identifier;
+}
+#endiv
+#divert <hpp>
+#import tunitas.montara.resource.aspect.Operations
+#import tunitas.montara.resource.aspect.Storage
+#import tunitas.montara.identifier.Consent
+#import tunitas.montara.storage.Consent
+class tunitas::montara::resource::Consent_Revoke_Identifier : public microhttpd::Resource,
+                                                              protected aspect::Storage<storage::Consent>,
+                                                              protected aspect::Operations<identifier::Consent, storage::Consent> {
+  struct Ancestors {
+    using Resource = microhttpd::Resource;
+    using Storage = aspect::Storage<storage::Consent>;
+    using Operations = aspect::Operations<identifier::Consent, storage::Consent>;
+  };
+public:
+  inline explicit Consent_Revoke_Identifier(storage::Consent &);
+  inline auto POST(Request const &) -> Transport;
+  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
+protected:
+  inline static auto const PARAMETER_NAME = std::string{"consentId"};
+};
+#endiv
+#divert <ipp>
+namespace tunitas::montara::resource {
+  Consent_Revoke_Identifier::Consent_Revoke_Identifier(storage::Consent &store) : Ancestors::Storage{store}  { resources::initialize_only_post(*this); }
+  auto Consent_Revoke_Identifier::POST(Request const &request) -> Transport {
+    // Get the content and drop it.
+    // The important thing is that content is pulled in and the socket is closed.
+    // Blik.  Because browsers cannot do DELETE [[and why is that WHATWG?]], they have to do POST with empty bodies.
+    // NOT request.get_content();
+    return deetie(request, store, PARAMETER_NAME);
+  }
+  template<required::Storage STORAGE> auto Consent_Revoke_Identifier::registration(STORAGE &storage) -> endpoint::Registration { return endpoint::make_registration<Consent_Revoke_Identifier>("/consent/revoke"s, PARAMETER_NAME, storage); }
+}
+#endiv

@@ -1,0 +1,19 @@
+// This is C++ 23 -*- c++ -*- -std=c++23 in the stylings of the S.C.O.L.D. design method.
+// For terms and provenance see the LICENSE file at the top of the repository.
+#divert <cpp>
+#import tunitas.montara.resource.Consent_CreateWithArray
+#import tunitas.montara.resource.Consent_CreateWithList
+#import tunitas.montara.resource.Consent_FindIdentifiersByEntity
+#import tunitas.montara.resource.Consent_RevokeWithArray
+#import tunitas.montara.resource.Consent_RevokeWithList
+#import tunitas.montara.resource.Consent_Revoke_Identifier
+#import tunitas.montara.resource.Subscription_FindByEntity
+#import tunitas.montara.resource.Transfer_CreateWithArray
+#import tunitas.montara.resource.Transfer_CreateWithList
+#import tunitas.montara.resource.Transfer_FindByConsentIdentifier
+namespace tunitas::montara::resource {
+  string::Storage const Consent_FindIdentifiersByEntity::DUMMY_DATA{"dummy-consent-identifier-found-by-entity"};
+  string::Storage const Transfer_FindByConsentIdentifier::DUMMY_DATA{"dummy-datatransfer-found-by-consent-identifier"};
+  string::Storage const Subscription_FindByEntity::DUMMY_DATA{"dummy-subscription-found-by-entity"};
+}
+#endiv

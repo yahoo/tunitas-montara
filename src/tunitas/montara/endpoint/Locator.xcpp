@@ -1,0 +1,24 @@
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
+// Licensed under the terms of the Apache-2.0 license.
+// For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+// For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
+#divert <fpp>
+#import microhttpd.path.Endpoint
+namespace tunitas::montara::endpoint {
+  //
+  // The locator for a resource.
+  //
+  // Specification:
+  //
+  //   The microhttpd++ calls these things "endpoints"
+  //   And they have some quirky ways of being constructed.
+  //
+  // Design:
+  //
+  //   Use a type alias.
+  //   When moving to a struct(ure), then an 'operator Endpoint() const' will be necessary
+  //
+  using Locator = microhttpd::path::Endpoint;
+}
+#endiv

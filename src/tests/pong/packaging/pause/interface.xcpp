@@ -1,0 +1,36 @@
+// This is C++ 23 -*- c++ -*- -std=c++23 in the stylings of the S.C.O.L.D. design method which is so popular nowadays.
+// For terms and provenance see the LICENSE file at the top of the repository.
+#divert <hpp>
+namespace tests::pong::packaging::pause::interface {
+  //
+  // See the documentariat near tests.pong.pause
+  //
+  auto pause(Duration) -> Status;
+}
+#endiv
+#divert <cpp>
+#import tests.pong.packaging.pause.Cleanup
+#import sys.posix.SIG
+#import sys.posix.signal
+#import sys.posix.ITIMER
+#import sys.posix.setitimer
+#import sys.posix.E
+#import sys.posix.pause
+namespace tests::pong::packaging::pause {
+  auto interface::pause(Duration delay) -> Status {
+    auto cleanup = Cleanup{};
+    signal(SIG::ALARM, [](int) -> void { });
+    if (auto sat = setitimer(ITIMER::REAL, {timeval{}, as<timeval>(delay)}, nullptr); fail(sat)) {
+      return sat;
+    } else if (auto pau = posix::pause(); fail(pau) && E::INTR != error_code(pau)) {
+      // This is bad, Something *other* than the signal happened
+      return pau;
+    } else {
+      // This is good
+      // <quote> EINTR a signal was caught and the signal-catching function returned.,/quote>
+      //
+      return {};
+    }
+  }
+}
+#endiv

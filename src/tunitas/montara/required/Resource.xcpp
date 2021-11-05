@@ -1,0 +1,24 @@
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
+// Licensed under the terms of the Apache-2.0 license.
+// For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+// For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
+#divert <fpp>
+#import microhttpd.Resource
+#include <hpp/microhttpd.Resource>
+#import tunitas.montara.required.Storage
+namespace tunitas::montara::required {
+  //
+  // Is this type a resource, as is suitable for microhttpd++?
+  // And as used herein in the Montara Service?
+  //
+  // The complete type of RESOURCE must be available.
+  // There is an additional constraint on the constructor, namely that it must accept an lvalue reference.
+  //
+  template<typename RESOURCE, typename STORAGE> concept Resource = requires(RESOURCE, STORAGE &storage) {
+    requires derived_from<RESOURCE, microhttpd::Resource>;
+    requires Storage<STORAGE>;
+    { RESOURCE{storage} };
+  };
+}
+#endiv

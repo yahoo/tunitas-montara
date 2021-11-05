@@ -2,10 +2,13 @@
 source ${0%/*}/rigging.sh || exit 70
 rm -f ${pidfile?}
 # WATCHOUT - unless you say '--engine=memory' you'll get vacuous "success" from all APIs
+logfile=${0%/*}/log.montara-service.$$
+logLATEST=${0%/*}/log.LATEST
 if false ; then
-    montara-service --engine=memory --background --pidfile=${pidfile?} --port $PORT
+    montara-service --engine=memory --background --no-drop-privileges --pidfile=${pidfile?} --port $PORT
 else
-    montara-service --engine=memory --foreground --pidfile=${pidfile?} --port $PORT >& ${0%/*}/montara-service.$$ </dev/null & 
+    montara-service --engine=memory --foreground --no-drop-privileges --pidfile=${pidfile?} --port $PORT >& ${logfile?} < /dev/null &
+    ln -fs ${logfile##*/} ${logLATEST?}
 fi
 sleep 0.25
 debug_show_service LAUNCHED

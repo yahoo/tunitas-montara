@@ -1,0 +1,67 @@
+// This is -*- c++ -*- nearly C++23 with Modules TS but in the S.C.O.L.D. stylings that are so popular these days.
+// Copyright Yahoo Inc, 2021.
+// Licensed under the terms of the Apache-2.0 license.
+// For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+// For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
+#divert <fpp>
+namespace tunitas::montara::resource {
+  //
+  // The code behind the /datatransfer/createWithArray resource
+  //
+  // Editorial:
+  //
+  //   Whereas REST requires computed names (many nouns) and a few constrained verbs (POST, GET, PUT, DELETE)
+  //   No one is fooled, this is not REST, this is RPC on bulk data.
+  //   This is not Representational State Transfer (REST); this is Remote Procedure Call (RPC).
+  //
+  // Example: TBD
+  //
+  // Usage:
+  //
+  //   resource::Transfer_CreateWithArray resource;
+  //   ws.register_resource("/datatransfer/createWithArray", &resource, true);
+  //   ws.start(cfg.foreground);
+  //   
+  class Transfer_CreateWithArray;
+}
+#endiv
+#divert <hpp>
+#import tunitas.montara.resource.aspect.Storage
+#import tunitas.montara.storage.Transfer
+class tunitas::montara::resource::Transfer_CreateWithArray : public microhttpd::Resource,
+                                                             protected aspect::Storage<storage::Transfer> {
+  struct Ancestors {
+    using Resource = microhttpd::Resource;
+    using Storage = aspect::Storage<storage::Transfer>;
+  };
+public:
+  inline explicit Transfer_CreateWithArray(storage::Transfer &);
+  auto POST(Request const &) -> Transport;
+  inline static auto locator_primary() -> endpoint::Locator;
+  inline static auto locator_alternate() -> endpoint::Locator;
+  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
+};
+#endiv
+#divert <ipp>
+namespace tunitas::montara::resource {
+  Transfer_CreateWithArray::Transfer_CreateWithArray(storage::Transfer &store) : Ancestors::Storage{store} { resources::initialize_only_post(*this); }
+  auto Transfer_CreateWithArray::locator_primary() -> endpoint::Locator   { return endpoint::make_locator("/transfer/createWithArray"s); }
+  auto Transfer_CreateWithArray::locator_alternate() -> endpoint::Locator { return endpoint::make_locator("/datatransfer/createWithArray"s); }
+  template<required::Storage STORAGE> auto Transfer_CreateWithArray::registration(STORAGE &storage) -> endpoint::Registration { return endpoint::make_registration<Transfer_CreateWithArray>(locator_primary(), storage); }
+}
+#endiv
+#divert <cpp>
+namespace tunitas::montara::resource {
+  auto Transfer_CreateWithArray::POST(Request const &request) -> Transport {
+    auto filled = Optional<Transport>{};
+    filters::enforce_no_query_arguments(request, filled);
+    if (!filled) {
+#warning [[WRITETHIS]] implement the acceptance of the bulk transfer ... queue it into work tier
+      auto body = R"text(accepted)text"s;
+      auto type = mime::TEXT_PLAIN;
+      filled = render::Builder{http::R202_ACCEPTED}.content_type(move(type)).body(move(body)).build();
+    }
+    return move(*filled);
+  }
+}
+#endiv

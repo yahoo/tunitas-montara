@@ -1,0 +1,37 @@
+// This is C++ 23 -*- c++ -*- -std=c++23 in the stylings of the S.C.O.L.D. design method which is so popular nowadays.
+// For terms and provenance see the LICENSE file at the top of the repository.
+#divert <fpp>
+#import tests.pong.packaging.pause // namespace implementation
+namespace tests::pong::packaging::pause {
+  //
+  // Clean. Up.
+  //
+  // Restore SIGALARM
+  // Unset the ITIMER
+  //
+  // Usage:
+  //
+  //   auto cleanup = Cleanup{};
+  //
+  struct Cleanup;
+}
+#endiv
+#divert <hpp>
+namespace tests::pong::packaging {
+  struct pause::Cleanup {
+    inline ~Cleanup() noexcept(false);
+  };
+}
+#endiv
+#divert <ipp>
+#import sys.posix.SIG
+#import sys.posix.signal
+#import sys.posix.ITIMER
+#import sys.posix.unsetitimer
+namespace tests::pong::packaging::pause {
+  Cleanup::~Cleanup() noexcept(false) {
+    signal(SIG::ALARM, SIG::DEFAULT);
+    unsetitimer(ITIMER::REAL);
+  };
+}
+#endiv
