@@ -1,5 +1,8 @@
 // This is C++ 23 -*- c++ -*- -std=c++23 in the stylings of the S.C.O.L.D. design method which is so popular nowadays.
-// For terms and provenance see the LICENSE file at the top of the repository.
+// Copyright Yahoo Inc, 2021.
+// Licensed under the terms of the Apache-2.0 license.
+// For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+// For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
 #import tests
 namespace tests::pong { }

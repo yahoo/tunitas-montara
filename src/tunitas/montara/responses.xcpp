@@ -5,15 +5,18 @@
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
 namespace tunitas::montara::responses {
-  namespace package_responses::body::interface { }
-  using namespace package_responses::body::interface;
+  namespace package_responses {
+    namespace body::exported { }
+    namespace interface = body::exported;
+  }    
+  using namespace package_responses::interface;
 }
 #import tunitas.server.responses
 namespace tunitas::montara::responses::package_responses {
   // namespaces: any context namespaces?
   namespace body {
     // any body namespaces?
-    namespace interface {
+    namespace exported {
       //
       // Standardized (server) responses
       //
@@ -35,8 +38,8 @@ namespace tunitas::montara::responses::package_responses {
   // types: any context types?
   namespace body {
     // types: any body types?
-    namespace interface {
-      // types: any (exported) interface types?
+    namespace exported {
+      // types: any (exported) exported types?
     }
   }
 }

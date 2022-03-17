@@ -126,7 +126,7 @@ auto app::service::options::Parser::parse(Args &args) -> Result {
       break;
     case oi::CHR_p:
     case oi::SERVICE_PORT:
-      cfg.port = get_port(step);
+      cfg.service_port = get_port(step);
       break;
     case oi::PID_FILEPATH:
       cfg.emit_pid = true;

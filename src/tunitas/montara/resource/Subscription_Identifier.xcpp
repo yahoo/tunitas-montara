@@ -25,23 +25,28 @@ namespace tunitas::montara::resource {
 #import tunitas.montara.resource.aspect.Storage
 #import tunitas.montara.identifier.Subscription
 #import tunitas.montara.storage.Subscription
-class tunitas::montara::resource::Subscription_Identifier : public microhttpd::Resource,
-                                                            protected aspect::Storage<storage::Subscription>,
-                                                            protected aspect::Operations<identifier::Subscription, storage::Subscription> {
-  struct Ancestors {
-    using Resource = microhttpd::Resource;
-    using Storage = aspect::Storage<storage::Subscription>;
-    using Operations = aspect::Operations<identifier::Subscription, storage::Subscription>;
+namespace tunitas::montara {
+  namespace resource {
+    using std::move;
+  }
+  class resource::Subscription_Identifier : public microhttpd::Resource,
+                                            protected aspect::Storage<storage::Subscription>,
+                                            protected aspect::Operations<identifier::Subscription, storage::Subscription> {
+    struct Ancestors {
+      using Resource = microhttpd::Resource;
+      using Storage = aspect::Storage<storage::Subscription>;
+      using Operations = aspect::Operations<identifier::Subscription, storage::Subscription>;
+    };
+  public:
+    inline explicit Subscription_Identifier(storage::Subscription &);
+    inline auto DELETE(Request const &) -> Transport;
+    inline auto GET(Request const &) -> Transport;
+    inline auto PUT(Request const &) -> Transport;
+    template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
+  protected:
+    inline static auto const PARAMETER_NAME = std::string{"subscriptionId"};
   };
-public:
-  inline explicit Subscription_Identifier(storage::Subscription &);
-  inline auto DELETE(Request const &) -> Transport;
-  inline auto GET(Request const &) -> Transport;
-  inline auto PUT(Request const &) -> Transport;
-  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
-protected:
-  inline static auto const PARAMETER_NAME = std::string{"subscriptionId"};
-};
+}
 #endiv
 #divert <ipp>
 namespace tunitas::montara::resource {

@@ -4,40 +4,19 @@
 # For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 # For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #
-check_bin_unit = check/bin/unit
-check_bin_unit_LDADD = \
-  $(lib_libtunitas_montara_la) \
-  $(lib_libwant_la) \
-  -lunit-bench-module \
-  $(end)
-$(check_bin_unit_OBJECTS): AM_CPPFLAGS+=$(AND_CHECK_CPPFLAGS_SET)
-$(check_bin_unit_OBJECTS): AM_CXXFLAGS+=$(AND_CHECK_CXXFLAGS_SET) -Wno-deprecated-declarations
-# reminder: autotools does not put $(AM_LDFLAGS) into check_bin_unit_LDFLAGS, like it does with CPPFLAGS and CXXFLAGS
-check_bin_unit_LDFLAGS = $(CHECK_LDFLAGS_SET)
-check_bin_unit_MODULES = $(call TF_SOURCEStoMODULES, $(check_bin_unit_SOURCES))
-check_bin_unit_SOURCES = \
-  obj/src/tests/unit/c.main.cpp \
-  obj/src/tests/unit/namespace.cpp \
+tests_unit_SUBSOURCES = \
+  check/obj/src/tests/namespace.cpp \
+  check/obj/src/tests/unit/c.main.cpp \
+  check/obj/src/tests/unit/namespace.cpp \
   \
-  obj/src/tests/unit/Fixture.cpp \
-  obj/src/tests/unit/endpoint.Fixture.cpp \
-  obj/src/tests/unit/error.Fixture.cpp \
-  obj/src/tests/unit/identifier.Fixture.cpp \
-  obj/src/tests/unit/montara.Fixture.cpp \
-  obj/src/tests/unit/resource.Fixture.cpp \
-  obj/src/tests/unit/storage.Fixture.cpp \
-  obj/src/tests/unit/storage.null.Fixture.cpp \
-  obj/src/tests/unit/storage.memory.Fixture.cpp \
-  obj/src/tests/unit/want.Fixture.cpp \
+  check/obj/src/tests/unit/Fixture.cpp \
+  check/obj/src/tests/unit/endpoint.Fixture.cpp \
+  check/obj/src/tests/unit/error.Fixture.cpp \
+  check/obj/src/tests/unit/identifier.Fixture.cpp \
+  check/obj/src/tests/unit/montara.Fixture.cpp \
+  check/obj/src/tests/unit/resource.Fixture.cpp \
+  check/obj/src/tests/unit/storage.Fixture.cpp \
+  check/obj/src/tests/unit/storage.null.Fixture.cpp \
+  check/obj/src/tests/unit/storage.memory.Fixture.cpp \
+  check/obj/src/tests/unit/want.Fixture.cpp \
   $(end)
-#
-$(scold_cxxdir)/tests/unit/dependencies.mk: $(check_bin_unit_SOURCES)
-$(check_bin_unit_SOURCES) : obj/src/%.cpp : src/%.xcpp
-	$(TF_V_DIS) $(call TF_XCPP2CPP, $<)
-	$(TF_V_DONE) test -e $@
-$(scold_cxxdir)/tests/unit/dependencies.mk:
-	$(TF_V_DEP) $(call TF_DEPENDENCIES, $^)
-	$(TF_V_DONE) test -e $@
-include $(scold_cxxdir)/tests/unit/dependencies.mk
-clean-dependencies::
-	rm -f $(scold_cxxdir)/tests/unit/dependencies.mk

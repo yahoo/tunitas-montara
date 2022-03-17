@@ -5,18 +5,21 @@
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
 namespace tunitas::montara::resources {
-  namespace package_resources::body::interface { }
-  using namespace package_resources::body::interface;
+  namespace package_resources {
+    namespace body::exported { }
+    namespace interface = body::exported;
+  }
+  using namespace package_resources::interface;
 }
 #import tunitas.server.resources
 // This is convenient yet vestigial.
 // Nowadays, all this is inherited from the core of the service
 namespace tunitas::montara::resources::package_resources {
-  // any interface-context namespaces?
+  // any exported-context namespaces?
   namespace body {
     // any body namespaces?
-    namespace interface {
-      // any interface namespaces?
+    namespace exported {
+      // any exported namespaces?
       using namespace tunitas::server::resources;
     }
   }
@@ -25,10 +28,11 @@ namespace tunitas::montara::resources::package_resources {
 #import microhttpd.method.Registered
 #import microhttpd.method.Unregistered
 namespace tunitas::montara::resources::package_resources {
-  // any interface-context types
+  // any exported-context types
   namespace body {
-    namespace interface {
+    namespace exported {
       //
+      // [[FIXTHIS]] this is all copy-pasta among at least montara, tarwater, rockaway
       // See the documentariat in tunitas.server.resources
       //
       // Usage:

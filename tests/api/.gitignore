@@ -1,3 +1,6 @@
+# just that
 run.pid
 # these are the debugging scripts
 montara-service.*
+# the logging
+log.*

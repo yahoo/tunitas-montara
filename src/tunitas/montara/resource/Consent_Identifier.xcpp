@@ -25,22 +25,27 @@ namespace tunitas::montara::resource {
 #import tunitas.montara.resource.aspect.Storage
 #import tunitas.montara.identifier.Consent
 #import tunitas.montara.storage.Consent
-class tunitas::montara::resource::Consent_Identifier : public microhttpd::Resource,
-                                                       protected aspect::Storage<storage::Consent>,
-                                                       protected aspect::Operations<identifier::Consent, storage::Consent> {
-  struct Ancestors {
-    using Resource = microhttpd::Resource;
-    using Storage = aspect::Storage<storage::Consent>;
-    using Operations = aspect::Operations<identifier::Consent, storage::Consent>;
+namespace tunitas::montara {
+  namespace resource {
+    using std::move;
+  }
+  class resource::Consent_Identifier : public microhttpd::Resource,
+                                       protected aspect::Storage<storage::Consent>,
+                                       protected aspect::Operations<identifier::Consent, storage::Consent> {
+    struct Ancestors {
+      using Resource = microhttpd::Resource;
+      using Storage = aspect::Storage<storage::Consent>;
+      using Operations = aspect::Operations<identifier::Consent, storage::Consent>;
+    };
+  public:
+    inline explicit Consent_Identifier(storage::Consent &);
+    inline auto GET(Request const &) -> Transport;
+    inline auto PUT(Request const &) -> Transport;
+    template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
+  protected:
+    inline static auto const PARAMETER_NAME = std::string{"consentId"};
   };
-public:
-  inline explicit Consent_Identifier(storage::Consent &);
-  inline auto GET(Request const &) -> Transport;
-  inline auto PUT(Request const &) -> Transport;
-  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
-protected:
-  inline static auto const PARAMETER_NAME = std::string{"consentId"};
-};
+}
 #endiv
 #divert <ipp>
 namespace tunitas::montara::resource {

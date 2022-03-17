@@ -1,0 +1,32 @@
+# This is a GNU -*- Makefile -*- fragment that is included by Automake
+# Copyright Yahoo Inc, 2021.
+# Licensed under the terms of the Apache-2.0 license.
+# For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+# For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
+#
+TESTS = \
+  $(tests_unit_TESTS) \
+  $(tests_pong_TESTS) \
+  $(tests_service_TESTS) \
+  $(tests_api_TESTS) \
+  $(end)
+XGOOD_TESTS = \
+  $(tests_unit_XGOOD_TESTS) \
+  $(tests_pong_XGOOD_TESTS) \
+  $(tests_service_XGOOD_TESTS) \
+  $(tests_api_XGOOD_TESTS) \
+  $(end)
+XFAIL_TESTS = \
+  $(tests_unit_XFAIL_TESTS) \
+  $(tests_pong_XFAIL_TESTS) \
+  $(tests_service_XFAIL_TESTS) \
+  $(tests_api_XFAIL_TESTS) \
+  $(end)
+#
+tests_pong_TESTS = $(tests_pong_XGOOD_TESTS) $(tests_pong_XFAIL_TESTS)
+tests_pong_XFAIL_TESTS = 
+tests_pong_XGOOD_TESTS = tests/pong/all.test
+#
+include tests/api/Makefrag.am
+include tests/service/Makefrag.am
+include tests/unit/Makefrag.am

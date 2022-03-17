@@ -4,22 +4,17 @@
 // For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
-#import nonstd.string
-namespace tests::unit {
-  namespace string = nonstd::string;
-}
+#import tests
+namespace tests::unit { }
 #endiv
 #divert <hpp>
-#import tests.cppunit.Test
-#import tests.cppunit.test.Fixture
-#import tests.cppunit.ASSERT
+// Because all test fixtures will need these
+#import tests.cppunit.Test // ............ the v1-series compatibility shims
+#import tests.cppunit.test.Fixture // .... ibidem.
+#import tests.cppunit.ASSERT // .......... ibidem.
 #endiv
 #divert <ipp>
-#import nonstd.string.literals
-namespace tests::unit {
-  using namespace nonstd::string::literals;
-}
-#import rigging.suite.io
+#import rigging.suite.io // ... ibidem (the v1-series compatibility shim)
 #import std.cerr
 #import std.clog
 #import std.cout

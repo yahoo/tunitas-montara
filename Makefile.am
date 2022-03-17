@@ -18,12 +18,15 @@ ACLOCAL_AMFLAGS = -I m4
 AUTOMAKE_OPTIONS = no-define subdir-objects foreign
 
 default:
+include tests/Makefrag.am
+include @temerarious_flagship_datadir@/am/build.am
+#
 # also configure.ac and HGTW_SUBMODULE_CONFIGURE
 # SUBDIRS = @subdirs@
-include @temerarious_flagship_datadir@/am/build.am
 
 #
 # There is addenda code for perl::split in microhttpd that MUST precede module-langu == 0.2
+# REMOVEWHEN deprecating the addenda area and relying solely on the module-langu version of langu::ish::perl::split
 #
 # Witness:
 #   src/microhttpd/path/actualities/prepare.xcpp: In lambda function:
@@ -35,36 +38,32 @@ DEVELOPMENT_AREAS_microhttpd_addenda_before_mainline_langu_FIXTHIS = $(microhttp
 DEVELOPMENT_AREAS = \
   $(DEVELOPMENT_AREAS_microhttpd_addenda_before_mainline_langu_FIXTHIS) \
   \
-  $(module_format_prefix) \
-  $(module_ip_prefix) \
+  $(module_cli_core_prefix) \
   $(module_json_prefix) \
   $(module_langu_prefix) \
   $(module_nonstd_prefix) \
-  $(module_options_prefix) \
-  $(module_posix_prefix) \
-  $(module_std_prefix) \
-  $(module_string_prefix) \
   $(module_sys_prefix) \
   $(microhttpd___prefix) \
   $(tunitas_basics_prefix) \
+  $(deprecated_DEVELOPMENT_AREAS) \
   $(end)
 TESTING_AREAS = \
-  $(module_cppunit_prefix) \
-  $(module_rigging_prefix) \
+  $(module_rigging_core_prefix) \
+  $(deprecated_TESTING_AREAS) \
   $(end)
 INSTALLATION_AREAS = \
-  $(nonstd_cppunit_prefix) \
   $(nonstd_gcc_prefix) \
   $(nonstd_jsoncpp_prefix) \
   $(std_scold_prefix) \
   $(std_tunitas_prefix) \
+  $(deprecated_INSTALLATION_AREAS) \
   $(end)
 
 default: all
 
-module_SOURCE_SET = \
-  $(filter-out %DUMMY_DATA.cpp, $(lib_libtunitas_montara_la_SOURCES)) \
-  $(lib_libwant_la_SOURCES) \
+INSTALL_MODULES = \
+  $(filter-out %DUMMY_DATA.cpp, $(noinst_lib_libtunitas_montara_la_MODULES)) \
+  $(noinst_lib_libwant_la_MODULES) \
   $(end)
 
 .PHONY: clean-local mostlyclean-local distclean-local
@@ -72,13 +71,14 @@ clean-local mostlyclean-local distclean-local::
 clean-dependencies::
 clean-local:: clean-dependencies
 
-include src/app/Makefrag.am
-include src/app/service/Makefrag.am
-include src/autotools/autoconf/Makefrag.am
-include src/tests/pong/Makefrag.am
-include src/tests/unit/Makefrag.am
-include src/tunitas/montara/Makefrag.am
-include src/want/Makefrag.am
+include check/bin/unit.am
+include check/bin/pong.am
+include sbin/montara-service.am
+include lib/libtunitas-montara.am
+include noinst/lib/libtunitas-montara.am
+include noinst/lib/libautotools-autoconf+tunitas-montara.am
+include noinst/lib/libapp.am
+include noinst/lib/libwant.am
 
 # There is no point in defining systemddir to follow $(prefix) because
 # the system's systemd won't look in odd places, e.g. /usr/local/lib/systemd/system
@@ -91,34 +91,17 @@ sbin_PROGRAMS = \
   sbin/montara-service \
   $(end)
 lib_LTLIBRARIES = \
-  $(lib_libtunitas_montara_la) \
+  lib/libtunitas-montara.la \
   $(end)
 noinst_LTLIBRARIES = \
-  $(lib_libautotools_autoconf_la) \
-  $(lib_libwant_la) \
-  $(lib_libapp_la) \
+  noinst/lib/libautotools-autoconf+tunitas-montara.la \
+  noinst/lib/libtunitas-montara.la \
+  noinst/lib/libwant.la \
+  noinst/lib/libapp.la \
   $(end)
 check_PROGRAMS = \
-  $(check_bin_unit) \
-  $(check_bin_pong) \
-  $(end)
-
-include tests/api/Makefrag.am
-include tests/service/Makefrag.am
-include tests/unit/Makefrag.am
-tests_pong_XFAIL_TESTS = 
-tests_pong_TESTS = tests/pong/all.test
-XFAIL_TESTS = \
-  $(tests_unit_XFAIL_TESTS) \
-  $(tests_pong_XFAIL_TESTS) \
-  $(tests_service_XFAIL_TESTS) \
-  $(tests_api_XFAIL_TESTS) \
-  $(end)
-TESTS = \
-  $(tests_unit_TESTS) \
-  $(tests_pong_TESTS) \
-  $(tests_service_TESTS) \
-  $(tests_api_TESTS) \
+  check/bin/unit \
+  check/bin/pong \
   $(end)
 
 # --- Mostly boilerplate beyond here
@@ -166,3 +149,19 @@ AM_CFLAGS   = $(PACKAGE_CFLAGS_SET)
 AM_CXXFLAGS = $(PACKAGE_CXXFLAGS_SET)
 AM_LDFLAGS  = $(V_LDFLAGS_avoid.VERBOSE_Veq$(V))
 AM_LIBTOOLFLAGS = $(V_LIBTOOLFLAGS_VERBOSE_Veq$(V))
+
+deprecated_DEVELOPMENT_AREAS = \
+  $(module_format_prefix) \
+  $(module_ip_prefix) \
+  $(module_options_prefix) \
+  $(module_posix_prefix) \
+  $(module_std_prefix) \
+  $(module_string_prefix) \
+  $(end)
+deprecated_TESTING_AREAS = \
+  $(module_cppunit_prefix) \
+  $(module_rigging_prefix) \
+  $(end)
+deprecated_INSTALLATION_AREAS = \
+  $(nonstd_cppunit_prefix) \
+  $(end)

@@ -1,9 +1,24 @@
 // This is C++ 23 -*- c++ -*- -std=c++23 in the stylings of the S.C.O.L.D. design method which is so popular nowadays.
 // For terms and provenance see the LICENSE file at the top of the repository.
 #divert <fpp>
+namespace tests::pong {
+  namespace package_main {
+    namespace body::exported { }
+    namespace interface = body::exported;
+  }
+  using namespace package_main::interface;
+}
+#import sys.exits.constants
+#import sys.time.durations.literals
+namespace tests::pong::package_main {
+  namespace body {
+    using namespace sys::exits::constants;
+    using namespace sys::time::durations::literals;
+  }
+}
 #import sys.exits.Code
 namespace tests::pong {
-  namespace packaging::main::implementation {
+  namespace package_main::body {
     using Exit = sys::exits::Code;
   }
 }
@@ -14,22 +29,18 @@ namespace tests::pong {
 #import microhttpd.ip.Port
 #import ip.endian.host_order
 namespace tests::pong {
-  namespace packaging::main::implementation {
+  namespace package_main::body {
     inline auto const NAME = std::string{"pong"};
-    inline auto const PORT = microhttpd::ip::Port{::ip::endian::host_order<::ip::in::port_t>(47309u)}; // the number is magic and specific for this test
-    namespace interface {
+    inline auto const PORT = []{
+                               // The port number here is magic and specific for this test.
+                               constexpr auto const MAGIC = 47309u;
+                               auto const HO = ::ip::endian::host_order<::ip::in::port_t>(MAGIC);
+                               return microhttpd::ip::Port{HO};
+                             }();
+    namespace exported {
       auto main(Arguments) -> Exit;
     }
   }
-  using packaging::main::implementation::interface::main;
-}
-#endiv
-#divert <ipp>
-#import sys.exits.constants
-#import sys.time.durations.literals
-namespace tests::pong::packaging::main::implementation {
-  using namespace sys::exits::constants;
-  using namespace sys::time::durations::literals;
 }
 #endiv
 #divert <cpp>
@@ -43,7 +54,7 @@ namespace tests::pong::packaging::main::implementation {
 #import std.make_shared
 #import tests.pong.pause
 #import tests.pong.Pong
-namespace tests::pong::packaging::main::implementation {
+namespace tests::pong::package_main {
   auto interface::main(Arguments arguments) -> Exit {
     auto exe = [&arguments]() {
                  auto save = arguments.front();

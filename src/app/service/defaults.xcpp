@@ -11,7 +11,6 @@ namespace app::service::defaults {
 #endiv
 #divert <hpp>
 #import microhttpd.ip.Port
-#import tunitas.string.literals
 namespace app::service::defaults {
   //
   // Default values for use in the std::optional<TYPE>
@@ -25,4 +24,7 @@ namespace app::service::defaults {
   inline auto const SERVICE_PORT = microhttpd::ip::Port{microhttpd::ip::Port::Representation::Native{23118}}; // [[FIXTIHS]] tie this to a --enable-service-port=NUMBER option in configure.ac
   inline auto const STORAGE_ENGINE = "null"s;
 }
+#endiv
+#divert <cpp>
+#warning [[FIXTHIS]] acquire the values of UNPRIVILEGED_USER, UNPRIVILEGED_GROUP, SERVICE_PORT from configure.ac
 #endiv

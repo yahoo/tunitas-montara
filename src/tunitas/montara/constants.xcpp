@@ -74,3 +74,6 @@ namespace tunitas::montara::constants {
   }
 }
 #endiv
+#divert <cpp>
+#warning FIXTHIS copy-pasta among montara, rockaway, tarwater and any other microhttpd++ service
+#endiv

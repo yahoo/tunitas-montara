@@ -23,20 +23,25 @@ namespace tunitas::montara::resource {
 #import tunitas.montara.resource.aspect.Storage
 #import tunitas.montara.storage.Consent
 #import std.string
-class tunitas::montara::resource::Consent_FindIdentifiersByEntity : public microhttpd::Resource, aspect::Storage<storage::Consent> {
-  struct Ancestors {
-    using Resource = microhttpd::Resource;
-    using Storage = aspect::Storage<storage::Consent>;
+namespace tunitas::montara {
+  namespace resource {
+    using std::move;
+  }
+  class resource::Consent_FindIdentifiersByEntity : public microhttpd::Resource, aspect::Storage<storage::Consent> {
+    struct Ancestors {
+      using Resource = microhttpd::Resource;
+      using Storage = aspect::Storage<storage::Consent>;
+    };
+  public:
+    inline explicit Consent_FindIdentifiersByEntity(storage::Consent &);
+    auto GET(Request const &) -> Transport;
+    template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
+    inline static auto locator_primary() -> endpoint::Locator;
+    inline static auto locator_alternate() -> endpoint::Locator;
+  private:
+    static std::string const DUMMY_DATA;
   };
-public:
-  inline explicit Consent_FindIdentifiersByEntity(storage::Consent &);
-  auto GET(Request const &) -> Transport;
-  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
-  inline static auto locator_primary() -> endpoint::Locator;
-  inline static auto locator_alternate() -> endpoint::Locator;
-private:
-  static std::string const DUMMY_DATA;
-};
+}
 #endiv
 #divert <ipp>
 namespace tunitas::montara::resource {

@@ -1,0 +1,24 @@
+# This is a GNU -*- Makefile -*- fragment that is included by Automake
+# Copyright Yahoo Inc, 2022.
+# Licensed under the terms of the Apache-2.0 license.
+# For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+# For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
+#
+check_bin_pong = check/bin/pong$(error REMOVE)
+check_bin_pong_CPPFLAGS = $(CHECK_CPPFLAGS_SET)
+check_bin_pong_CXXFLAGS = $(CHECK_CXXFLAGS_SET)
+check_bin_pong_LDFLAGS = $(CHECK_LDFLAGS_SET)
+check_bin_pong_LDADD = lib/libtunitas-montara.la
+check_bin_pong_SOURCES = $(tests_pong_SUBSOURCES)
+include src/tests/pong/Makefrag.am
+$(check_bin_pong_SOURCES) : disco_objdir=check/obj
+$(check_bin_pong_SOURCES) : scold_objdir=$(disco_objdir)
+$(check_bin_pong_SOURCES) : check/obj/src/%.cpp : src/%.xcpp
+	$(TF_V_DIS) $(call TF_XCPP2CPP, $<)
+	$(TF_V_DONE) test -e $@
+$(tf_check_mkdir)/pong.mk: $(check_bin_pong_SOURCES)
+$(tf_check_mkdir)/pong.mk:
+	$(TF_V_DEP) $(call TF_DEPENDENCIES, $^)
+	$(TF_V_DONE) test -e $@
+include $(tf_check_mkdir)/pong.mk
+clean-dependencies:: ; rm -f $(tf_check_mkdir)/pong.mk

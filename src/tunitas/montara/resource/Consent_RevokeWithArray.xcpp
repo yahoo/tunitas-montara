@@ -22,18 +22,23 @@ namespace tunitas::montara::resource {
 #divert <hpp>
 #import tunitas.montara.resource.aspect.Storage
 #import tunitas.montara.storage.Consent
-class tunitas::montara::resource::Consent_RevokeWithArray : public microhttpd::Resource, aspect::Storage<storage::Consent> {
-  struct Ancestors {
-    using Resource = microhttpd::Resource;
-    using Storage = aspect::Storage<storage::Consent>;
+namespace tunitas::montara {
+  namespace resource {
+    using std::move;
+  }
+  class resource::Consent_RevokeWithArray : public microhttpd::Resource, aspect::Storage<storage::Consent> {
+    struct Ancestors {
+      using Resource = microhttpd::Resource;
+      using Storage = aspect::Storage<storage::Consent>;
+    };
+  public:
+    inline explicit Consent_RevokeWithArray(storage::Consent &);
+    auto POST(Request const &) -> Transport;
+    template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
+  private:
+    static std::string const DUMMY_DATA;
   };
-public:
-  inline explicit Consent_RevokeWithArray(storage::Consent &);
-  auto POST(Request const &) -> Transport;
-  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
-private:
-  static std::string const DUMMY_DATA;
-};
+}
 #endiv
 #divert <ipp>
 namespace tunitas::montara::resource {

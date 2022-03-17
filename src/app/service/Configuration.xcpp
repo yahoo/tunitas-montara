@@ -25,19 +25,14 @@ namespace app::service {
 #divert <hpp>
 #import microhttpd.ip.Port
 #import std.optional
-#import std.filesystem.path
+#import std.string
 #import tunitas.app.Configuration
-class app::service::Configuration : public tunitas::app::Configuration {
+#import tunitas.server.configuration.Daemon
+class app::service::Configuration : public tunitas::app::Configuration,
+                                    public tunitas::server::configuration::Daemon {
   using Ancestor = tunitas::app::Configuration;
 public:
   using Ancestor::Configuration;
-  std::optional<bool> emit_pid;
-  std::optional<std::filesystem::path> pid_filepath;
-  std::optional<bool> foreground_mode;
-  std::optional<microhttpd::ip::Port> port;
   std::optional<std::string> storage_engine;
-  std::optional<bool> drop_privileges;
-  std::optional<std::string> daemon_user;
-  std::optional<std::string> daemon_group;
 };
 #endiv

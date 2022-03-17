@@ -1,12 +1,7 @@
-# This is a GNU -*- Makefile -*- fragment that is included by Automake
+#!/bin/bash --norc
 # Copyright Yahoo Inc, 2021.
 # Licensed under the terms of the Apache-2.0 license.
 # For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 # For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
-#
-app_SUBSOURCES = \
-  noinst/obj/src/app/namespace.cpp \
-  noinst/obj/src/app/exception/namespace.cpp \
-  noinst/obj/src/app/exception/Quitting.cpp \
-  noinst/obj/src/app/exception/Version.cpp \
-  $(end)
+TAG=${TAG:-STABLE} \
+exec ${0%/*}/v2

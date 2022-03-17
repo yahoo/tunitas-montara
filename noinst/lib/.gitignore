@@ -1,0 +1,8 @@
+# the lib directory shall exist
+.libs
+# everything here is a derived object
+*.la
+*.so
+*.so.*
+*.a
+

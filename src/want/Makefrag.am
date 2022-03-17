@@ -4,23 +4,8 @@
 # For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
 # For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #
-# merely a convenience library
-lib_libwant_la = lib/libwant.la
-lib_libwant_la_LIBADD = $(none)
-lib_libwant_la_LDFLAGS = $(PACKAGE_LDFLAGS_SET)
-lib_libwant_la_MODULES = $(call TF_SOURCEStoMODULES, $(lib_libwant_la_SOURCES))
-lib_libwant_la_SOURCES = \
+want_SUBSOURCES = \
   obj/src/want/namespace.cpp \
   obj/src/want/nonstd.Nullbuf.cpp \
   obj/src/want/nonstd.null.cpp \
   $(end)
-$(scold_cxxdir)/want/dependencies.mk: $(lib_libwant_la_SOURCES)
-$(lib_libwant_la_SOURCES) : obj/src/%.cpp : src/%.xcpp
-	$(TF_V_DIS) $(call TF_XCPP2CPP, $<)
-	$(TF_V_DONE) test -e $@
-$(scold_cxxdir)/want/dependencies.mk:
-	$(TF_V_DEP) $(call TF_DEPENDENCIES, $^)
-	$(TF_V_DONE) test -e $@
-include $(scold_cxxdir)/want/dependencies.mk
-clean-dependencies::
-	rm -f $(scold_cxxdir)/want/dependencies.mk

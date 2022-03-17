@@ -22,19 +22,24 @@ namespace tunitas::montara::resource {
 #divert <hpp>
 #import tunitas.montara.resource.aspect.Storage
 #import tunitas.montara.storage.Subscription
-class tunitas::montara::resource::Subscription_FindByEntity : public microhttpd::Resource,
-                                                              protected aspect::Storage<storage::Subscription> {
-  struct Ancestors {
-    using Resource = microhttpd::Resource;
-    using Storage = aspect::Storage<storage::Subscription>;
+namespace tunitas::montara {
+  namespace resource {
+    using std::move;
+  }
+  class resource::Subscription_FindByEntity : public microhttpd::Resource,
+                                              protected aspect::Storage<storage::Subscription> {
+    struct Ancestors {
+      using Resource = microhttpd::Resource;
+      using Storage = aspect::Storage<storage::Subscription>;
+    };
+  public:
+    inline explicit Subscription_FindByEntity(storage::Subscription &);
+    auto GET(Request const &) -> Transport;
+    template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
+  protected:
+    static string::Storage const DUMMY_DATA;
   };
-public:
-  inline explicit Subscription_FindByEntity(storage::Subscription &);
-  auto GET(Request const &) -> Transport;
-  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
-protected:
-  static string::Storage const DUMMY_DATA;
-};
+}
 #endiv
 #divert <ipp>
 namespace tunitas::montara::resource {

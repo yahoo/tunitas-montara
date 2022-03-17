@@ -5,11 +5,14 @@
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
 namespace tunitas::montara::endpoint {
-  namespace package_make::body::interface { }
-  using namespace package_make::body::interface;
+  namespace package_make {
+    namespace body::exported { }
+    namespace interface = body::exported;
+  }
+  using namespace package_make::interface;
 }
 namespace tunitas::montara::endpoint::package_make {
-  // interface namespaces?
+  // exported namespaces?
   namespace body {
     // body namespaces?
   }
@@ -30,7 +33,7 @@ namespace tunitas::montara::endpoint::package_make {
 #import tunitas.montara.required.Storage
 #import std.make_shared
 namespace tunitas::montara::endpoint::package_make::body {
-  namespace interface {
+  namespace exported {
     //
     // Rhymes with std::make_unique(...), std::make_shared(...) and all those
     //
@@ -46,11 +49,11 @@ namespace tunitas::montara::endpoint::package_make::body {
 #endiv
 #divert <ipp>
 namespace tunitas::montara::endpoint::package_make {
-  auto body::interface::make_locator(String prefix) -> Locator                  { return Locator{Locator::COMPLETE, move(prefix), Locator::STRING}; }
-  auto body::interface::make_locator(String prefix, String variable) -> Locator { return Locator{Locator::COMPLETE, embracket(prefix, variable), Locator::STRING}; }
-  template<typename RESOURCE, required::Storage STORAGE> requires required::Resource<RESOURCE, STORAGE> auto body::interface::make_registration(Locator locator, STORAGE &storage) -> Registration                { return {move(locator), make_shared<RESOURCE>(storage)}; }
-  template<typename RESOURCE, required::Storage STORAGE> requires required::Resource<RESOURCE, STORAGE> auto body::interface::make_registration(String prefix, STORAGE &storage) -> Registration                  { return {make_locator(move(prefix)), make_shared<RESOURCE>(storage)}; }
-  template<typename RESOURCE, required::Storage STORAGE> requires required::Resource<RESOURCE, STORAGE> auto body::interface::make_registration(String prefix, String variable, STORAGE &storage) -> Registration { return {make_locator(move(prefix), move(variable)), make_shared<RESOURCE>(storage)}; }
+  auto interface::make_locator(String prefix) -> Locator                  { return Locator{Locator::COMPLETE, move(prefix), Locator::STRING}; }
+  auto interface::make_locator(String prefix, String variable) -> Locator { return Locator{Locator::COMPLETE, embracket(prefix, variable), Locator::STRING}; }
+  template<typename RESOURCE, required::Storage STORAGE> requires required::Resource<RESOURCE, STORAGE> auto interface::make_registration(Locator locator, STORAGE &storage) -> Registration                { return {move(locator), make_shared<RESOURCE>(storage)}; }
+  template<typename RESOURCE, required::Storage STORAGE> requires required::Resource<RESOURCE, STORAGE> auto interface::make_registration(String prefix, STORAGE &storage) -> Registration                  { return {make_locator(move(prefix)), make_shared<RESOURCE>(storage)}; }
+  template<typename RESOURCE, required::Storage STORAGE> requires required::Resource<RESOURCE, STORAGE> auto interface::make_registration(String prefix, String variable, STORAGE &storage) -> Registration { return {make_locator(move(prefix), move(variable)), make_shared<RESOURCE>(storage)}; }
   auto body::embracket(String const &prefix, String const &variable) -> String { return prefix + "/{"s + variable + "}"s; }
 }
 #endiv

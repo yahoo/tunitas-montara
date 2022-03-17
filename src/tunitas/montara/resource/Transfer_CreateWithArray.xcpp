@@ -28,19 +28,24 @@ namespace tunitas::montara::resource {
 #divert <hpp>
 #import tunitas.montara.resource.aspect.Storage
 #import tunitas.montara.storage.Transfer
-class tunitas::montara::resource::Transfer_CreateWithArray : public microhttpd::Resource,
-                                                             protected aspect::Storage<storage::Transfer> {
-  struct Ancestors {
-    using Resource = microhttpd::Resource;
-    using Storage = aspect::Storage<storage::Transfer>;
+namespace tunitas::montara {
+  namespace resource {
+    using std::move;
+  }
+  class resource::Transfer_CreateWithArray : public microhttpd::Resource,
+                                             protected aspect::Storage<storage::Transfer> {
+    struct Ancestors {
+      using Resource = microhttpd::Resource;
+      using Storage = aspect::Storage<storage::Transfer>;
+    };
+  public:
+    inline explicit Transfer_CreateWithArray(storage::Transfer &);
+    auto POST(Request const &) -> Transport;
+    inline static auto locator_primary() -> endpoint::Locator;
+    inline static auto locator_alternate() -> endpoint::Locator;
+    template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
   };
-public:
-  inline explicit Transfer_CreateWithArray(storage::Transfer &);
-  auto POST(Request const &) -> Transport;
-  inline static auto locator_primary() -> endpoint::Locator;
-  inline static auto locator_alternate() -> endpoint::Locator;
-  template<required::Storage STORAGE> inline static auto registration(STORAGE &) -> endpoint::Registration;
-};
+}
 #endiv
 #divert <ipp>
 namespace tunitas::montara::resource {

@@ -1,32 +1,19 @@
-# This is a -*- Makefile -*- fragment which is processed by automake
-# For terms and provenance see the LICENSE file at the top of this repository.
+# This is a GNU -*- Makefile -*- fragment that is included by Automake
+# Copyright Yahoo Inc, 2021.
+# Licensed under the terms of the Apache-2.0 license.
+# For terms, see the LICENSE file at https://github.com/yahoo/tunitas-montara/blob/master/LICENSE
+# For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #
-check_bin_pong = check/bin/pong
-check_bin_pong_LDADD = $(lib_libtunitas_montara_la)
-check_bin_pong_LDFLAGS = $(CHECK_LDFLAGS_SET)
-$(check_bin_pong_OBJECTS): AM_CPPFLAGS+=$(AND_CHECK_CPPFLAGS_SET)
-$(check_bin_pong_OBJECTS): AM_CXXFLAGS+=$(AND_CHECK_CXXFLAGS_SET)
-check_bin_pong_MODULES = $(call HT_SOURCEStoMODULES,$(check_bin_pong_SOURCES))
-check_bin_pong_SOURCES = \
-  obj/src/tests/pong/c.main.cpp \
-  obj/src/tests/pong/main.cpp \
-  obj/src/tests/pong/namespace.cpp \
-  obj/src/tests/pong/Arguments.cpp \
-  obj/src/tests/pong/Pong.cpp \
-  obj/src/tests/pong/pause.cpp \
+tests_pong_SUBSOURCES = \
+  check/obj/src/tests/pong/c.main.cpp \
+  check/obj/src/tests/pong/main.cpp \
+  check/obj/src/tests/pong/namespace.cpp \
+  check/obj/src/tests/pong/Arguments.cpp \
+  check/obj/src/tests/pong/Pong.cpp \
+  check/obj/src/tests/pong/pause.cpp \
   \
-  obj/src/tests/pong/packaging/namespace.cpp \
-  obj/src/tests/pong/packaging/pause/namespace.cpp \
-  obj/src/tests/pong/packaging/pause/interface.cpp \
-  obj/src/tests/pong/packaging/pause/Cleanup.cpp \
+  check/obj/src/tests/pong/packaging/namespace.cpp \
+  check/obj/src/tests/pong/packaging/pause/namespace.cpp \
+  check/obj/src/tests/pong/packaging/pause/interface.cpp \
+  check/obj/src/tests/pong/packaging/pause/Cleanup.cpp \
   $(end)
-$(scold_cxxdir)/tests/pong/dependencies.mk: $(check_bin_pong_SOURCES)
-$(check_bin_pong_SOURCES) : obj/src/%.cpp : src/%.xcpp
-	$(HT_V_COLD) $(call HT_XCPP2CPP, $<)
-	$(HT_V_DONE) test -e $@
-$(scold_cxxdir)/tests/pong/dependencies.mk:
-	$(HT_V_BOTH) $(call HT_DEPENDENCIES, $^)
-	$(HT_V_DONE) test -e $@
-include $(scold_cxxdir)/tests/pong/dependencies.mk
-clean-dependencies::
-	rm -f $(scold_cxxdir)/tests/pong/dependencies.mk

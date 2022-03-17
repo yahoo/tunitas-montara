@@ -87,7 +87,7 @@ TF_CHECK_PACKAGES([microhttpd microhttpd.Daemon microhttpd.Render microhttpd.Req
 
 m4_include([ac/with-pkgconfigdir.m4]) dnl [[FIXTHIS]] into temerarious-flagship (many packages have it)
 MONTARA_WITH_PKGCONFIGDIR
-pkgconfdir='${prefix}/tunitas/montara'
+tunitas_montara_pkgconfdir='${prefix}/etc/tunitas/montara'
 AC_DEFINE_UNQUOTED([TUNITAS_MONTARA_PKGCONFDIR], ["$tunitas_montara_pkgconfdir"], [directory containing the configuration files, e.g. /etc/tunitas/montara])
 
 TF_FINALIZE

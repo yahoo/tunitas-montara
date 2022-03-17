@@ -7,7 +7,14 @@
 #import tunitas.server.service
 // This is convenient yet vestigial.
 // Nowadays, all this is inherited from the core of the service
-namespace tunitas::montara::service { using namespace tunitas::server::service; }
+namespace tunitas::montara::service {
+  using namespace tunitas::server::service;
+  static_assert(sizeof (Resource &));
+  static_assert(sizeof (Request &));
+  static_assert(sizeof (Response &));
+  static_assert(sizeof (Transport &));
+  static_assert(sizeof (render::Builder &));
+}
 #endiv
 #divert <cpp>
 // Of course, this is test code

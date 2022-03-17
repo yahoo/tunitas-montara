@@ -5,8 +5,8 @@
 // For terms, see the LICENSE file at https://git.tunitas.technology/all/services/montara/tree/LICENSE
 #divert <fpp>
 namespace app::service {
-  namespace package_run::body::interface { }
-  using namespace package_run::body::interface;
+  namespace package_run::body::exported { }
+  using namespace package_run::body::exported;
 }
 #import tunitas.montara.resource
 #import tunitas.string.literals
@@ -15,7 +15,7 @@ namespace app::service {
 #import sys.exits.constants
 #import sys.posix
 namespace app::service::package_run {
-  // any interface namespaces?
+  // any ambient namespaces?
   namespace body {
     using namespace tunitas::string::literals;
     namespace resource = tunitas::montara::resource;
@@ -32,7 +32,7 @@ namespace app::service::package_run {
 #import nonstd.same_as
 #import std.unique_ptr
 namespace app::service::package_run {
-  // any interface types?
+  // any exported types?
   namespace body {
     using microhttpd::path::Endpoint; // [[FIXTHIS]] WATCHOUT - this is distinct from montara's Endpoint! (which is a microhttpd::Resource descendant)
     using microhttpd::router::Registration;
@@ -45,7 +45,7 @@ namespace app::service::package_run {
 #divert <hpp>
 #import app.service.Configuration
 namespace app::service::package_run::body {
-  namespace interface {
+  namespace exported {
     //
     // Run the service
     // There is no termination (except by SIGTERM)
@@ -110,7 +110,7 @@ namespace app::service::package_run::body {
 #import sys.posix.signal
 #import sys.posix.SIG
 namespace app::service::package_run {
-  auto body::interface::run(Configuration const &cfg) -> void {
+  auto body::exported::run(Configuration const &cfg) -> void {
     // https://blog.erratasec.com/2018/10/tcpip-sockets-and-sigpipe.html (tl;dr discursive; the essay is more about how smart the authors are; they are "above this")
     signal(SIG::PIPE, SIG::IGNORE); // not checking the return code ... hope it worked
     //
@@ -124,7 +124,7 @@ namespace app::service::package_run {
   auto body::get_service(Configuration const &cfg) -> Service {
     auto specification = microhttpd::service::Specification{};
     using namespace constants::server;
-    auto with_port = cfg.port.value_or(defaults::SERVICE_PORT);
+    auto with_port = cfg.service_port.value_or(defaults::SERVICE_PORT);
     debug(cfg) << "port=" << microhttpd::ip::format(with_port) << '\n';
     specification.set_debug(Switch::ON);
     specification.set_use_ipv4(Switch::ON).set_use_ipv6(Switch::ON); // this is already the default
@@ -137,6 +137,59 @@ namespace app::service::package_run {
     specification.set_port(with_port);
     return microhttpd::Service{move(specification)};
   }
+  auto body::get_engine(Configuration const &cfg) -> Pointer<Engine> {
+    auto storage_name = cfg.storage_engine.value_or(defaults::STORAGE_ENGINE);
+    debug(cfg) << "engine=" << storage_name << '\n';
+    auto ordered = storage::factory().order(storage_name);
+    auto const could_not = [&cfg, &storage_name](char const *verb, std::error_code ec) {
+                             error(cfg)<< "could not " << verb << " storage engine '" << q(storage_name) << "' because " << ec.message() << '\n';
+                             throw exception::Quitting{cfg.NAME, sys::exits::UNAVAILABLE};
+                           };
+    if (!ok(ordered)) {
+      could_not("acquire", error_code(ordered));
+    }
+    auto builder = value(std::move(ordered));
+    storage::Configuration configuration; // [[FIXTHIS]] load up some configuration values from service::Configuration
+    auto built = builder->build(configuration);
+    if (!ok(built)) {
+      could_not("build", error_code(ordered));
+    }
+    return value(std::move(built));
+  }
+  auto body::load_service(Service &service, Engine &engine) -> void {
+    [&service, &target=*engine.consent]{
+      service.enregister(resource::Consent::registration(target));
+      service.enregister(resource::Consent_CreateWithArray::registration(target));
+      service.enregister(resource::Consent_CreateWithList::registration(target));
+      [&service](auto r10n){
+        auto also = r10n.destination;
+        service.enregister(move(r10n));
+        service.enregister({resource::Consent_FindIdentifiersByEntity::locator_alternate(), also});
+      }(resource::Consent_FindIdentifiersByEntity::registration(target));
+      service.enregister(resource::Consent_Identifier::registration(target));
+      service.enregister(resource::Consent_RevokeWithArray::registration(target));
+      service.enregister(resource::Consent_RevokeWithList::registration(target));
+      service.enregister(resource::Consent_Revoke_Identifier::registration(target));
+    }();
+    [&service, &target=*engine.transfer]{
+      service.enregister(resource::Transfer::registration(target));
+      service.enregister(resource::Transfer_Identifier::registration(target));
+      service.enregister(resource::Transfer_CreateWithArray::registration(target));
+      service.enregister(resource::Transfer_CreateWithList::registration(target));
+      [&service, r10n=resource::Transfer_FindByConsentIdentifier::registration(target)]{
+        auto also = r10n.destination;
+        service.enregister(r10n);
+        service.enregister({resource::Transfer_FindByConsentIdentifier::locator_abbreviation<0>(), also});
+        service.enregister({resource::Transfer_FindByConsentIdentifier::locator_abbreviation<1>(), also});
+      }();
+    }();
+    [&service, &target=*engine.subscription]{
+      service.enregister(resource::Subscription::registration(target));
+      service.enregister(resource::Subscription_Identifier::registration(target));
+      service.enregister(resource::Subscription_FindByEntity::registration(target));
+    }();
+  }
+  // [[FIXTHIS]] this is copy-pasta among montara, tarwater & rockaway
   auto body::drop_privileges(Configuration const &cfg) -> void {
     if (cfg.drop_privileges.value_or(defaults::DROP_PRIVILEGES)) {
 #warning [[FIXTHIS]] when implemented, convert to the use of the two-argument microhttpd::sys::drop privileges(user, group)
@@ -166,25 +219,7 @@ namespace app::service::package_run {
       }
     }
   }
-  auto body::get_engine(Configuration const &cfg) -> Pointer<Engine> {
-    auto storage_name = cfg.storage_engine.value_or(defaults::STORAGE_ENGINE);
-    debug(cfg) << "engine=" << storage_name << '\n';
-    auto ordered = storage::factory().order(storage_name);
-    auto const could_not = [&cfg, &storage_name](char const *verb, std::error_code ec) {
-                             error(cfg)<< "could not " << verb << " storage engine '" << q(storage_name) << "' because " << ec.message() << '\n';
-                             throw exception::Quitting{cfg.NAME, sys::exits::UNAVAILABLE};
-                           };
-    if (!ok(ordered)) {
-      could_not("acquire", error_code(ordered));
-    }
-    auto builder = value(std::move(ordered));
-    storage::Configuration configuration; // [[FIXTHIS]] load up some configuration values from service::Configuration
-    auto built = builder->build(configuration);
-    if (!ok(built)) {
-      could_not("build", error_code(ordered));
-    }
-    return value(std::move(built));
-  }
+  // [[FIXTHIS]] this is copy-pasta among montara, tarwater & rockaway
   auto body::write_pidfile(Configuration const &cfg) -> void try {
     Pidfile pidfile{cfg.pid_filepath, cfg.emit_pid.value_or(defaults::EMIT_PID)};
     pidfile.manual();
@@ -205,39 +240,7 @@ namespace app::service::package_run {
     error(cfg) << "failed to write the pid file " << cfg.pid_filepath.value_or("stderr") << " because " << e.what() << '\n';
     throw exception::Quitting{cfg.NAME, sys::exits::FAIL};
   }
-  auto body::load_service(Service &service, Engine &engine) -> void {
-    [&service, &target=*engine.consent]{
-      service.enregister(resource::Consent::registration(target));
-      service.enregister(resource::Consent_CreateWithArray::registration(target));
-      service.enregister(resource::Consent_CreateWithList::registration(target));
-      [&service, r10n=resource::Consent_FindIdentifiersByEntity::registration(target)]{
-        auto also = r10n.destination;
-        service.enregister(move(r10n));
-        service.enregister({resource::Consent_FindIdentifiersByEntity::locator_alternate(), also});
-      }();
-      service.enregister(resource::Consent_Identifier::registration(target));
-      service.enregister(resource::Consent_RevokeWithArray::registration(target));
-      service.enregister(resource::Consent_RevokeWithList::registration(target));
-      service.enregister(resource::Consent_Revoke_Identifier::registration(target));
-    }();
-    [&service, &target=*engine.transfer]{
-      service.enregister(resource::Transfer::registration(target));
-      service.enregister(resource::Transfer_Identifier::registration(target));
-      service.enregister(resource::Transfer_CreateWithArray::registration(target));
-      service.enregister(resource::Transfer_CreateWithList::registration(target));
-      [&service, r10n=resource::Transfer_FindByConsentIdentifier::registration(target)]{
-        auto also = r10n.destination;
-        service.enregister(r10n);
-        service.enregister({resource::Transfer_FindByConsentIdentifier::locator_abbreviation<0>(), also});
-        service.enregister({resource::Transfer_FindByConsentIdentifier::locator_abbreviation<1>(), also});
-      }();
-    }();
-    [&service, &target=*engine.subscription]{
-      service.enregister(resource::Subscription::registration(target));
-      service.enregister(resource::Subscription_Identifier::registration(target));
-      service.enregister(resource::Subscription_FindByEntity::registration(target));
-    }();
-  }
+  // [[FIXTHIS]] this is copy-pasta among montara, tarwater & rockaway
   auto body::fly_service(Configuration const &cfg, Service &service) -> void {
     // There is no 'quit' method.  The service runs forever.
     // To stop it, you have to kill it, e.g., systemctl stop montara
