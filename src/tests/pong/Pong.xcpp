@@ -34,7 +34,7 @@ namespace tests::pong::eponymity {
 namespace tests::pong::eponymity::pong {
   auto Pong::GET(microhttpd::Request const &) -> microhttpd::Transport {
     std::cerr << "responding to 'GET /ping'\n";
-    return Builder{201_HTTP}.body("pong!").build();
+    return Builder{201_HTTP}.body("pong!"sv).build();
   }
 }
 #endiv
