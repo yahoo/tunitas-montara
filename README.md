@@ -4,6 +4,7 @@ This repository contains a reference implementation of the "North-Facing" API Se
 
 The main body of documentation for the Tunitas family of components and services can be found with the [packaging](https://github.com/yahoo/tunitas-packaging) and with [build system](https://github.com/yahoo/temerarious-flagship]).  The overview and administrative declarations herein are necessarily summary in nature. The declarations and definitions in the packaging and build system areas are complete and should be interpreted as superceding these when the two are in conflict.
 
+Current work with modern-generation tooling, <em>e.g.</em> circa Fedora 36+ and GCC 12+, is occurring around the <em>v2-themed</em> feature branches.
 ## Table of Contents
 
 - [Background](#background)
@@ -25,10 +26,10 @@ The Montara service is a member of the Tunitas family of components and services
   * [Tunitas Butano](https://github.com/yahoo/tunitas-butano) package of components for the IAB's Transparency & Consent Framework.
   * [Temerarious Flagship](https://github.com/yahoo/temerarious-flagship), the build system
 
-* [Design Changes](https://github.com/yahoo/tunitas-montara/blob/master/doc/Design-Changes.md)
-* [The Data Types](https://github.com/yahoo/tunitas-montara/blob/master/doc/Data-Types.md)
-* [The Response Codes](https://github.com/yahoo/tunitas-montara/blob/master/doc/Response-Codes.md)
-* [The REST API Endpoints](https://github.com/tunitas-montara/blob/master/doc/REST-Endpoints.md)
+  * [Design Changes](https://github.com/yahoo/tunitas-montara/blob/master/doc/Design-Changes.md)
+  * [The Data Types](https://github.com/yahoo/tunitas-montara/blob/master/doc/Data-Types.md)
+  * [The Response Codes](https://github.com/yahoo/tunitas-montara/blob/master/doc/Response-Codes.md)
+  * [The REST API Endpoints](https://github.com/tunitas-montara/blob/master/doc/REST-Endpoints.md)
 
 ## Dependencies
 
