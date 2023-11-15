@@ -29,7 +29,7 @@ The Montara service is a member of the Tunitas family of components and services
   * [Design Changes](https://github.com/yahoo/tunitas-montara/blob/master/doc/Design-Changes.md)
   * [The Data Types](https://github.com/yahoo/tunitas-montara/blob/master/doc/Data-Types.md)
   * [The Response Codes](https://github.com/yahoo/tunitas-montara/blob/master/doc/Response-Codes.md)
-  * [The REST API Endpoints](https://github.com/tunitas-montara/blob/master/doc/REST-Endpoints.md)
+  * [The REST API Endpoints](https://github.com/yahoo/tunitas-montara/blob/master/doc/REST-Endpoints.md)
 
 ## Dependencies
 
